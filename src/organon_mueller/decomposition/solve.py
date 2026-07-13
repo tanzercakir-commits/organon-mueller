@@ -183,6 +183,15 @@ def decompose(
         )
     cov = _hermitize(np.asarray(covariance, dtype=complex))
 
+    # trace-1 convention guard (shared with decompose_composite; stage-9
+    # review found the scaled-input silent-scaling hazard is inherited here)
+    trace = float(np.trace(cov).real)
+    if abs(trace - 1.0) > 1e-6:
+        raise DecompositionError(
+            f"covariance trace is {trace:.6f}; normalize to m00 = 1 "
+            "(trace-1 convention, AO2016)"
+        )
+
     # rank-2 guard
     eig = np.linalg.eigvalsh(cov)
     lam_max = float(np.max(np.abs(eig)))
