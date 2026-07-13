@@ -181,7 +181,12 @@ def decompose(
         covariance = np.array(
             sp.matrix2numpy(standard_covariance_from_mueller(m).evalf(), dtype=complex)
         )
-    cov = _hermitize(np.asarray(covariance, dtype=complex))
+    cov = np.asarray(covariance, dtype=complex)
+    # stage-10 review: NaN passes |trace-1| checks (comparisons with NaN
+    # are False) and then crashes eigvalsh — guard finiteness first
+    if not np.all(np.isfinite(cov.real)) or not np.all(np.isfinite(cov.imag)):
+        raise DecompositionError("covariance contains non-finite entries")
+    cov = _hermitize(cov)
 
     # trace-1 convention guard (shared with decompose_composite; stage-9
     # review found the scaled-input silent-scaling hazard is inherited here)

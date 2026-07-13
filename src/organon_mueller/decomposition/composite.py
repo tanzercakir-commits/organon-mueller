@@ -174,6 +174,8 @@ def decompose_composite(
 ) -> CompositeResult:
     """Numeric composite-type decomposition with K26 guards."""
     cov = np.asarray(covariance, dtype=complex)
+    if not np.all(np.isfinite(cov.real)) or not np.all(np.isfinite(cov.imag)):
+        raise DecompositionError("covariance contains non-finite entries")
     cov = (cov + cov.conj().T) / 2
 
     # trace-1 convention guard (stage-9 review: a scaled covariance would

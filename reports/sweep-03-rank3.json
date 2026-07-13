@@ -1,0 +1,198 @@
+{
+ "sweep": "rank3-01",
+ "seed": 20260713,
+ "trials_per_pair": 4,
+ "note": "beyond-paper zone (M34): recoveries are mechanism verifications on synthetic data; NO physics/novelty claim \u2014 candidates only (novelty protocol step 5 is human)",
+ "entries": [
+  {
+   "pair": "type1+type2",
+   "trial": 0,
+   "alphas_true": [
+    0.25884662731591357,
+    0.39315617856851465,
+    0.3479971941155718
+   ],
+   "status": "recovered",
+   "alpha_error": 5.551115123125783e-17,
+   "component_error": 1.1102581366116353e-16
+  },
+  {
+   "pair": "type1+type2",
+   "trial": 1,
+   "alphas_true": [
+    0.3720423983139667,
+    0.2637550661202245,
+    0.36420253556580884
+   ],
+   "status": "recovered",
+   "alpha_error": 1.1102230246251565e-16,
+   "component_error": 2.2204513324775974e-16
+  },
+  {
+   "pair": "type1+type2",
+   "trial": 2,
+   "alphas_true": [
+    0.27905217723361453,
+    0.2072632909916713,
+    0.5136845317747142
+   ],
+   "status": "recovered",
+   "alpha_error": 2.220446049250313e-16,
+   "component_error": 8.881784197001252e-16
+  },
+  {
+   "pair": "type1+type2",
+   "trial": 3,
+   "alphas_true": [
+    0.3942034549428791,
+    0.21449833784707684,
+    0.39129820721004405
+   ],
+   "status": "recovered",
+   "alpha_error": 2.275957200481571e-15,
+   "component_error": 3.935521390205134e-15
+  },
+  {
+   "pair": "type1+type3",
+   "trial": 0,
+   "alphas_true": [
+    0.37972460560181664,
+    0.2707237418333411,
+    0.3495516525648423
+   ],
+   "status": "recovered",
+   "alpha_error": 4.440892098500626e-16,
+   "component_error": 5.117875266520903e-16
+  },
+  {
+   "pair": "type1+type3",
+   "trial": 1,
+   "alphas_true": [
+    0.2474118557400018,
+    0.2658124115975073,
+    0.4867757326624909
+   ],
+   "status": "recovered",
+   "alpha_error": 5.551115123125783e-17,
+   "component_error": 1.1102230246251565e-16
+  },
+  {
+   "pair": "type1+type3",
+   "trial": 2,
+   "alphas_true": [
+    0.31630873632541173,
+    0.23853425072191192,
+    0.4451570129526763
+   ],
+   "status": "recovered",
+   "alpha_error": 5.551115123125783e-17,
+   "component_error": 1.1443916996305594e-16
+  },
+  {
+   "pair": "type1+type3",
+   "trial": 3,
+   "alphas_true": [
+    0.24819589153695717,
+    0.3487063044897209,
+    0.4030978039733219
+   ],
+   "status": "recovered",
+   "alpha_error": 1.6653345369377348e-16,
+   "component_error": 4.440892098500626e-16
+  },
+  {
+   "pair": "type2+type3",
+   "trial": 0,
+   "alphas_true": [
+    0.24685262772975453,
+    0.2181064841796126,
+    0.535040888090633
+   ],
+   "status": "recovered",
+   "alpha_error": 5.551115123125783e-17,
+   "component_error": 3.885780586188048e-16,
+   "consistency_residual": 2.2144855923935758e-16
+  },
+  {
+   "pair": "type2+type3",
+   "trial": 1,
+   "alphas_true": [
+    0.24936436186331756,
+    0.2391804957381701,
+    0.5114551423985123
+   ],
+   "status": "recovered",
+   "alpha_error": 2.7755575615628914e-17,
+   "component_error": 1.1112879714260754e-16,
+   "consistency_residual": 2.4658031702321343e-17
+  },
+  {
+   "pair": "type2+type3",
+   "trial": 2,
+   "alphas_true": [
+    0.21377709179482007,
+    0.22885850169513866,
+    0.5573644065100413
+   ],
+   "status": "recovered",
+   "alpha_error": 1.1102230246251565e-16,
+   "component_error": 2.220446049250313e-16,
+   "consistency_residual": 7.561132835601745e-17
+  },
+  {
+   "pair": "type2+type3",
+   "trial": 3,
+   "alphas_true": [
+    0.3990503734560048,
+    0.3939382158368151,
+    0.2070114107071801
+   ],
+   "status": "recovered",
+   "alpha_error": 0.0,
+   "component_error": 3.608224830031759e-16,
+   "consistency_residual": 6.968853307271919e-17
+  },
+  {
+   "pair": "type1+type2",
+   "control": "rank2_type1",
+   "status": "rejected",
+   "reason": "covariance rank is 2 (rank_tol=1e-09), three-term decomposition needs rank 3"
+  },
+  {
+   "pair": "type1+type3",
+   "control": "rank2_type1",
+   "status": "rejected",
+   "reason": "covariance rank is 2 (rank_tol=1e-09), three-term decomposition needs rank 3"
+  },
+  {
+   "pair": "type2+type3",
+   "control": "rank2_type1",
+   "status": "rejected",
+   "reason": "covariance rank is 2 (rank_tol=1e-09), three-term decomposition needs rank 3"
+  },
+  {
+   "pair": "type1+type2",
+   "control": "same_pair_data",
+   "status": "accepted_alternative_verified",
+   "reconstruction_error": 5.598098641007068e-17,
+   "max_purity_defect": 7.701840528095621e-17,
+   "alphas": [
+    0.06055488670199833,
+    0.5394451132980016,
+    0.4000000000000001
+   ]
+  },
+  {
+   "pair": "type1+type3",
+   "control": "same_pair_data",
+   "status": "rejected",
+   "reason": "type1+type3: delegated type-1 stage failed: covariance rank is 4 (rank_tol=1e-09), two-term decomposition needs rank 2"
+  },
+  {
+   "pair": "type2+type3",
+   "control": "same_pair_data",
+   "status": "rejected",
+   "reason": "type2+type3: ebar3 (type-3 center) <= 0 (-1.3877787807814457e-17)"
+  }
+ ]
+}
