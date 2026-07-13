@@ -11,28 +11,33 @@ import time
 from organon_mueller.discovery.engine import DiscoveryEngine
 
 CONFIGS = [
-    (False, 7),   # v0's full-run configuration, for comparison
-    (True, 7),
-    (True, 9),
+    # (atoms, conj_normal, max_size, certify)
+    (("a", "b"), False, 7, "none"),   # v0's full-run configuration
+    (("a", "b"), True, 7, "none"),
+    (("a", "b"), True, 7, "all"),     # stage-4 symbolic certification cost
+    (("a", "b"), True, 9, "underivable"),
+    (("a", "b", "c"), True, 7, "underivable"),  # stage-4 3-atom scaling
+    (("a", "b", "c"), True, 8, "underivable"),
 ]
 
 
 def main() -> None:
-    print(f"{'mode':7s} {'size':>4s} {'terms':>6s} {'buckets':>7s} "
-          f"{'verified':>8s} {'underiv':>7s} {'refuted':>7s} {'fpcoll':>6s} "
-          f"{'harvest_s':>9s} {'total_s':>8s}")
-    for conj_normal, max_size in CONFIGS:
+    print(f"{'atoms':>5s} {'mode':7s} {'size':>4s} {'certify':>11s} {'terms':>6s} "
+          f"{'buckets':>7s} {'verified':>8s} {'underiv':>7s} {'demoted':>7s} "
+          f"{'refuted':>7s} {'fpcoll':>6s} {'total_s':>8s}")
+    for atoms, conj_normal, max_size, certify in CONFIGS:
         start = time.perf_counter()
         result = DiscoveryEngine(
-            atom_names=("a", "b"), max_size=max_size, conj_normal=conj_normal
+            atom_names=atoms, max_size=max_size,
+            conj_normal=conj_normal, certify=certify,
         ).run()
         total = time.perf_counter() - start
         print(
-            f"{'pruned' if conj_normal else 'full':7s} {max_size:4d} "
-            f"{result.n_terms:6d} {result.n_buckets:7d} "
+            f"{len(atoms):5d} {'pruned' if conj_normal else 'full':7s} {max_size:4d} "
+            f"{certify:>11s} {result.n_terms:6d} {result.n_buckets:7d} "
             f"{len(result.verified):8d} {len(result.underivable):7d} "
-            f"{len(result.refuted):7d} {result.fingerprint_collisions:6d} "
-            f"{result.harvest_seconds:9.2f} {total:8.2f}"
+            f"{len(result.demoted_by_symbolic):7d} "
+            f"{len(result.refuted):7d} {result.fingerprint_collisions:6d} {total:8.2f}"
         )
 
 

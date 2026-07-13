@@ -30,8 +30,19 @@ sature edilmesi tutarsız sonuçlar verdi:
   taze iki-terimli e-graph'ında ispatlanıyor. Yalıtılmış modda tüm problarda
   tutarlı davranış; 9/9 takılan çift ispatlandı.
 
+## Elenen hipotezler (2026-07-13, kullanıcı sorusu üzerine)
+
+- **Bellek yönetimi**: hayır — graflar küçük (≈10³ düğüm), hata deterministik
+  ve içerik-bağımlı; daha büyük (5698) graf doğruyken daha küçüğü (1476)
+  hatalı — bellek baskısı deseniyle uyumsuz.
+- **`seminaive` bayrağı**: hayır — `EGraph(seminaive=False)` ile de aynı
+  davranış (her iki ayarda test edildi). API'de başka ilgili konfigürasyon
+  yüzeyi görünmüyor (`RunConfig` iterasyon/scheduler düzeyi; ek iterasyonlar
+  zaten denendi).
+
 ## Açık iş
 
-- Minimal repro'yu küçültüp (delta-debug) egglog upstream'ine bildirmek —
-  dış temas olduğundan kullanıcı onayına bağlı (kritik-karar listesi).
+- ~~Upstream'e bildirim~~ — **kullanıcı kararı (2026-07-13): bildirim
+  YAPILMAYACAK** ("tek geliştirici benim; biz paketi sunacağız"). Repro ve
+  analiz repoda kalıyor; plan değişirse yeniden değerlendirilir.
 - egglog sürüm yükseltmelerinde probe script yeniden koşulmalı.

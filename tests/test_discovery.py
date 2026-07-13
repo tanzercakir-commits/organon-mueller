@@ -147,3 +147,32 @@ def test_full_run_pipeline_v1():
     # collisions, every non-anchor term contributes exactly one pair
     assert result.fingerprint_collisions == 0
     assert len(result.verified) == result.n_terms - result.n_buckets
+    assert result.demoted_by_symbolic == []  # K16 channel empty here
+    result.check_invariants()  # M20 guards hold on a real result
+
+
+def test_invariant_guard_raises_on_corruption():
+    """M20: runtime guards actually fire (user directive 2026-07-13)."""
+    from organon_mueller.discovery.engine import (
+        CandidatePair,
+        DiscoveryInvariantError,
+        DiscoveryResult,
+    )
+
+    bad = DiscoveryResult(
+        atom_names=("a", "b"), max_size=3, conj_normal=False,
+        n_terms=10, n_buckets=2,
+    )
+    bad.verified.append(CandidatePair(A, A))  # degenerate pair
+    with pytest.raises(DiscoveryInvariantError):
+        bad.check_invariants()
+
+    bad2 = DiscoveryResult(
+        atom_names=("a", "b"), max_size=3, conj_normal=False,
+        n_terms=10, n_buckets=2,
+    )
+    p = CandidatePair(Mul(A, B), Mul(B, A))
+    bad2.verified.append(p)
+    bad2.refuted.append(p)  # same pair in two categories
+    with pytest.raises(DiscoveryInvariantError):
+        bad2.check_invariants()
