@@ -1,0 +1,60 @@
+{
+  "budget_seconds": 600,
+  "environment_note": "sweep-02 (extended language, stage 7), 2026-07-13, Anthropic cloud sandbox, Linux-6.18.5-x86_64-with-glibc2.39, Python 3.11.15, sympy 1.14.0, numpy 2.4.4, egglog 13.2.0",
+  "outcomes": [
+    {
+      "atom_names": [
+        "a",
+        "b"
+      ],
+      "certify": "underivable",
+      "conj_normal": true,
+      "demoted_count": 0,
+      "fingerprint_collisions": 4,
+      "fingerprint_seed": 424242,
+      "harvest_seconds": 4.75,
+      "max_size": 6,
+      "n_buckets": 134,
+      "n_terms": 340,
+      "numeric_draws": 3,
+      "numeric_false_negatives": 0,
+      "numeric_seed": 20260713,
+      "refuted_count": 0,
+      "scalar_names": [
+        "p",
+        "q"
+      ],
+      "status": "completed",
+      "total_seconds": 4.77,
+      "underivable_pairs": [],
+      "verified_count": 202
+    },
+    {
+      "atom_names": [
+        "a",
+        "b"
+      ],
+      "certify": "underivable",
+      "conj_normal": true,
+      "demoted_count": 0,
+      "fingerprint_collisions": 12,
+      "fingerprint_seed": 424242,
+      "harvest_seconds": 17.32,
+      "max_size": 7,
+      "n_buckets": 302,
+      "n_terms": 1036,
+      "numeric_draws": 3,
+      "numeric_false_negatives": 0,
+      "numeric_seed": 20260713,
+      "refuted_count": 0,
+      "scalar_names": [
+        "p",
+        "q"
+      ],
+      "status": "completed",
+      "total_seconds": 17.34,
+      "underivable_pairs": [],
+      "verified_count": 722
+    }
+  ]
+}

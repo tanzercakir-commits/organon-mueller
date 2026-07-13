@@ -26,11 +26,23 @@ __all__ = ["fingerprint_key", "bucket_by_fingerprint", "FINGERPRINT_SEED"]
 
 FINGERPRINT_SEED = 424242  # distinct from verification seeds (K14)
 _DECIMALS = 3
+_ZERO_KEY = b"ZERO"
+_ZERO_EPS = 1e-12
 
 
-def fingerprint_key(term: Term, assignment: dict[str, np.ndarray]) -> bytes:
+def fingerprint_key(term: Term, assignment) -> bytes:
+    """Scale-relative key (stage 7): entries of M / ||M||_F rounded.
+
+    Frobenius normalization keeps the key meaningful when opaque scalars
+    make magnitudes arbitrary. Proportional-but-distinct terms may collide
+    — expected, and filtered by the proof + verification layers (M15).
+    Truly equal terms always share a key (same exact value).
+    """
     value = evaluate(term, assignment)
-    quantized = np.round(value, _DECIMALS) + 0.0  # normalize -0.0 to +0.0
+    norm = float(np.linalg.norm(value))
+    if not (norm > _ZERO_EPS):
+        return _ZERO_KEY
+    quantized = np.round(value / norm, _DECIMALS) + 0.0  # -0.0 -> +0.0
     return quantized.tobytes()
 
 
@@ -38,10 +50,11 @@ def bucket_by_fingerprint(
     terms: list[Term],
     atom_names: tuple[str, ...],
     seed: int = FINGERPRINT_SEED,
+    scalar_names: tuple[str, ...] = (),
 ) -> list[list[Term]]:
     """Group terms by coarse numeric fingerprint (candidate classes)."""
     rng = np.random.default_rng(seed)
-    assignment = random_assignment(atom_names, rng)
+    assignment = random_assignment(atom_names, rng, scalar_names)
     buckets: dict[bytes, list[Term]] = {}
     for term in terms:
         buckets.setdefault(fingerprint_key(term, assignment), []).append(term)

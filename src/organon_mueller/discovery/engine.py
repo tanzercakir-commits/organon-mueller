@@ -43,7 +43,7 @@ from .axioms import structural_rules, to_egglog
 from .fingerprint import bucket_by_fingerprint
 from .interpret import terms_numerically_equal
 from .symbolic import terms_symbolically_equal
-from .terms import Term, enumerate_terms
+from .terms import Term, enumerate_extended, enumerate_terms
 
 __all__ = [
     "DiscoveryEngine",
@@ -147,14 +147,21 @@ class DiscoveryEngine:
         max_size: int = 7,
         conj_normal: bool = False,
         certify: str = "underivable",
+        scalar_names: tuple[str, ...] = (),
     ):
         if certify not in {"none", "underivable", "all"}:
             raise ValueError(f"unknown certify mode: {certify}")
-        if len(set(atom_names)) != len(atom_names):
-            raise ValueError(f"duplicate atom names: {atom_names}")
+        names = tuple(atom_names) + tuple(scalar_names)
+        if len(set(names)) != len(names):
+            raise ValueError(
+                f"duplicate/colliding names: atoms={atom_names} scalars={scalar_names}"
+            )
         self.atom_names = atom_names
+        self.scalar_names = scalar_names
         self.max_size = max_size
-        self.conj_normal = conj_normal
+        # extended enumeration is conj-normal by construction; record the
+        # configuration that actually runs (stage-7 review: honest artifacts)
+        self.conj_normal = True if scalar_names else conj_normal
         self.certify = certify
         self.rules = structural_rules(atom_names)
 
@@ -174,12 +181,30 @@ class DiscoveryEngine:
             # so it can never masquerade as non-equivalence (reviewer, stage 2)
             return False
 
+    # -- helpers wiring scalar names through the layers (stage 7) ---------------
+    def _numeric(self, a: Term, b: Term) -> bool:
+        return terms_numerically_equal(
+            a, b, self.atom_names, scalar_names=self.scalar_names
+        )
+
+    def _symbolic(self, a: Term, b: Term) -> bool:
+        return terms_symbolically_equal(
+            a, b, self.atom_names, scalar_names=self.scalar_names
+        )
+
     # -- full pipeline -----------------------------------------------------------
     def run(self) -> DiscoveryResult:
-        terms = enumerate_terms(self.atom_names, self.max_size, self.conj_normal)
+        if self.scalar_names:
+            terms = enumerate_extended(
+                self.atom_names, self.scalar_names, self.max_size
+            )
+        else:
+            terms = enumerate_terms(self.atom_names, self.max_size, self.conj_normal)
 
         start = time.perf_counter()
-        buckets = bucket_by_fingerprint(terms, self.atom_names)
+        buckets = bucket_by_fingerprint(
+            terms, self.atom_names, scalar_names=self.scalar_names
+        )
         result = DiscoveryResult(
             atom_names=self.atom_names,
             max_size=self.max_size,
@@ -203,11 +228,9 @@ class DiscoveryEngine:
                     continue
                 pair = CandidatePair(anchor, other)
                 provable = self.provable(anchor, other)
-                true = terms_numerically_equal(anchor, other, self.atom_names)
+                true = self._numeric(anchor, other)
                 if provable and true:
-                    if self.certify == "all" and not terms_symbolically_equal(
-                        anchor, other, self.atom_names
-                    ):
+                    if self.certify == "all" and not self._symbolic(anchor, other):
                         # e-graph AND numeric sampling both wrong: loudest alarm
                         result.refuted.append(pair)
                     else:
@@ -217,16 +240,16 @@ class DiscoveryEngine:
                     # layer (stage-4 review): provable + symbolically TRUE +
                     # numerically false is a numeric-layer false negative
                     # (tolerance jitter), not an unsound axiom
-                    if self.certify in {"underivable", "all"} and (
-                        terms_symbolically_equal(anchor, other, self.atom_names)
+                    if self.certify in {"underivable", "all"} and self._symbolic(
+                        anchor, other
                     ):
                         result.verified.append(pair)
                         result.numeric_false_negatives += 1
                     else:
                         result.refuted.append(pair)  # K10: surfaced, never dropped
                 elif true:
-                    if self.certify in {"underivable", "all"} and not (
-                        terms_symbolically_equal(anchor, other, self.atom_names)
+                    if self.certify in {"underivable", "all"} and not self._symbolic(
+                        anchor, other
                     ):
                         # numeric sampling coincidence, caught by layer 1 (K16)
                         result.demoted_by_symbolic.append(pair)

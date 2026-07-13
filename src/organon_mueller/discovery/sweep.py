@@ -26,6 +26,7 @@ class SweepConfig:
     max_size: int
     conj_normal: bool = True
     certify: str = "underivable"
+    scalar_names: tuple[str, ...] = ()  # stage 7: extended-language sweeps
 
 
 @dataclass
@@ -35,6 +36,7 @@ class SweepOutcome:
     conj_normal: bool
     certify: str
     fingerprint_seed: int
+    scalar_names: tuple[str, ...] = ()
     #: numeric verification parameters (K21: the artifact carries every
     #: reproduction input, not just the fingerprint seed)
     numeric_seed: int | None = None
@@ -68,11 +70,13 @@ def run_one(config: SweepConfig) -> SweepOutcome:
         max_size=config.max_size,
         conj_normal=config.conj_normal,
         certify=config.certify,
+        scalar_names=config.scalar_names,
     ).run()
     total = time.perf_counter() - start
     return SweepOutcome(
         numeric_seed=sig["seed"].default,
         numeric_draws=sig["draws"].default,
+        scalar_names=config.scalar_names,
         atom_names=config.atom_names,
         max_size=config.max_size,
         conj_normal=config.conj_normal,
@@ -111,6 +115,7 @@ def run_sweep(
                     max_size=config.max_size,
                     conj_normal=config.conj_normal,
                     certify=config.certify,
+                    scalar_names=config.scalar_names,
                     fingerprint_seed=FINGERPRINT_SEED,
                     status="skipped_budget",
                 )

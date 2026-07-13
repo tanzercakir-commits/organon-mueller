@@ -37,16 +37,16 @@ def test_table_integrity_k19():
 def test_campaign_recovers_all_translatable():
     result = run_recovery_campaign()
     assert result.complete, f"campaign failures: {result.failures}"
-    assert result.recovered == ["I1", "I10"]
+    assert result.recovered == ["I1", "I10", "I15"]  # I15 joined at stage 7
     assert result.structural == ["I7", "I8"]
-    assert len(result.untranslatable) == 17
+    assert len(result.untranslatable) == 16
 
 
 def test_m22_monotonicity_floor():
-    """M22: the recovered set may only grow. This is the stage-5 floor;
-    raise it when the language is extended, never lower it."""
+    """M22: the recovered set may only grow. Floor raised at stage 7
+    (Sum/Scale delivered I15); raise again on future extensions, never lower."""
     result = run_recovery_campaign()
-    assert set(result.recovered) >= {"I1", "I10"}
+    assert set(result.recovered) >= {"I1", "I10", "I15"}
 
 
 def test_mueller_reality_pair_in_full_harvest():

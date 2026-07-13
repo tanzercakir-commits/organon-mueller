@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 from .engine import DiscoveryEngine
 from .interpret import terms_numerically_equal
 from .symbolic import terms_symbolically_equal
-from .terms import Atom, Conj, Mul, Term
+from .terms import Atom, Conj, Mul, Scale, ScalarAtom, ScalarConj, Sum, Term
 
 __all__ = [
     "RecoveryEntry",
@@ -35,18 +35,35 @@ __all__ = [
 ]
 
 _A, _B = Atom("a"), Atom("b")
+_P, _Q = ScalarAtom("p"), ScalarAtom("q")
+_CP, _CQ = ScalarConj(_P), ScalarConj(_Q)
 
 #: registered vocabulary of missing features (K19: an untranslatable entry
-#: must cite keys from here)
+#: must cite keys from here). Stage 7 delivered `addition` and OPAQUE
+#: `scalars` (Sum/Scale, universally-quantified coefficients — M26);
+#: what remains missing for fixed-coefficient identities is INTERPRETED
+#: scalar arithmetic.
 MISSING_FEATURES = {
-    "addition": "terim toplamı (koherent süperpozisyon: Z = aZ_a + bZ_b)",
-    "scalars": "karmaşık skaler katsayılar (a, b, e^{i phi}, agirliklar)",
+    "interpreted_scalars": "yorumlanan/sabit skaler aritmetigi "
+                           "(e^{i phi}, (1+i)/2, +-1, 1/det, trig, reel agirliklar)",
     "dagger": "eslenik-devrik (transpoze/bra-ket; S' = Z S Z^dagger, H = |h><h|)",
     "stokes_sort": "ayri Stokes sort'u (vektor/matris s, S)",
     "entry_level": "matris girdisi/iz/det duzeyinde ifadeler (M00, tr, det, simetri desenleri)",
     "constants": "sabit yapilar (A matrisi, Kronecker, R(theta), ozel durumlar)",
     "guarded_atoms": "kosullu atom siniflari (parametreleri kisitli durumlar: hermitsel, uniter, tau=0)",
 }
+
+# I15 structural forms (stage 7): superposition, its Mueller expansion in
+# nested-Scale form (scalar products are never formed — M10/K23), and the
+# cross term whose conj-symmetry IS the paper's "real cross term".
+_SUP = Sum(Scale(_P, _A), Scale(_Q, _B))
+_T_AA = Scale(_P, Scale(_CP, Mul(_A, Conj(_A))))
+_T_AB = Scale(_P, Scale(_CQ, Mul(_A, Conj(_B))))
+_T_BA = Scale(_Q, Scale(_CP, Mul(_B, Conj(_A))))
+_T_BB = Scale(_Q, Scale(_CQ, Mul(_B, Conj(_B))))
+_I15_LHS = Mul(_SUP, Conj(_SUP))
+_I15_RHS = Sum(Sum(_T_AA, _T_AB), Sum(_T_BA, _T_BB))
+_I15_CROSS = Sum(_T_AB, _T_BA)
 
 
 @dataclass(frozen=True)
@@ -80,7 +97,7 @@ RECOVERY_TABLE: tuple[RecoveryEntry, ...] = (
         note="det dilde yok",
     ),
     RecoveryEntry(
-        "I4", "untranslatable", missing=("guarded_atoms", "scalars"),
+        "I4", "untranslatable", missing=("guarded_atoms", "interpreted_scalars"),
         note="isaret-cevrilmis atom (parametre duzeyi islem) ve 1/det olcegi yok",
     ),
     RecoveryEntry(
@@ -115,7 +132,7 @@ RECOVERY_TABLE: tuple[RecoveryEntry, ...] = (
         note="komutasyon aksiyom-duzeyinde; seri Mueller yasasi TURETILIR",
     ),
     RecoveryEntry(
-        "I11", "untranslatable", missing=("constants", "scalars"),
+        "I11", "untranslatable", missing=("constants", "interpreted_scalars"),
         note="R(theta) sabiti ve trigonometrik skalerler yok",
     ),
     RecoveryEntry(
@@ -131,22 +148,27 @@ RECOVERY_TABLE: tuple[RecoveryEntry, ...] = (
         note="H = |h><h| dis carpimi ve iz formulu",
     ),
     RecoveryEntry(
-        "I15", "untranslatable", missing=("addition", "scalars"),
-        note="koherent superpozisyon: toplam + karmasik katsayilar. Kismi golge: "
-             "capraz-terim gercelligi I10 komutasyonuna esdeger (known.py notu) "
-             "ve o kisim ZATEN kazanilmis durumda; toplam-formu dil disi",
+        "I15", "translatable",
+        pairs=(
+            _p(_I15_LHS, _I15_RHS),          # 4-term expansion, nested-Scale form
+            _p(_I15_CROSS, Conj(_I15_CROSS)),  # cross-term reality (M26: all coefficients)
+        ),
+        note="Asama 7 Sum/Scale ile kazanildi: acilim + capraz-terim gercelligi, "
+             "opak (evrensel-nicelenmis) katsayilarla — makalenin Eq.(10)'u da "
+             "keyfi a,b icin kurulur, birebir sadik ceviri",
     ),
     RecoveryEntry(
-        "I16", "untranslatable", missing=("addition", "scalars"),
-        note="girisim: e^{i phi} skaleri ve toplam",
+        "I16", "untranslatable", missing=("interpreted_scalars",),
+        note="iskelet (Sum/Scale) artik dilde; ama e^{i phi} SABIT birim-modul "
+             "skaleri ve 1+cos(phi) aritmetigi yorumlanan skaler ister (M26)",
     ),
     RecoveryEntry(
-        "I17", "untranslatable", missing=("addition", "scalars", "entry_level"),
-        note="konveks karisim + kovaryans haritasi",
+        "I17", "untranslatable", missing=("interpreted_scalars", "entry_level"),
+        note="konveks karisim REEL agirliklar (w1+w2=1) + kovaryans haritasi ister",
     ),
     RecoveryEntry(
-        "I18", "untranslatable", missing=("addition", "scalars", "constants"),
-        note="ozel polarizor durumlari ve (1+i)/2 katsayilari",
+        "I18", "untranslatable", missing=("interpreted_scalars", "constants"),
+        note="ozel polarizor durumlari ve (1+i)/2 SABIT katsayilari",
     ),
     RecoveryEntry(
         "I19", "untranslatable", missing=("guarded_atoms", "entry_level"),
@@ -178,7 +200,9 @@ class CampaignResult:
 
 def run_recovery_campaign(engine: DiscoveryEngine | None = None) -> CampaignResult:
     """Prove every translatable pair through all three layers (K20)."""
-    engine = engine or DiscoveryEngine(atom_names=("a", "b"))
+    engine = engine or DiscoveryEngine(
+        atom_names=("a", "b"), scalar_names=("p", "q")
+    )
     result = CampaignResult()
     for entry in RECOVERY_TABLE:
         if entry.status == "structural":
@@ -195,8 +219,14 @@ def run_recovery_campaign(engine: DiscoveryEngine | None = None) -> CampaignResu
         for left, right in entry.pairs:
             layers = {
                 "proof": engine.provable(left, right),
-                "numeric": terms_numerically_equal(left, right, engine.atom_names),
-                "symbolic": terms_symbolically_equal(left, right, engine.atom_names),
+                "numeric": terms_numerically_equal(
+                    left, right, engine.atom_names,
+                    scalar_names=engine.scalar_names,
+                ),
+                "symbolic": terms_symbolically_equal(
+                    left, right, engine.atom_names,
+                    scalar_names=engine.scalar_names,
+                ),
             }
             if not all(layers.values()):
                 ok = False

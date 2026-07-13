@@ -14,21 +14,36 @@ import sympy as sp
 
 from ..algebra.states import HVector
 from ..verify import symbolic_equal
-from .terms import Atom, Conj, Mul, Term
+from .terms import Atom, Conj, Mul, Scalar, ScalarAtom, ScalarConj, Scale, Sum, Term
 
 __all__ = [
     "symbolic_assignment",
     "evaluate_symbolic",
+    "evaluate_scalar_symbolic",
     "terms_symbolically_equal",
 ]
 
 
-def symbolic_assignment(atom_names: tuple[str, ...]) -> dict[str, sp.Matrix]:
-    """Fresh generic symbolic Z matrix per atom (independent parameters, K17)."""
-    return {name: HVector.generic(name).to_z() for name in atom_names}
+def symbolic_assignment(
+    atom_names: tuple[str, ...], scalar_names: tuple[str, ...] = ()
+) -> dict:
+    """Fresh generic symbolic Z matrix per atom and a fresh independent
+    complex symbol per scalar (independence rule K17 extends to scalars)."""
+    assignment: dict = {name: HVector.generic(name).to_z() for name in atom_names}
+    for name in scalar_names:
+        assignment[name] = sp.symbols(f"scl_{name}", complex=True)
+    return assignment
 
 
-def evaluate_symbolic(term: Term, assignment: dict[str, sp.Matrix]) -> sp.Matrix:
+def evaluate_scalar_symbolic(scalar: Scalar, assignment) -> sp.Expr:
+    if isinstance(scalar, ScalarAtom):
+        return assignment[scalar.name]
+    if isinstance(scalar, ScalarConj):
+        return sp.conjugate(evaluate_scalar_symbolic(scalar.arg, assignment))
+    raise TypeError(f"unknown scalar node: {scalar!r}")
+
+
+def evaluate_symbolic(term: Term, assignment) -> sp.Matrix:
     if isinstance(term, Atom):
         return assignment[term.name]
     if isinstance(term, Mul):
@@ -38,14 +53,25 @@ def evaluate_symbolic(term: Term, assignment: dict[str, sp.Matrix]) -> sp.Matrix
         )
     if isinstance(term, Conj):
         return evaluate_symbolic(term.arg, assignment).conjugate()
+    if isinstance(term, Sum):
+        return sp.expand(
+            evaluate_symbolic(term.left, assignment)
+            + evaluate_symbolic(term.right, assignment)
+        )
+    if isinstance(term, Scale):
+        return sp.expand(
+            evaluate_scalar_symbolic(term.coeff, assignment)
+            * evaluate_symbolic(term.arg, assignment)
+        )
     raise TypeError(f"unknown term node: {term!r}")
 
 
 def terms_symbolically_equal(
-    a: Term, b: Term, atom_names: tuple[str, ...]
+    a: Term, b: Term, atom_names: tuple[str, ...],
+    scalar_names: tuple[str, ...] = (),
 ) -> bool:
-    """EXACT equality proof of two terms over generic states."""
-    assignment = symbolic_assignment(atom_names)
+    """EXACT equality proof of two terms over generic states and scalars."""
+    assignment = symbolic_assignment(atom_names, scalar_names)
     return symbolic_equal(
         evaluate_symbolic(a, assignment), evaluate_symbolic(b, assignment)
     )
