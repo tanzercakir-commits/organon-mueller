@@ -13,18 +13,21 @@ Kuntman–Arteaga state formalism.
 
 ## Status
 
-**Stage 0** — representation layer + known-identity regression core.
+**Stage 1** — expanded identity library, serialization layer, egglog spike.
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the full staged plan.
 
 | Layer | State |
 |---|---|
 | Six isomorphic representations (`J`, `M`, `H`, `\|h>`, `Z`, quaternion) + conversions | done |
-| Known-identity library with sources & side conditions (14 identities) | done (14/14 recovered) |
-| Condition predicates (nondepolarizing, hermitian/unitary state) | done |
-| Symbolic + deterministic numeric verification helpers | done |
-| Discovery engine (equality saturation / egglog) | stage 2+ |
-| Symmetry-conditioned decomposition deriver | stage 3+ |
-| Coupled-dipole symbolic module | stage 3+ |
-| MCP server / web UI / LaTeX reports | packaging stages |
+| Known-identity library with sources & side conditions | done — 21 identities recovered |
+| Coherent superposition & symmetry-class identities (PRA 95, 063819; AO 55, 2543) | done |
+| Condition predicates / Horn-guard vocabulary | done |
+| JSON serialization (MCP-readiness) + LaTeX output | done |
+| egglog feasibility spike (noncommutative quaternion fragment) | done — success, hybrid architecture proposed |
+| Discovery engine core (hybrid egglog + SymPy) | stage 2 |
+| Symmetry-conditioned decomposition deriver | phase C |
+| Coupled-dipole symbolic module | phase D |
+| MCP server / web UI / LaTeX reports | phase E |
 
 ## Quickstart
 

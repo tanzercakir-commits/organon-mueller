@@ -245,6 +245,127 @@ def _check_i14() -> bool:
     return sample_check(one, samples=25)
 
 
+def _check_i15() -> bool:
+    """Coherent superposition Z = a Za + b Zb:
+    M = |a|^2 Ma + |b|^2 Mb + (ab* Za Zb* + a*b Zb Za*), cross term real."""
+    ha, hb = HVector.generic("a"), HVector.generic("b")
+    a, b = sp.symbols("c_a c_b", complex=True)
+    za, zb = ha.to_z(), hb.to_z()
+    z = a * za + b * zb
+    m = sp.expand(z * z.conjugate())
+    cross = sp.expand(
+        a * sp.conjugate(b) * za * zb.conjugate()
+        + sp.conjugate(a) * b * zb * za.conjugate()
+    )
+    expected = sp.expand(
+        a * sp.conjugate(a) * ha.to_mueller()
+        + b * sp.conjugate(b) * hb.to_mueller()
+        + cross
+    )
+    ok_expansion = symbolic_equal(m, expected)
+    ok_real = symbolic_equal(cross, cross.conjugate())
+    return ok_expansion and ok_real
+
+
+def _check_i16() -> bool:
+    """Interference analog of Young's slits: Zb = e^{i phi} Za, equal weights:
+    M = Ma (1 + cos phi)."""
+    h = HVector.generic("a")
+    phi = sp.symbols("phi", real=True)
+    za = h.to_z()
+    z = (za + sp.exp(sp.I * phi) * za) / sp.sqrt(2)
+    m = sp.expand(z * z.conjugate())
+    expected = sp.expand(h.to_mueller() * (1 + sp.cos(phi)))
+    diff = sp.expand(m - expected)
+    return all(sp.simplify(e.rewrite(sp.cos)) == 0 for e in diff)
+
+
+def _check_i17() -> bool:
+    """Covariance map is linear (Cloude): H(sum wi Mi) = sum wi Hi; a proper
+    convex mixture of two distinct pure states is depolarizing (rank 2,
+    trace condition violated)."""
+    ha, hb = HVector.generic("a"), HVector.generic("b")
+    w1, w2 = sp.symbols("w_1 w_2", real=True)
+    lhs = covariance_from_mueller(w1 * ha.to_mueller() + w2 * hb.to_mueller())
+    rhs = sp.expand(
+        w1 * covariance_from_mueller(ha.to_mueller())
+        + w2 * covariance_from_mueller(hb.to_mueller())
+    )
+    ok_linear = symbolic_equal(lhs, rhs)
+
+    def one(rng: np.random.Generator) -> bool:
+        m1 = to_numpy(random_hvector(rng).to_mueller())
+        m2 = to_numpy(random_hvector(rng).to_mueller())
+        m_mix = 0.5 * m1 + 0.5 * m2
+        cov_mix = 0.5 * to_numpy(
+            covariance_from_mueller(sp.Matrix(m1))
+        ) + 0.5 * to_numpy(covariance_from_mueller(sp.Matrix(m2)))
+        return covariance_rank(cov_mix) == 2 and not trace_condition(m_mix)
+
+    return ok_linear and sample_check(one, samples=10)
+
+
+def _check_i18() -> bool:
+    """Artificial quarter-wave plate (PRA 95, 063819, Eq. (15)):
+    |h> = (1+i)/2 |h_H> + (1-i)/2 |h_V> responds as a genuine QWP."""
+    inv_sqrt2 = 1 / sp.sqrt(2)
+    h_h = sp.Matrix([1, 1, 0, 0]) * inv_sqrt2   # horizontal polarizer state
+    h_v = sp.Matrix([1, -1, 0, 0]) * inv_sqrt2  # vertical polarizer state
+    col = (1 + sp.I) / 2 * h_h + (1 - sp.I) / 2 * h_v
+    h = HVector(col[0], col[1], col[2], col[3])
+    expected = sp.Matrix(
+        [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, -1, 0]]
+    )
+    return symbolic_equal(sp.expand(h.to_mueller()), expected)
+
+
+def _symmetry_pattern(h: HVector, zero_positions, pairs, antipairs, quad) -> bool:
+    """M has zeros at `zero_positions`; M[p]=M[q] for pairs; M[p]=-M[q] for
+    antipairs; and the quadratic relation sum(M[q]^2 for q in quad) = M00^2
+    (the full literature pattern, Appl. Opt. 55, 2543, Eqs. (7)-(9))."""
+    m = h.to_mueller()
+    ok_zero = all(sp.expand(m[i, j]) == 0 for (i, j) in zero_positions)
+    ok_sym = all(symbolic_zero(m[p] - m[q]) for (p, q) in pairs)
+    ok_anti = all(symbolic_zero(m[p] + m[q]) for (p, q) in antipairs)
+    ok_quad = symbolic_zero(
+        sum(m[q] ** 2 for q in quad) - m[0, 0] ** 2
+    )
+    return ok_zero and ok_sym and ok_anti and ok_quad
+
+
+def _check_i19() -> bool:
+    """Generator (tau, alpha, 0, 0) => type-1 (block-diagonal) symmetry."""
+    t, a = sp.symbols("tau alpha", complex=True)
+    h = HVector(t, a, 0, 0)
+    zeros = [(0, 2), (0, 3), (1, 2), (1, 3), (2, 0), (2, 1), (3, 0), (3, 1)]
+    pairs = [((0, 1), (1, 0)), ((2, 2), (3, 3)), ((0, 0), (1, 1))]
+    antipairs = [((2, 3), (3, 2))]
+    quad = [(0, 1), (2, 2), (2, 3)]
+    return _symmetry_pattern(h, zeros, pairs, antipairs, quad)
+
+
+def _check_i20() -> bool:
+    """Generator (tau, 0, beta, 0) => type-2 symmetry."""
+    t, b = sp.symbols("tau beta", complex=True)
+    h = HVector(t, 0, b, 0)
+    zeros = [(0, 1), (0, 3), (1, 0), (1, 2), (2, 1), (2, 3), (3, 0), (3, 2)]
+    pairs = [((0, 2), (2, 0)), ((1, 1), (3, 3)), ((0, 0), (2, 2))]
+    antipairs = [((1, 3), (3, 1))]
+    quad = [(0, 2), (1, 1), (1, 3)]
+    return _symmetry_pattern(h, zeros, pairs, antipairs, quad)
+
+
+def _check_i21() -> bool:
+    """Generator (tau, 0, 0, gamma) => type-3 (circular) symmetry."""
+    t, g = sp.symbols("tau gamma", complex=True)
+    h = HVector(t, 0, 0, g)
+    zeros = [(0, 1), (0, 2), (1, 0), (1, 3), (2, 0), (2, 3), (3, 1), (3, 2)]
+    pairs = [((0, 3), (3, 0)), ((1, 1), (2, 2)), ((0, 0), (3, 3))]
+    antipairs = [((1, 2), (2, 1))]
+    quad = [(0, 3), (1, 1), (1, 2)]
+    return _symmetry_pattern(h, zeros, pairs, antipairs, quad)
+
+
 # ---------------------------------------------------------------------------
 # registry
 # ---------------------------------------------------------------------------
@@ -319,6 +440,45 @@ KNOWN_IDENTITIES: tuple[Identity, ...] = (
         "I14", "rank(H)=1 for pure states; M_ij = tr(Pi_ij H); H = |h><h|",
         "Cloude (1986); Gil (2014); JOSA A 34, 80 (2017), Eqs. (6)-(9)",
         (), "numeric", _check_i14,
+    ),
+    # ---- stage 1 additions (I1-I14 are frozen, decision M7) ----------------
+    Identity(
+        "I15", "Z = a Za + b Zb => M expands with real coherence cross term "
+        "(load-bearing leg: cross-term realness, a corollary of I10; "
+        "the expansion leg is ring bilinearity)",
+        "Kuntman et al., Phys. Rev. A 95, 063819 (2017), Eq. (10)",
+        ("coherent",), "symbolic", _check_i15,
+    ),
+    Identity(
+        "I16", "Zb = e^{i phi} Za, equal weights => M = Ma (1 + cos phi)",
+        "Phys. Rev. A 95, 063819 (2017), Eqs. (25)-(26)",
+        ("coherent",), "symbolic", _check_i16,
+    ),
+    Identity(
+        "I17", "covariance map linear; proper 2-mixture => rank 2, trace cond. fails "
+        "(load-bearing leg: the numeric mixture; linearity holds by construction)",
+        "Cloude (1986); Gil (2007); Phys. Rev. A 95, 063819 (2017), Sec. III",
+        ("depolarizing",), "symbolic+numeric", _check_i17,
+    ),
+    Identity(
+        "I18", "(1+i)/2 pol_H + (1-i)/2 pol_V superposes to a genuine QWP state",
+        "Phys. Rev. A 95, 063819 (2017), Eq. (15)",
+        ("coherent",), "symbolic", _check_i18,
+    ),
+    Identity(
+        "I19", "generator (tau, alpha, 0, 0) => type-1 block-diagonal M symmetry",
+        "JOSA A 34, 80 (2017), Eq. (31); Appl. Opt. 55, 2543 (2016), Eq. (7)",
+        ("class2_generator",), "symbolic", _check_i19,
+    ),
+    Identity(
+        "I20", "generator (tau, 0, beta, 0) => type-2 M symmetry",
+        "JOSA A 34, 80 (2017), Eq. (31); Appl. Opt. 55, 2543 (2016), Eq. (8)",
+        ("class2_generator",), "symbolic", _check_i20,
+    ),
+    Identity(
+        "I21", "generator (tau, 0, 0, gamma) => type-3 circular M symmetry",
+        "JOSA A 34, 80 (2017), Eq. (31); Appl. Opt. 55, 2543 (2016), Eq. (9)",
+        ("class2_generator",), "symbolic", _check_i21,
     ),
 )
 

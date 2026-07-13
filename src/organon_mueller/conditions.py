@@ -77,9 +77,15 @@ def has_nonzero_det_params(params, rtol: float = RTOL) -> bool:
 
 #: Registered guard vocabulary for the identity library (Horn-condition seed).
 #: Every Identity.conditions key must appear here (enforced by tests).
+#: Keys mapping to None are structural/contextual guards (they constrain the
+#: setting of an identity rather than a single state) — predicate functions
+#: for them arrive with the discovery engine stages.
 CONDITIONS = {
     "nondepolarizing": is_nondepolarizing_mueller,
     "det_nonzero": has_nonzero_det_params,
     "hermitian_state": is_hermitian_state,
     "unitary_state": is_unitary_state,
+    "coherent": None,
+    "depolarizing": None,
+    "class2_generator": None,
 }
