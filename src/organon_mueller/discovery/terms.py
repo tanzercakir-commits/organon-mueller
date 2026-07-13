@@ -58,10 +58,20 @@ class Conj(Term):
         return f"conj({self.arg.render()})"
 
 
-def enumerate_terms(atom_names: tuple[str, ...], max_size: int) -> list[Term]:
+def enumerate_terms(
+    atom_names: tuple[str, ...], max_size: int, conj_normal: bool = False
+) -> list[Term]:
     """All terms up to `max_size`, deterministically ordered (rule K12).
 
     Sizes: atom = 1; Conj adds 1; Mul adds 1 plus both operand sizes.
+
+    With ``conj_normal=True`` (stage 3), Conj is only applied at the atom
+    level: forms like conj(conj(x)) and conj(x*y) are pruned from generation.
+    Under the structural axioms every term has such a normal form, so
+    identity content is preserved UP TO A MAX_SIZE SHIFT: conj-normalizing
+    can grow a term (conj of a k-atom product gains k-1 size), so a pruned
+    enumeration at a given max_size covers slightly fewer identities than
+    the unpruned one at the same bound (stage-3 review note).
     """
 
     @lru_cache(maxsize=None)
@@ -70,7 +80,11 @@ def enumerate_terms(atom_names: tuple[str, ...], max_size: int) -> list[Term]:
         if n == 1:
             out.extend(Atom(name) for name in atom_names)
         if n >= 2:
-            out.extend(Conj(t) for t in of_size(n - 1))
+            if conj_normal:
+                if n == 2:
+                    out.extend(Conj(Atom(name)) for name in atom_names)
+            else:
+                out.extend(Conj(t) for t in of_size(n - 1))
         for left_size in range(1, n - 1):
             right_size = n - 1 - left_size
             if right_size < 1:
