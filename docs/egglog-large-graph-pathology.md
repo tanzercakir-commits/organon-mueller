@@ -42,7 +42,8 @@ sature edilmesi tutarsız sonuçlar verdi:
 
 ## Açık iş
 
-- ~~Upstream'e bildirim~~ — **kullanıcı kararı (2026-07-13): bildirim
-  YAPILMAYACAK** ("tek geliştirici benim; biz paketi sunacağız"). Repro ve
-  analiz repoda kalıyor; plan değişirse yeniden değerlendirilir.
+- Upstream'e bildirim — karar GÜNCEL (13 Tem, öğleden sonra): kullanıcı
+  "belki yazarız" dedi; **taslak hazır**: `egglog-upstream-issue-draft.md`
+  (tek kural + 29 terimlik 1-minimal repro, delta-debug ile küçültüldü).
+  GÖNDERİM hâlâ kullanıcı onayına bağlı (M23, kritik-karar: dış temas).
 - egglog sürüm yükseltmelerinde probe script yeniden koşulmalı.
