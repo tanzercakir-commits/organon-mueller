@@ -1,16 +1,18 @@
-# organon-mueller — Yol Haritası (TASLAK, frozen-N Aşama 2 sonunda ilan edilir)
+# organon-mueller — Yol Haritası — **FROZEN-22** (ilan: Aşama 2, 2026-07-13)
 
-Tahmin: **~22 aşama, 6 faz**. Organon v1 geleneği: taslak erken çizilir,
-N sayısı çekirdek mimari oturunca DONDURULUR ve sonra değişmez (v1'de 55).
-Kuntman/grup geri bildirimi C ve D fazlarının sırasını değiştirebilir.
+**22 aşama, 6 faz — DONDURULDU** (Organon v1 geleneği; v1'de frozen-55).
+Bu sayı artık değişmez; değişiklik ancak kritik-karar notuyla kullanıcıya
+gider. Kuntman/grup geri bildirimi C ve D fazlarının İÇ sırasını
+değiştirebilir, aşama sayısını değiştiremez.
 
 ```
 FAZ A — Zemin (Aşama 0–2)
 ├── 0  Temsil katmanı + 14 özdeşlik regresyonu            ✅ (36/36)
 ├── 1  Kütüphane genişletme (21 özdeşlik) + serileştirme
 │      + egglog spike (BAŞARILI, hibrit mimari önerisi)    ✅ (50/50)
-└── 2  Keşif motoru çekirdeği v0: hibrit egglog+SymPy,
-       kanonik form, ilk enumerasyon → FROZEN-N İLANI
+└── 2  Keşif motoru çekirdeği v0: hibrit egglog+SymPy,        ✅ (56/56)
+       enumerasyon+saturasyon+hasat+%100 doğrulama;
+       R1-R3 yeniden keşfi, negatif kontroller → FROZEN-22 İLANI
 
 FAZ B — Keşif motoru (Aşama 3–7)
 ├── 3  Terim enumerasyonu + karmaşıklık sınırları

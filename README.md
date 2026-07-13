@@ -13,8 +13,9 @@ Kuntman–Arteaga state formalism.
 
 ## Status
 
-**Stage 1** — expanded identity library, serialization layer, egglog spike.
-See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the full staged plan.
+**Stage 2** — discovery engine core v0 (hybrid equality saturation + SymPy
+verification). Roadmap frozen at 22 stages: [`docs/ROADMAP.md`](docs/ROADMAP.md).
+Trust anchor: the verification contract in [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
 
 | Layer | State |
 |---|---|
@@ -24,7 +25,8 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the full staged plan.
 | Condition predicates / Horn-guard vocabulary | done |
 | JSON serialization (MCP-readiness) + LaTeX output | done |
 | egglog feasibility spike (noncommutative quaternion fragment) | done — success, hybrid architecture proposed |
-| Discovery engine core (hybrid egglog + SymPy) | stage 2 |
+| Discovery engine core: enumerate → saturate → harvest → verify (100%) | done — rediscovers I10 family; sound-by-construction guards |
+| Scalar-coefficient terms, canonical-form tuning, novelty search | phase B |
 | Symmetry-conditioned decomposition deriver | phase C |
 | Coupled-dipole symbolic module | phase D |
 | MCP server / web UI / LaTeX reports | phase E |
