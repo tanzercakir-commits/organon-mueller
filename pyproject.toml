@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "organon-mueller"
+version = "0.0.1"
+description = "Automated identity discovery for the Stokes-Mueller formalism of polarization optics - term enumeration, equality saturation, and symbolic verification. Successor to Organon v1."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "sympy>=1.12",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

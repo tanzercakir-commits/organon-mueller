@@ -1,2 +1,68 @@
 # organon-mueller
-An experimental engine for discovering and verifying algebraic identities in Stokes-Mueller polarization optics.
+
+Automated identity discovery for the Stokes-Mueller formalism of polarization
+optics — term enumeration, equality saturation, and symbolic verification.
+
+Successor to [Organon v1](https://github.com/tanzercakir-commits/Organon), a
+first-order-logic physics reasoning system (frozen at `v1.0`). v2 narrows the
+logic to the **equational fragment of FOL** (Birkhoff rules) with
+**Horn-conditional guards** (`P(x) -> t1 = t2`), and deepens the domain to the
+algebra of polarized light: Jones matrices, Mueller matrices, covariance
+vectors/matrices, Z-matrix states and biquaternions, following the
+Kuntman–Arteaga state formalism.
+
+## Status
+
+**Stage 0** — representation layer + known-identity regression core.
+
+| Layer | State |
+|---|---|
+| Six isomorphic representations (`J`, `M`, `H`, `\|h>`, `Z`, quaternion) + conversions | done |
+| Known-identity library with sources & side conditions (14 identities) | done (14/14 recovered) |
+| Condition predicates (nondepolarizing, hermitian/unitary state) | done |
+| Symbolic + deterministic numeric verification helpers | done |
+| Discovery engine (equality saturation / egglog) | stage 2+ |
+| Symmetry-conditioned decomposition deriver | stage 3+ |
+| Coupled-dipole symbolic module | stage 3+ |
+| MCP server / web UI / LaTeX reports | packaging stages |
+
+## Quickstart
+
+```bash
+pip install -e ".[test]"
+pytest                      # known-identity regression suite
+```
+
+```python
+from organon_mueller import HVector, verify_all
+
+h = HVector.generic("a")        # generic complex (tau, alpha, beta, gamma)
+M = h.to_mueller()              # M = Z Z*
+Z = h.to_z()
+q = h.to_quaternion()           # tau*1 + i*alpha*i + i*beta*j + i*gamma*k
+
+verify_all()                    # {'I1': True, ..., 'I14': True}
+```
+
+## Workflow
+
+Milestone discipline inherited from Organon v1: every stage has a spec in
+[`specs/`](specs/) and a closing report in [`reports/`](reports/). Nothing
+untested reaches `main`; CI re-runs the known-identity regression suite on
+every push.
+
+## References
+
+- E. Kuntman, M. A. Kuntman, O. Arteaga, *Vector and matrix states for Mueller
+  matrices of nondepolarizing optical media*, JOSA A **34**, 80 (2017).
+- E. Kuntman, M. A. Kuntman, O. Arteaga, *Quaternion algebra for
+  Stokes-Mueller formalism*, arXiv:1705.07147 / JOSA A (2019).
+- E. Kuntman, M. A. Kuntman, J. Sancho-Parramon, O. Arteaga, *Formalism of
+  optical coherence and polarization based on material media states*, Phys.
+  Rev. A **95**, 063819 (2017).
+- E. Kuntman, O. Arteaga, *Decomposition of a depolarizing Mueller matrix into
+  its nondepolarizing components by using symmetry conditions*, Appl. Opt.
+  **55**, 2543 (2016).
+- M. A. Kuntman, E. Kuntman, J. Sancho-Parramon, O. Arteaga, *Light scattering
+  by coupled oriented dipoles: decomposition of the scattering matrix*, Phys.
+  Rev. B **98**, 045410 (2018).
