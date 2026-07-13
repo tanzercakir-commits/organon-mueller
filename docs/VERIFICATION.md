@@ -32,6 +32,35 @@ değişiklik "kritik karar"dır ve kullanıcı onayı gerektirir.
 6. **CI matrisi** — GitHub Actions, Python 3.10/3.11/3.12, her push'ta tam
    regresyon. Kırmızı CI = aşama kapanmamış demektir.
 
+## Faz C ekleri (stage 8–11; yalnız EKLEME — katman zayıflatılmadı)
+
+- **Spec-öncesi sayısal probe**: kampanya/tarama hedefleri ve türetim
+  mekanizmaları spec'e yazılmadan ÖNCE sayısal probe'dan geçer (iki
+  kazanım kayıtlı: A9 yanlış-unitary hedefi — spec-09 retraksiyon notu
+  olarak; A10 tip-3 işaret hatası — probe dosyasıyla). A10'dan itibaren
+  probe dosyaları `probes/` altında saklanır.
+- **Çalışma-zamanı invariant guard'ları**: çözücüler her çağrıda iz-1
+  konvansiyonunu, girdi sonluluğunu, rank ön-koşulunu, payda/alan
+  koşullarını ve çıktı bileşenlerinin PSD/rank-1 fizikselliğini denetler;
+  ihlal gerekçeli `DecompositionError` fırlatır (K26: sessiz
+  makul-ama-yanlış çıktı yok). Keşif tarafında karşılığı
+  `check_invariants → DiscoveryInvariantError`.
+- **M34 — makale-çapası olmayan bölge**: K28'in "basılı tabloyla birebir"
+  çapası mevcut olmadığında üç-katmanlı ikame ZORUNLUDUR: (i)
+  probe-doğrulanmış el türetimi spec'te sabitlenir, (ii) türetici çıktısı
+  o el formülleriyle sembolik birebir test edilir, (iii) bağımsız denetçi
+  matematiği sıfırdan yeniden türetir. Sonuçların dili "aday"dır; fizik
+  yorumu insana kalır.
+- **Fazladan-belirlenim guard'ları (K32 tipi)**: bir çözüm yolu
+  bilinmeyenlerden fazla bağımsız denklem içeriyorsa, artık denklem(ler)
+  çalışma zamanında ZORUNLU tutarlılık kontrolüne dönüşür; geçemeyen veri
+  gerekçeli hatayla reddedilir (sessiz yamalama yasak).
+- **Kabul-sonrası doğrulama**: bir hipotez beklenmedik şekilde kabul
+  edilirse (ör. teklik-dışılık: aynı veri birden çok geçerli ayrışım
+  taşıyabilir) kabul otomatik hata SAYILMAZ; rekonstrüksiyon + bileşen
+  saflığı ayrıca doğrulanır ve artefaktta açıkça etiketlenir
+  (`accepted_alternative_verified`). Doğrulanamayan kabul bug'dır.
+
 ## Sınırlar (dürüstlük)
 
 - Sayısal doğrulama (katman 2/4) ispat değildir; "rastgele nokta kümesinde

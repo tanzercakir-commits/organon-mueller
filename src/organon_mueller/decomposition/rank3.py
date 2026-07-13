@@ -383,15 +383,60 @@ def _to_mueller(h: np.ndarray) -> np.ndarray:
     ).real
 
 
-# ------------------------------------------- bridge v0 (spec-10 goal 2)
+# ---------------------------- bridge (v0: spec-10 goal 2; v1 scores: A11)
 
 @dataclass
 class ProposeReport:
     """Every attempt is recorded — successes with results, failures with
-    reasons (K21 spirit: nothing is silently dropped)."""
+    reasons (K21 spirit: nothing is silently dropped). `scores` (bridge
+    v1, stage 11) carries the cheap structure score per attempted
+    hypothesis: min |denominator| of its derived expressions on this
+    data — the paper's "larger denominator = numerically healthier"
+    advice generalized. Scores ORDER the attempts and the returned
+    successes; they never eliminate anything."""
     rank: int
-    successes: list          # [(label, result)]
+    successes: list          # [(label, result)] — best score first
     failures: list           # [(label, reason)]
+    scores: dict | None = None  # {label: float}
+
+
+def _min_abs_denominator(exprs, hermitian: sp.Matrix, cov: np.ndarray) -> float:
+    """Cheap health score: the smallest |denominator| among the derived
+    expressions of a hypothesis, evaluated on the data."""
+    mapping = _subs_map(hermitian, cov)
+    vals = []
+    for expr in exprs:
+        _, den = sp.fraction(sp.together(expr))
+        try:
+            vals.append(abs(complex(sp.N(den.subs(mapping)))))
+        except (TypeError, ValueError):  # non-numeric residue: score 0
+            vals.append(0.0)
+    return min(vals) if vals else float("inf")
+
+
+def _hypothesis_score(label: str, cov: np.ndarray) -> float:
+    """Structure score for a rank-2 symmetry or rank-3 pair label."""
+    from .composite import COMPOSITE_TYPES, derive_composite
+
+    if label in ("type1", "type2", "type3"):
+        # best variant's health (auto mode will pick it anyway); use the
+        # lru-cached deriver from solve (review: derive.py is uncached)
+        from .solve import _derived
+
+        best = 0.0
+        for variant in ("a", "b"):
+            eq = _derived(label, variant)
+            best = max(best, _min_abs_denominator(
+                (eq.x_expr, eq.w_expr), eq.hermitian, cov))
+        return best
+    if label in COMPOSITE_TYPES:
+        d = derive_composite(label)
+        return _min_abs_denominator(
+            (d.x_expr, d.g_expr, d.h_expr), d.hermitian, cov)
+    pair = tuple(label.split("+"))
+    d = derive_rank3(pair)
+    return _min_abs_denominator(
+        [expr for _, expr in d.exprs], d.hermitian, cov)
 
 
 def propose_decompositions(
@@ -400,53 +445,62 @@ def propose_decompositions(
     psd_tol: float = 1e-6,
     rank1_tol: float = 1e-6,
 ) -> ProposeReport:
-    """Bridge v0: given a covariance, TRY every symmetry class the rank
-    admits and report the full outcome map. (v1 — cheap fingerprint
-    pre-ordering before the exact solves — is noted for A11.)"""
+    """Bridge v1: given a covariance, score every symmetry class the rank
+    admits (denominator health — see ProposeReport), attempt ALL of them
+    in score order, and report the full outcome map. Scoring orders, it
+    never eliminates; acceptance is decided solely by the exact solvers."""
     from .composite import COMPOSITE_TYPES, decompose_composite
 
     cov = np.asarray(covariance, dtype=complex)
     if not np.all(np.isfinite(cov.real)) or not np.all(np.isfinite(cov.imag)):
         return ProposeReport(rank=-1, successes=[], failures=[
-            ("input", "covariance contains non-finite entries")])
+            ("input", "covariance contains non-finite entries")], scores={})
     cov = (cov + cov.conj().T) / 2
     eig = np.linalg.eigvalsh(cov)
     lam_max = float(np.max(np.abs(eig)))
     rank = int(np.sum(np.abs(eig) > rank_tol * lam_max))
 
     caught = (DecompositionError, ValueError, np.linalg.LinAlgError)
-    successes, failures = [], []
     if rank == 2:
-        for sym in ("type1", "type2", "type3"):
-            try:
-                successes.append((sym, decompose(
-                    covariance=cov, symmetry=sym,
-                    rank_tol=rank_tol, psd_tol=psd_tol, rank1_tol=rank1_tol)))
-            except caught as exc:
-                failures.append((sym, str(exc)))
-        for sym in COMPOSITE_TYPES:
-            try:
-                successes.append((sym, decompose_composite(
-                    cov, sym, rank_tol=rank_tol,
-                    psd_tol=psd_tol, rank1_tol=rank1_tol)))
-            except caught as exc:
-                failures.append((sym, str(exc)))
+        labels = ["type1", "type2", "type3", *COMPOSITE_TYPES]
     elif rank == 3:
-        for pair in RANK3_PAIRS:
-            label = "+".join(pair)
-            try:
-                successes.append((label, decompose_rank3(
-                    cov, pair, rank_tol=rank_tol,
-                    psd_tol=psd_tol, rank1_tol=rank1_tol)))
-            except caught as exc:
-                failures.append((label, str(exc)))
+        labels = ["+".join(pair) for pair in RANK3_PAIRS]
     else:
-        failures.append((
+        return ProposeReport(rank=rank, successes=[], failures=[(
             "rank",
             f"rank {rank}: no symmetry-conditioned path implemented "
             "(1 = already pure, 4 = full-rank needs different machinery)",
-        ))
-    return ProposeReport(rank=rank, successes=successes, failures=failures)
+        )], scores={})
+
+    # bridge v1: score every hypothesis first, attempt in score order
+    scores = {}
+    for label in labels:
+        try:
+            scores[label] = _hypothesis_score(label, cov)
+        except caught:
+            scores[label] = 0.0
+    ordered = sorted(labels, key=lambda lb: scores[lb], reverse=True)
+
+    def _attempt(label):
+        if label in ("type1", "type2", "type3"):
+            return decompose(covariance=cov, symmetry=label,
+                             rank_tol=rank_tol, psd_tol=psd_tol,
+                             rank1_tol=rank1_tol)
+        if label in COMPOSITE_TYPES:
+            return decompose_composite(cov, label, rank_tol=rank_tol,
+                                       psd_tol=psd_tol, rank1_tol=rank1_tol)
+        return decompose_rank3(cov, tuple(label.split("+")),
+                               rank_tol=rank_tol, psd_tol=psd_tol,
+                               rank1_tol=rank1_tol)
+
+    successes, failures = [], []
+    for label in ordered:
+        try:
+            successes.append((label, _attempt(label)))
+        except caught as exc:
+            failures.append((label, str(exc)))
+    return ProposeReport(rank=rank, successes=successes,
+                         failures=failures, scores=scores)
 
 
 # ------------------------------------------------- sweep (K21 artifact)
