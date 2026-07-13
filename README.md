@@ -34,8 +34,9 @@ Trust anchor: the verification contract in [`docs/VERIFICATION.md`](docs/VERIFIC
 ## Quickstart
 
 ```bash
-pip install -e ".[test]"
-pytest                      # known-identity regression suite
+pip install -e ".[test]"            # base (Python >= 3.10)
+pip install -e ".[test,discovery]"  # + discovery engine (egglog needs Python >= 3.11)
+pytest                              # known-identity regression suite
 ```
 
 ```python

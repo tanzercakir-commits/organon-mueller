@@ -15,7 +15,9 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=7.0"]
-discovery = ["egglog>=13.0"]
+# egglog publishes wheels for Python >=3.11 only; on 3.10 the extra resolves
+# to nothing and the discovery tests self-skip (pytest.importorskip).
+discovery = ["egglog>=13.0; python_version >= '3.11'"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
