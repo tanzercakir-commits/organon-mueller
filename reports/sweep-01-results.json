@@ -1,0 +1,76 @@
+{
+  "budget_seconds": 900,
+  "environment_note": "sweep-01, 2026-07-13, Anthropic cloud sandbox, Linux-6.18.5-x86_64-with-glibc2.39, Python 3.11.15, sympy 1.14.0, numpy 2.4.4, egglog 13.2.0 | schema migrated post stage-6 review (seeds embedded; data unchanged, reviewer-reproduced)",
+  "outcomes": [
+    {
+      "atom_names": [
+        "a",
+        "b"
+      ],
+      "certify": "underivable",
+      "conj_normal": true,
+      "demoted_count": 0,
+      "fingerprint_collisions": 0,
+      "fingerprint_seed": 424242,
+      "harvest_seconds": 86.85,
+      "max_size": 10,
+      "n_buckets": 176,
+      "n_terms": 4036,
+      "numeric_draws": 3,
+      "numeric_false_negatives": 0,
+      "numeric_seed": 20260713,
+      "refuted_count": 0,
+      "status": "completed",
+      "total_seconds": 86.88,
+      "underivable_pairs": [],
+      "verified_count": 3860
+    },
+    {
+      "atom_names": [
+        "a",
+        "b",
+        "c"
+      ],
+      "certify": "underivable",
+      "conj_normal": true,
+      "demoted_count": 0,
+      "fingerprint_collisions": 0,
+      "fingerprint_seed": 424242,
+      "harvest_seconds": 237.08,
+      "max_size": 9,
+      "n_buckets": 627,
+      "n_terms": 8331,
+      "numeric_draws": 3,
+      "numeric_false_negatives": 0,
+      "numeric_seed": 20260713,
+      "refuted_count": 0,
+      "status": "completed",
+      "total_seconds": 237.13,
+      "underivable_pairs": [],
+      "verified_count": 7704
+    },
+    {
+      "atom_names": [
+        "a",
+        "b"
+      ],
+      "certify": "underivable",
+      "conj_normal": true,
+      "demoted_count": 0,
+      "fingerprint_collisions": 0,
+      "fingerprint_seed": 424242,
+      "harvest_seconds": 257.21,
+      "max_size": 11,
+      "n_buckets": 288,
+      "n_terms": 11284,
+      "numeric_draws": 3,
+      "numeric_false_negatives": 0,
+      "numeric_seed": 20260713,
+      "refuted_count": 0,
+      "status": "completed",
+      "total_seconds": 257.27,
+      "underivable_pairs": [],
+      "verified_count": 10996
+    }
+  ]
+}
