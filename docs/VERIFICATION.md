@@ -61,6 +61,20 @@ değişiklik "kritik karar"dır ve kullanıcı onayı gerektirir.
   saflığı ayrıca doğrulanır ve artefaktta açıkça etiketlenir
   (`accepted_alternative_verified`). Doğrulanamayan kabul bug'dır.
 
+## Faz D ekleri (stage 12–15; yalnız EKLEME)
+
+- **K33 — PDF-tabanlı çapa disiplini**: makale metninden alınan her çapa
+  denklem numarası taşır; basılı değer türetilenle çelişiyorsa M30
+  baskı-notu düşülür (kümülatif tablo: docs/phase-d-retrospective.md —
+  sekiz teşhis, hepsi bağımsız denetçi teyitli). Adaş-farklı-nesne
+  uyarıları (ör. iki makalenin δ₁/δ₂'si) adlandırmaya işlenir.
+- **Çok-makale çapraz-sentineller (M36 tipi)**: iki bağımsız modül aynı
+  fiziksel konfigürasyonda AYNI sonucu vermek zorundadır (Symmetry-genel
+  ↔ PRB; paper Eq. 29 ↔ JOSA A HVector) — kalıcı testler.
+- **İndirgeme-kesinlik ispatları**: boyut-indirgeyen her çözüm yolu
+  (2×2 xy-blok, rank-1 skaler) denetimde TAM sisteme (3D dyadic 6×6)
+  karşı doğrulanır; "yaklaşım değil kesin" hükmü kayda geçer.
+
 ## Sınırlar (dürüstlük)
 
 - Sayısal doğrulama (katman 2/4) ispat değildir; "rastgele nokta kümesinde

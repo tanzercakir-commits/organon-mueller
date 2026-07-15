@@ -92,11 +92,59 @@ def demo_bridge() -> dict:
     }
 
 
+def demo_dipoles() -> dict:
+    """Section 4 (addendum): coupled-dipole engine — PRB decomposition
+    equality (numeric, seeded), the forward gamma map, and the ensemble
+    triple (chiral/achiral/uncoupled)."""
+    from organon_mueller.dipoles.dimer import (
+        scattering_matrix_decomposed, scattering_matrix_direct,
+    )
+    from organon_mueller.dipoles.ensemble import ensemble_gamma
+    from organon_mueller.dipoles.general import forward_gamma_general
+    import sympy as sp
+
+    rng = np.random.default_rng(20260713)
+    phi1, phi2 = rng.uniform(0, 2 * np.pi, 2)
+    a1, a2, d1, d2 = (complex(x, y) * 0.3 for x, y in
+                      rng.standard_normal((4, 2)))
+    # genuinely the DIRECT coupled 4x4 solve vs the three-term form
+    # (the full symbolic theorem lives in tests/test_dipoles.py)
+    direct = scattering_matrix_direct(
+        sp.Float(phi1), sp.Float(phi2), a1, a2, d1, d2)
+    dec = scattering_matrix_decomposed(
+        sp.Float(phi1), sp.Float(phi2), a1, a2, d1, d2)
+    decomposition_err = float(np.max(np.abs(
+        np.array(sp.matrix2numpy((direct - dec).evalf(), dtype=complex)))))
+
+    # gamma map (stage-13 theorem): co-planar e2 = 1 is gamma-blind,
+    # out-of-plane e2 != 1 is not
+    args = (0.7, 0.4, 0.3, a1, a2, d1, d2, sp.exp(sp.I * 0.8))
+    gamma_coplanar = complex(forward_gamma_general(*args, 1).evalf())
+    gamma_offplane = complex(forward_gamma_general(
+        *args, sp.exp(sp.I * 0.5)).evalf())
+
+    chiral = ensemble_gamma(chiral=True, n_samples=400)
+    achiral = ensemble_gamma(chiral=False, n_samples=400)
+    uncoupled = ensemble_gamma(chiral=True, n_samples=50,
+                               a_coef=0.0, b_coef=0.0)
+    return {
+        "decomposition_eq25_err": decomposition_err,
+        "gamma_map": {"coplanar": abs(gamma_coplanar),
+                      "offplane": abs(gamma_offplane)},
+        "ensemble": {
+            "chiral_mean_abs": abs(chiral["mean_gamma"]),
+            "achiral_mean_abs": abs(achiral["mean_gamma"]),
+            "uncoupled_pointwise": uncoupled["mean_abs_gamma"],
+        },
+    }
+
+
 def main() -> dict:
     return {
         "section6": demo_section6(),
         "rank3_candidate_zone": demo_rank3(),
         "bridge": demo_bridge(),
+        "dipoles": demo_dipoles(),
     }
 
 
@@ -130,6 +178,19 @@ if __name__ == "__main__":
                                key=lambda kv: -kv[1]):
         mark = "ACCEPTED" if label in br["successes"] else "rejected"
         print(f"   {label:14s} score={score:9.3e}  {mark}")
+    dp = results["dipoles"]
+    print("=" * 72)
+    print("4) coupled-dipole engine (addendum; PRB 98,045410 + ensemble)")
+    print(f"   Eq. 25: direct 4x4 coupled solve vs three-term form: "
+          f"{dp['decomposition_eq25_err']:.2e}")
+    gm = dp["gamma_map"]
+    print(f"   gamma map: co-planar |gamma| = {gm['coplanar']:.1e} (blind), "
+          f"out-of-plane |gamma| = {gm['offplane']:.3e}")
+    en = dp["ensemble"]
+    print(f"   ensemble |mean gamma_z|: chiral+coupled {en['chiral_mean_abs']:.3e}"
+          f"  achiral {en['achiral_mean_abs']:.3e}"
+          f"  uncoupled(pointwise) {en['uncoupled_pointwise']:.1e}")
     print("=" * 72)
     print("Interpretation of any of the above is deliberately left to the")
-    print("group (novelty protocol step 5 is human); see README-en.md.")
+    print("group (novelty protocol step 5 is human); see README-en.md and")
+    print("ADDENDUM-dipoles-en.md.")

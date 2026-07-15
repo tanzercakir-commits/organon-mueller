@@ -139,3 +139,12 @@ def test_kuntman_demo_runs_and_matches_paper():
     br = results["bridge"]
     assert br["rank"] == 3 and "type1+type2" in br["successes"]
     assert set(br["failures"]) | set(br["successes"]) == set(br["scores"])
+    dp = results["dipoles"]  # stage-15 addendum section
+    assert dp["decomposition_eq25_err"] < 1e-10
+    assert dp["gamma_map"]["coplanar"] < 1e-12
+    assert dp["gamma_map"]["offplane"] > 1e-6
+    en = dp["ensemble"]
+    # margin 2.5x at n=400 (review: numpy stream stability caveat;
+    # pinned-seed ratio ~1687x, 47-seed sweep worst case 4.39x)
+    assert en["chiral_mean_abs"] > 2.5 * en["achiral_mean_abs"]
+    assert en["uncoupled_pointwise"] < 1e-14

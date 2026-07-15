@@ -56,6 +56,23 @@ def test_decomposition_numeric_seeded():
         assert np.max(np.abs(num - sym)) < 1e-10
 
 
+def test_closed_forms_eqs_14_17_symbolic():
+    """Paper Eqs. (14)-(17): p_i closed forms — symbolic anchor (added
+    stage-15 review: the ADDENDUM claims 'symbolically', so a permanent
+    symbolic test must exist, not just the archived numeric probe)."""
+    e0x, e0y = sp.symbols("e0x e0y", complex=True)
+    lam = coupling_lambda(PHI1, PHI2, D1, D2)
+    e1_ = sp.cos(PHI1) * e0x + sp.sin(PHI1) * e0y
+    e2_ = sp.cos(PHI2) * e0x + sp.sin(PHI2) * e0y
+    den = 1 - A1 * A2 * lam ** 2
+    p1 = A1 * sp.Matrix([sp.cos(PHI1), sp.sin(PHI1)]) * (e1_ + A2 * lam * e2_) / den
+    p2 = A2 * sp.Matrix([sp.cos(PHI2), sp.sin(PHI2)]) * (e2_ + A1 * lam * e1_) / den
+    t = scattering_matrix_decomposed(PHI1, PHI2, A1, A2, D1, D2)
+    diff = (t * sp.Matrix([e0x, e0y]) - (p1 + p2)).applyfunc(
+        lambda e: sp.simplify(sp.expand_trig(sp.together(e))))
+    assert diff == sp.zeros(2, 1)
+
+
 # -- normal modes (Eqs. 41-46) ----------------------------------------------------
 
 def test_determinant_structure_theorem():
