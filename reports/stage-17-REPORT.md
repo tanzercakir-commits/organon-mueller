@@ -1,52 +1,51 @@
-# AŞAMA 17 — RAPOR (MCP Server + sympify GATE Sertleştirmesi)
+# STAGE 17 — REPORT (MCP Server + sympify GATE Hardening)
 
-**Tarih**: 2026-07-14 · **Spec**: `specs/stage-17.md` · **Mod**: otonom
-**Sonuç**: TAMAMLANDI — 268/268 test yeşil; **STAGE-2 GATE KAPANDI**
-(eval'e hiç girmeyen kısıtlı srepr parser); MCP tool yüzeyi + server kodu
-(HOST EDİLMEDİ — kritik karar kullanıcıda); güvenlik denetimi BEŞ tur
-sonunda PASS.
+**Date**: 2026-07-14 · **Spec**: `specs/stage-17.md` · **Mode**: autonomous
+**Result**: COMPLETED — 268/268 tests green; **STAGE-2 GATE CLOSED**
+(restricted srepr parser that never enters eval); MCP tool surface + server code
+(NOT HOSTED — critical decision with the user); security audit PASS after FIVE rounds.
 
-## 1. Teslim edilenler
+## 1. Deliverables
 
-- **`safe_parse.py`** — kısıtlı srepr parser: `ast.parse` + BEYAZ-LİSTE
-  yürüyüşü; **eval/sympify metin yolunda YOK** (denetçi canary ile
-  kanıtladı: 0 sympify-on-string çağrısı). `serialize.hvector_from_dict`
-  artık buraya geçer; GATE docstring'i "CLOSED" olarak güncellendi.
-- **`mcp_server/`** — SAF tool fonksiyonları (SDK'sız test edilir):
+- **`safe_parse.py`** — restricted srepr parser: `ast.parse` + WHITE-LIST
+  walk; **NO eval/sympify on the text path** (reviewer proved with a canary:
+  0 sympify-on-string calls). `serialize.hvector_from_dict`
+  now passes through here; the GATE docstring was updated to "CLOSED".
+- **`mcp_server/`** — PURE tool functions (tested without the SDK):
   decompose_mueller / propose_hypotheses / guarded_campaign_info /
-  generate_report; girdiler yalnız sayı + enum string (ifade metni sınırı
-  hiç geçmez); hatalar `{"error": gerekçe}` (iz sızdırmaz). FastMCP
-  sarmalayıcı (`[mcp]` opsiyonel extra); `python -m
+  generate_report; inputs are only numbers + enum strings (the expression-text boundary
+  is never crossed); errors are `{"error": reason}` (no trace leak). FastMCP
+  wrapper (`[mcp]` optional extra); `python -m
   organon_mueller.mcp_server` (stdio) — README-mcp.md.
-- **HOST ETME YOK**: sunucu hiçbir yerde başlatılmaz/expose edilmez;
-  çalıştırma/paylaşma kararı kullanıcıda (kritik-karar protokolü).
+- **NO HOSTING**: the server is not started/exposed anywhere;
+  the run/share decision is with the user (critical-decision protocol).
 
-## 2. Güvenlik denetimi — BEŞ tur (güvenlik sınırı, sonuna kadar)
+## 2. Security audit — FIVE rounds (security boundary, to the end)
 
-Denetçi kötü-niyetli girdilerle saldırdı; her tur yeni açık, her açık
-kapatıldı, aynı denetçi yeniden saldırdı:
-- **Tur 1**: anti-eval sağlam AMA 5 açık — D1 (DoS büyüklük), D2 (ham
-  MemoryError sızıntısı), D3 (tool tolerans TypeError sızıntısı), D4
-  (non-finite geçişi), D5 (regex \n bypass).
-- **Tur 2**: D2-D5 kapandı, D1 yarım (exponent sınırlandı ama sonuç
-  değil) + regresyon (küçük Float srepr'leri kırıldı).
-- **Tur 3**: D1 sonuç-büyüklüğü projeksiyonu + regresyon düzeltildi;
-  S1 (Float exponent materialize) + S2 (Mul-fold materialize) kaldı.
-- **Tur 4**: S1/S2 fold-öncesi projeksiyonla kapandı; non-integer Pow
-  exponent sınıfı (Float/büyük Rational) bulundu.
-- **Tur 5**: her exponent tipi + base'e gömülü sayısal atomlar projekte
-  edildi → **PASS**. Denetçi kalan tüm yüzeyi (sembolik-base^huge,
-  exponent-folding sırası, nested Pow, negatif/I base, conjugate) taradı;
-  hiçbiri huge sayı materialize etmiyor/>1s yakmıyor/kod çalıştırmıyor.
+The reviewer attacked with malicious inputs; each round a new hole, each hole
+closed, the same reviewer attacked again:
+- **Round 1**: anti-eval sound BUT 5 holes — D1 (DoS magnitude), D2 (raw
+  MemoryError leak), D3 (tool tolerance TypeError leak), D4 (non-finite passthrough),
+  D5 (regex \n bypass).
+- **Round 2**: D2-D5 closed, D1 half (exponent bounded but not the result)
+  + regression (small Float sreprs broke).
+- **Round 3**: D1 result-magnitude projection + regression fixed;
+  S1 (Float exponent materialize) + S2 (Mul-fold materialize) remained.
+- **Round 4**: S1/S2 closed with pre-fold projection; a non-integer Pow
+  exponent class (Float/large Rational) was found.
+- **Round 5**: every exponent type + numeric atoms embedded in the base were
+  projected → **PASS**. The reviewer swept the entire remaining surface (symbolic-base^huge,
+  exponent-folding order, nested Pow, negative/I base, conjugate);
+  none materialize a huge number/burn >1s/execute code.
 
-Guard'lar: metin ≤64KB, düğüm ≤2000, derinlik ≤64, digit ≤4096, bit
-≤16384, exponent ≤10⁶; Symbol regex fullmatch; non-finite ret; Float
-exponent yasak; Pow/Mul/Add fold-öncesi büyüklük projeksiyonu. Meşru
-kütüphane korpusu (220 ifade) hiçbir şey kaybetmeden roundtrip.
+Guards: text ≤64KB, nodes ≤2000, depth ≤64, digits ≤4096, bits
+≤16384, exponent ≤10⁶; Symbol regex fullmatch; non-finite rejected; Float
+exponent forbidden; Pow/Mul/Add pre-fold magnitude projection. The legitimate
+library corpus (220 expressions) roundtrips losing nothing.
 
-## 3. Sıradaki aşama (otonom devam)
+## 3. Next stage (autonomous continuation)
 
-**Aşama 18 — Opsiyonel web UI**: statik HTML+JS demo sayfası (hosting
-YOK — aynı kritik-karar kuralı); MCP tool'larının/rapor üretecinin
-tarayıcıdan gösterimi. Kapsam kararı spec'te (statik + client-side vs
-sunucu bağımlı — güvenlik gerekçesiyle statik öneriliyor).
+**Stage 18 — Optional web UI**: static HTML+JS demo page (NO hosting
+— the same critical-decision rule); browser display of the MCP tools/report generator.
+Scope decision in the spec (static + client-side vs
+server-dependent — static is recommended for security reasons).

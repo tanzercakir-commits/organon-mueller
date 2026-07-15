@@ -1,65 +1,65 @@
-# AŞAMA 3 — RAPOR
+# STAGE 3 — REPORT
 
-**Tarih**: 2026-07-13 · **Spec**: `specs/stage-03.md` · **Mod**: otonom
-**Sonuç**: TAMAMLANDI — 65/65 test yeşil; boru hattı v1.1; **önemli
-güvenilirlik bulgusu yakalandı ve etrafından dolaşıldı** (aşağıda).
+**Date**: 2026-07-13 · **Spec**: `specs/stage-03.md` · **Mode**: autonomous
+**Result**: COMPLETED — 65/65 tests green; pipeline v1.1; **a significant
+reliability finding was caught and worked around** (below).
 
 ---
 
-## 1. Teslim edilenler
+## 1. Deliverables
 
-- **Boru hattı v1.1 (tersine akış)**: sayısal parmak izi kovalar aday ÖNERİR
-  (`fingerprint.py`, kaba 3-ondalık anahtar, doğrulamadan bağımsız tohum) →
-  her aday çift **yalıtılmış iki-terimli e-graph'ta** İSPATLANIR → bağımsız
-  çok-tohumlu sayısal doğrulama karar verir. Yeni sınıf: **`underivable`** —
-  sayısal doğru ama aksiyomlardan türetilemeyen çift (yenilik/eksik-aksiyom
-  sinyali; Aşama 5-6'nın girdisi).
-- **conj-normal budanmış enumerasyon** (`terms.py`): Conj yalnız atom
-  seviyesinde; boyut 9'da 5698 → 1476 terim. (İçerik max_size kayması payıyla
-  korunur — docstring'de dürüst kayıt.)
-- Çakışma-gölgeleme kapaması: parmak izi çakışması yaşayan kova artıkları
-  kendi aralarında yeniden incelenir (tamlık kaybı kapatıldı).
+- **Pipeline v1.1 (reversed flow)**: numerical fingerprint buckets SUGGEST candidates
+  (`fingerprint.py`, coarse 3-decimal key, seed independent of verification) →
+  each candidate pair is PROVEN in an **isolated two-term e-graph** → independent
+  multi-seed numerical verification decides. New class: **`underivable`** —
+  a pair that is numerically correct but underivable from the axioms (a novelty/missing-axiom
+  signal; input to Stages 5-6).
+- **conj-normal pruned enumeration** (`terms.py`): Conj only at the atom
+  level; at size 9, 5698 → 1476 terms. (Content is preserved modulo the max_size shift
+  margin — an honest record in the docstring.)
+- Collision-shadowing closure: the residue of a bucket that experiences a fingerprint collision
+  is re-examined among itself (completeness loss closed).
 - `spikes/bench_stage3.py`, `spikes/egglog_pathology_probe.py`,
   `docs/egglog-large-graph-pathology.md`.
 
-## 2. GÜVENİLİRLİK BULGUSU — egglog 13.2.0 büyük-graf patolojisi
+## 2. RELIABILITY FINDING — egglog 13.2.0 large-graph pathology
 
-Paylaşılan tek e-graph üzerinde (1476 terim) saturasyon **tutarsız** çıktı:
-yalıtımda ispatlanan 9 çift büyük grafta "ispatlanamaz" göründü; `extract`
-bir terimi **farklı atom-çokkümesindeki** bir sınıfa düşürdü (aksiyomların
-hiçbiri çokkümeyi değiştiremez — imkânsız temsilci). Denetçi üç bağımsız
-argümanla kök nedeni kütüphaneye sabitledi (monotonluk ihlali, kongruans
-ihlali, çokküme değişmezi) ve tüm sayıları yeniden üretti.
+On a single shared e-graph (1476 terms), saturation came out **inconsistent**:
+9 pairs proven in isolation appeared "unprovable" in the large graph; `extract`
+dropped a term into a class with a **different atom multiset** (no axiom
+can change the multiset — an impossible representative). The auditor pinned the root cause into the
+library with three independent arguments (monotonicity violation, congruence
+violation, multiset invariant) and reproduced all the numbers.
 
-**Sistem tasarımı gereği yakalandı**: e-graph hiçbir zaman tek doğrulayıcı
-değildi (M10); sahte-underivable çiftler sayısal katmanda "doğru ama
-ispatsız" görününce alarm verdi. **Çözüm (M18)**: paylaşılan graf kaldırıldı;
-her çift taze iki-terimli grafta ispatlanıyor. Bilinçli takas: hız yerine
-güvenilirlik. Upstream'e hata bildirimi dış temas olduğundan kullanıcı
-onayına bırakıldı (kritik-karar listesi).
+**Caught by design**: the e-graph was never the sole verifier
+(M10); when the false-underivable pairs appeared in the numerical layer as "correct but
+unproven" they raised an alarm. **Resolution (M18)**: the shared graph was removed;
+each pair is proven in a fresh two-term graph. Deliberate trade-off: reliability instead of speed.
+Since reporting a bug upstream is external contact, it was left to user
+approval (critical-decision list).
 
-## 3. Ölçümler (bu sandbox; K15)
+## 3. Measurements (this sandbox; K15)
 
-| mod | boyut | terim | kova | verified | underivable | refuted | çakışma | süre |
+| mode | size | terms | buckets | verified | underivable | refuted | collision | time |
 |---|---|---|---|---|---|---|---|---|
-| full | 7 | 570 | 64 | 506 | 0 | 0 | 0 | ~10 sn |
-| pruned | 7 | 212 | 56 | 156 | 0 | 0 | 0 | ~3 sn |
-| pruned | 9 | 1476 | 128 | **1348** | **0** | **0** | 0 | ~30 sn |
+| full | 7 | 570 | 64 | 506 | 0 | 0 | 0 | ~10 s |
+| pruned | 7 | 212 | 56 | 156 | 0 | 0 | 0 | ~3 s |
+| pruned | 9 | 1476 | 128 | **1348** | **0** | **0** | 0 | ~30 s |
 
-İç tutarlılık değişmezi testte: çakışma=0 iken verified = terim − kova.
+Internal-consistency invariant in test: when collision=0, verified = terms − buckets.
 
-## 4. Bağımsız denetim
+## 4. Independent audit
 
-Verdict: **PASS**. Patoloji problarını yeniden üretti; kural-kural çokküme
-korunumunu bağımsız doğruladı; parmak izinin −0.0 normalizasyonunu ve
-yanlış-ayrılma mesafesini ölçtü (en yakın sınır 1.3e-7 — 1e-12 titremeden 5
-kademe uzak). Üç önerisi uygulandı: çakışma-gölgeleme kapaması, patoloji
-ailesi regresyonu (6 çift) + verified=terim−kova değişmezi, docstring/K14/spec
-düzeltmeleri.
+Verdict: **PASS**. It reproduced the pathology probes; independently verified the rule-by-rule multiset
+preservation; measured the fingerprint's −0.0 normalization and
+the false-separation distance (nearest boundary 1.3e-7 — 5 orders of magnitude away from the 1e-12
+jitter). Three of its suggestions were applied: collision-shadowing closure, a pathology
+family regression (6 pairs) + the verified=terms−buckets invariant, docstring/K14/spec
+corrections.
 
-## 5. Sıradaki aşama (otonom devam)
+## 5. Next stage (autonomous continuation)
 
-**Aşama 4 — Aday boru hattı: sayısal ön-elek → sembolik ispat**: underivable
-çiftleri için SymPy **sembolik-kesin** doğrulama katmanı (rastgele örneklem
-yerine tam ispat, VERIFICATION.md katman-1'in keşif tarafına bağlanması) +
-atom sayısı ölçekleme (3 atom) denemesi.
+**Stage 4 — Candidate pipeline: numerical pre-sieve → symbolic proof**: a SymPy **symbolic-exact**
+verification layer for the underivable pairs (an exact proof instead of random sampling, binding
+VERIFICATION.md layer-1 to the discovery side) + an atom-count scaling
+(3 atoms) attempt.

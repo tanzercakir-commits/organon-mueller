@@ -1,67 +1,66 @@
-# AŞAMA 1 — RAPOR
+# STAGE 1 — REPORT
 
-**Tarih**: 2026-07-13
+**Date**: 2026-07-13
 **Spec**: `specs/stage-01.md`
-**Sonuç**: TAMAMLANDI — 49/49 test yeşil, kütüphane 21 özdeşlik (21/21 kurtarıldı), egglog spike BAŞARILI
+**Result**: COMPLETED — 49/49 tests green, library at 21 identities (21/21 recovered), egglog spike SUCCESSFUL
 
 ---
 
-## 1. Teslim edilenler
+## 1. Deliverables
 
-- **Yedi yeni özdeşlik (I15–I21)** — I1–I14 donduruldu (karar M7), yalnızca eklendi:
-  - I15: koherent süperpozisyon açılımı + çapraz terimin gerçelliği (PRA Eq. 10)
-  - I16: girişim analoğu M = M_a(1+cosφ) (PRA Eq. 25-26)
-  - I17: kovaryans haritasının lineerliği + karışımın depolarize olması (rank 2)
-  - I18: "yapay çeyrek dalga plakası" süperpozisyonu → gerçek QWP Mueller'i (PRA Eq. 15)
-  - I19–I21: (τ,α,0,0)/(τ,0,β,0)/(τ,0,0,γ) üreteçleri → Tip-1/2/3 M simetrileri,
-    **tam literatür deseni**: sıfır konumları + (anti)simetrik çiftler + köşegen
-    eşitlikleri + kuadratik bağıntı (örn. M01²+M22²+M23² = M00²)
-- **Serileştirme katmanı** (`serialize.py`): HVector JSON round-trip (srepr,
-  kayıpsız — semboller, kesin rasyoneller, Float'lar korunuyor), kütüphane
-  metadata JSON dökümü, LaTeX yardımcıları. MCP hazırlığı (karar M4/M8).
+- **Seven new identities (I15–I21)** — I1–I14 frozen (decision M7), additions only:
+  - I15: coherent superposition expansion + reality of the cross term (PRA Eq. 10)
+  - I16: interference analog M = M_a(1+cosφ) (PRA Eq. 25-26)
+  - I17: linearity of the covariance map + depolarization of the mixture (rank 2)
+  - I18: "artificial quarter-wave plate" superposition → real QWP Mueller (PRA Eq. 15)
+  - I19–I21: (τ,α,0,0)/(τ,0,β,0)/(τ,0,0,γ) generators → Type-1/2/3 M symmetries,
+    **full literature pattern**: zero positions + (anti)symmetric pairs + diagonal
+    equalities + quadratic relation (e.g. M01²+M22²+M23² = M00²)
+- **Serialization layer** (`serialize.py`): HVector JSON round-trip (srepr,
+  lossless — symbols, exact rationals, Floats preserved), library
+  metadata JSON dump, LaTeX helpers. MCP preparation (decisions M4/M8).
 - **egglog spike** (`spikes/egglog_quaternion.py` + `docs/egglog-spike.md`):
-  egglog-python 13.2.0; kuaterniyon birim cebri komütatiflik aksiyomu OLMADAN
-  sature edildi; i·j·k≡−1 dahil 4 denklik türetildi. **Aşama 2 önerisi: hibrit
-  mimari** (egglog = terim-yapısı denkliği, SymPy = katsayı doğrulaması).
-- **`docs/ROADMAP.md`**: ~22 aşamalık, 6 fazlı taslak (frozen-N ilanı Aşama 2 sonunda).
-- README durum tablosu güncellendi.
+  egglog-python 13.2.0; the quaternion unit algebra was saturated WITHOUT a
+  commutativity axiom; 4 equivalences including i·j·k≡−1 were derived. **Stage 2 proposal: hybrid
+  architecture** (egglog = term-structure equivalence, SymPy = coefficient verification).
+- **`docs/ROADMAP.md`**: ~22-stage, 6-phase draft (frozen-N declaration at the end of Stage 2).
+- README status table updated.
 
-## 2. Doğrulama
+## 2. Verification
 
-- `pytest`: **49/49 yeşil**. `verify_all()`: **21/21**.
-- CI matrisi değişmedi (3.10/3.11/3.12) — push'ta koşacak.
+- `pytest`: **49/49 green**. `verify_all()`: **21/21**.
+- CI matrix unchanged (3.10/3.11/3.12) — will run on push.
 
-## 3. Bağımsız denetim (odaklı, yalnız Aşama-1 farkı)
+## 3. Independent audit (focused, Stage-1 diff only)
 
-Verdict: **PASS**. Denetçi I18'i sıfırdan bağımsız rotayla (M_ij = ½tr(σᵢJσⱼJ†),
-paket makinesi kullanılmadan) doğruladı; I20'yi 50 rastgele parametrede aynı bağımsız
-rotayla; spike'a kendi negatif kontrollerini ekledi (i·j ≢ j·i korunuyor —
-saturasyon komütatifliği "icat etmiyor"). Bulgular ve yapılanlar:
+Verdict: **PASS**. The auditor verified I18 from scratch via an independent route (M_ij = ½tr(σᵢJσⱼJ†),
+without using the package machinery); I20 at 50 random parameters via the same independent
+route; added its own negative controls to the spike (i·j ≢ j·i is preserved —
+saturation does not "invent" commutativity). Findings and actions taken:
 
-| Bulgu | Aksiyon |
+| Finding | Action |
 |---|---|
-| I19–I21 literatür deseninin alt kümesini doğruluyordu (köşegen + kuadratik eksik) | ✅ tamamlandı — desen artık AO Eq. (7)-(9)'un tamamı |
-| I15 açılım ayağı bilineerlikten totoloji; yük taşıyan ayak gerçellik | ✅ registry statement'ına işlendi (keşif motoru "bulundu" sayacına girmesin) |
-| I17 sembolik ayak inşa gereği totoloji | ✅ statement'a işlendi |
-| `sympify` enjeksiyon yüzeyi (denetçi `__import__` çalıştırdı) | ✅ modül docstring'ine **STAGE-2 GATE** olarak sabitlendi: dış yüzey açılmadan kısıtlı parser + red testi zorunlu |
+| I19–I21 verified a subset of the literature pattern (diagonal + quadratic missing) | ✅ completed — the pattern is now the whole of AO Eq. (7)-(9) |
+| I15 expansion leg is a tautology from bilinearity; the load-bearing leg is reality | ✅ recorded in the registry statement (so it does not enter the discovery engine's "found" counter) |
+| I17 symbolic leg is a tautology by construction | ✅ recorded in the statement |
+| `sympify` injection surface (auditor ran `__import__`) | ✅ fixed in the module docstring as a **STAGE-2 GATE**: before the external surface is opened, a restricted parser + rejection test are mandatory |
 
-## 4. Kararlar ve açık sorular
+## 4. Decisions and open questions
 
-1. **Hibrit keşif mimarisi** (egglog yapı / SymPy katsayı) — Aşama 2 spec'inin
-   temeli olarak öneriliyor; onay Aşama 2 spec'inde.
-2. egglog pyproject'e girmedi (karar M9); Aşama 2'de `[discovery]` extra'sı olarak
-   planlanıyor.
-3. LICENSE hâlâ açık (kullanıcı kararı).
-4. Aşama 0'ın açık sorusu (τ=0 sınıfları) duruyor; keşif motoru tasarımında ele alınacak.
+1. **Hybrid discovery architecture** (egglog structure / SymPy coefficient) — proposed as the
+   basis of the Stage 2 spec; approval in the Stage 2 spec.
+2. egglog did not enter pyproject (decision M9); planned as a `[discovery]` extra in Stage 2.
+3. LICENSE still open (user decision).
+4. Stage 0's open question (τ=0 classes) stands; to be addressed in the discovery engine design.
 
-## 5. Sıradaki aşama önerisi
+## 5. Next stage proposal
 
-**Aşama 2 — Keşif motoru çekirdeği v0**: hibrit egglog+SymPy mimarisi; Z-cebri
-terim dili (çarpım + eşlenik + skaler yer tutucular), kanonik form/extraction,
-küçük karmaşıklık sınırında ilk enumerasyon; kabul ölçütü: motorun I1/I8/I10
-gibi yapısal özdeşlikleri kendi başına yeniden bulması. Sonunda **frozen-N ilanı**.
+**Stage 2 — Discovery engine core v0**: hybrid egglog+SymPy architecture; Z-algebra
+term language (product + conjugate + scalar placeholders), canonical form/extraction,
+first enumeration at a small complexity bound; acceptance criterion: the engine rediscovering, on its own, structural
+identities like I1/I8/I10. At the end, the **frozen-N declaration**.
 
-## 6. Önerilen commit (Aşama 0 + 1 birlikte, ilk push)
+## 6. Proposed commit (Stage 0 + 1 together, first push)
 
 ```
 git add -A

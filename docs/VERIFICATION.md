@@ -1,88 +1,96 @@
-# Doğrulama Sözleşmesi / Verification Contract
+# Verification Contract
 
-Bu proje otonom modda yürütülüyor (2026-07-13 mandası). Kullanıcının güven
-çıpası bu dokümandaki katmanlardır: **hiçbir matematiksel iddia bu
-katmanlardan geçmeden repoya giremez.** Herhangi bir katmanı zayıflatan
-değişiklik "kritik karar"dır ve kullanıcı onayı gerektirir.
+This project is being run in autonomous mode (2026-07-13 mandate). The user's
+trust anchor is the layers in this document: **no mathematical claim can enter
+the repo without passing through these layers.** Any change that weakens any
+layer is a "critical decision" and requires user approval.
 
-## Katmanlar
+## Layers
 
-1. **Sembolik-kesin doğrulama (SymPy)** — polinom özdeşlikler `expand`
-   tabanlı KESİN sıfır testiyle ispatlanır (yaklaşık değil). Kaynak:
+1. **Symbolic-exact verification (SymPy)** — polynomial identities are proven
+   with an `expand`-based EXACT zero test (not approximate). Source:
    `verify.symbolic_zero/symbolic_equal`.
-2. **Deterministik sayısal doğrulama (NumPy)** — sembolik maliyetli olan her
-   şey sabit tohumlu (seed=20260713) rastgele karmaşık örneklemlerle,
-   ölçek-göreli toleransla test edilir. CI'da tekrarlanabilir.
-3. **Bilinen-özdeşlik regresyonu** — kütüphanedeki her özdeşlik (şu an 21)
-   kaynak makale referansı + yan koşul (Horn guard) metadata'sı taşır ve her
-   push'ta yeniden ispatlanır. Kütüphane yalnız BÜYÜR (I-anahtarları donmuş,
-   karar M7). Totolojik test ayakları açıkça işaretlidir; "kurtarıldı"
-   sayımına yalnız yük taşıyan ayaklar girer.
-4. **Keşif motoru sözleşmesi (K9/K10)** — motor (egglog equality saturation)
-   TEK BAŞINA doğrulayıcı değildir: e-graph'ın önerdiği her aday çift,
-   motordan bağımsız SymPy/NumPy yorumlamasıyla test edilir. Doğrulanamayan
-   aday sessizce elenmez; `refuted` olarak yüzeye çıkar ve build'i KIRAR
-   (unsound aksiyom sinyali). Negatif kontroller (ör. saturasyonun
-   komütatiflik "icat etmemesi") kalıcı testlerdir. Ses sınırları
-   `discovery/axioms.py` docstring'inde gerekçeliyle yazılıdır.
-5. **Bağımsız adversarial denetim** — her aşamada, implementasyonu yazmamış
-   ayrı bir denetçi ajan kodu ve matematiği kaynak makalelerden bağımsız
-   rotalarla yeniden türeterek denetler; PASS almadan push yapılmaz.
-   Bulgular aşama raporlarına işlenir (`reports/`).
-6. **CI matrisi** — GitHub Actions, Python 3.10/3.11/3.12, her push'ta tam
-   regresyon. Kırmızı CI = aşama kapanmamış demektir.
+2. **Deterministic numeric verification (NumPy)** — everything for which
+   symbolic is costly is tested with fixed-seed (seed=20260713) random complex
+   samples, with scale-relative tolerance. Reproducible in CI.
+3. **Known-identity regression** — every identity in the library (currently 21)
+   carries source-paper reference + side-condition (Horn guard) metadata and is
+   re-proven on every push. The library only GROWS (I-keys frozen, decision
+   M7). Tautological test legs are explicitly marked; only load-bearing legs
+   enter the "recovered" count.
+4. **Discovery engine contract (K9/K10)** — the engine (egglog equality
+   saturation) is NOT a verifier ON ITS OWN: every candidate pair proposed by
+   the e-graph is tested with an engine-independent SymPy/NumPy interpretation.
+   A candidate that cannot be verified is not silently discarded; it surfaces as
+   `refuted` and BREAKS the build (unsound axiom signal). Negative controls
+   (e.g. saturation "not inventing" commutativity) are permanent tests. The
+   soundness boundaries are written with rationale in the
+   `discovery/axioms.py` docstring.
+5. **Independent adversarial audit** — at every stage, a separate auditor agent
+   that did not write the implementation audits the code and the mathematics by
+   re-deriving them through routes independent of the source papers; no push
+   happens without a PASS. Findings are recorded into the stage reports
+   (`reports/`).
+6. **CI matrix** — GitHub Actions, Python 3.10/3.11/3.12, full regression on
+   every push. Red CI = the stage has not been closed.
 
-## Faz C ekleri (stage 8–11; yalnız EKLEME — katman zayıflatılmadı)
+## Phase C additions (stage 8–11; addition ONLY — no layer was weakened)
 
-- **Spec-öncesi sayısal probe**: kampanya/tarama hedefleri ve türetim
-  mekanizmaları spec'e yazılmadan ÖNCE sayısal probe'dan geçer (iki
-  kazanım kayıtlı: A9 yanlış-unitary hedefi — spec-09 retraksiyon notu
-  olarak; A10 tip-3 işaret hatası — probe dosyasıyla). A10'dan itibaren
-  probe dosyaları `probes/` altında saklanır.
-- **Çalışma-zamanı invariant guard'ları**: çözücüler her çağrıda iz-1
-  konvansiyonunu, girdi sonluluğunu, rank ön-koşulunu, payda/alan
-  koşullarını ve çıktı bileşenlerinin PSD/rank-1 fizikselliğini denetler;
-  ihlal gerekçeli `DecompositionError` fırlatır (K26: sessiz
-  makul-ama-yanlış çıktı yok). Keşif tarafında karşılığı
+- **Pre-spec numeric probe**: campaign/sweep targets and derivation
+  mechanisms pass through a numeric probe BEFORE being written into the spec
+  (two gains recorded: A9 wrong-unitary target — as a spec-09 retraction note;
+  A10 type-3 sign error — with a probe file). From A10 onward, probe files are
+  stored under `probes/`.
+- **Runtime invariant guards**: on every call, the solvers check the trace-1
+  convention, input finiteness, the rank precondition, denominator/domain
+  conditions, and the PSD/rank-1 physicality of the output components; a
+  violation throws a reasoned `DecompositionError` (K26: no silent
+  plausible-but-wrong output). Its counterpart on the discovery side is
   `check_invariants → DiscoveryInvariantError`.
-- **M34 — makale-çapası olmayan bölge**: K28'in "basılı tabloyla birebir"
-  çapası mevcut olmadığında üç-katmanlı ikame ZORUNLUDUR: (i)
-  probe-doğrulanmış el türetimi spec'te sabitlenir, (ii) türetici çıktısı
-  o el formülleriyle sembolik birebir test edilir, (iii) bağımsız denetçi
-  matematiği sıfırdan yeniden türetir. Sonuçların dili "aday"dır; fizik
-  yorumu insana kalır.
-- **Fazladan-belirlenim guard'ları (K32 tipi)**: bir çözüm yolu
-  bilinmeyenlerden fazla bağımsız denklem içeriyorsa, artık denklem(ler)
-  çalışma zamanında ZORUNLU tutarlılık kontrolüne dönüşür; geçemeyen veri
-  gerekçeli hatayla reddedilir (sessiz yamalama yasak).
-- **Kabul-sonrası doğrulama**: bir hipotez beklenmedik şekilde kabul
-  edilirse (ör. teklik-dışılık: aynı veri birden çok geçerli ayrışım
-  taşıyabilir) kabul otomatik hata SAYILMAZ; rekonstrüksiyon + bileşen
-  saflığı ayrıca doğrulanır ve artefaktta açıkça etiketlenir
-  (`accepted_alternative_verified`). Doğrulanamayan kabul bug'dır.
+- **M34 — the region without a paper-anchor**: when K28's "one-to-one with the
+  printed table" anchor is not available, a three-layer substitute is
+  MANDATORY: (i) the probe-verified hand derivation is fixed in the spec, (ii)
+  the deriver output is tested symbolically one-to-one against those hand
+  formulas, (iii) an independent auditor re-derives the mathematics from
+  scratch. The language of the results is "candidate"; the physics
+  interpretation is left to the human.
+- **Over-determination guards (K32 type)**: if a solution path contains more
+  independent equations than unknowns, the residual equation(s) turn into a
+  MANDATORY consistency check at runtime; data that cannot pass is rejected
+  with a reasoned error (silent patching forbidden).
+- **Post-acceptance verification**: if a hypothesis is accepted unexpectedly
+  (e.g. non-uniqueness: the same data can carry multiple valid decompositions)
+  the acceptance is NOT automatically counted as an error; reconstruction +
+  component purity are additionally verified and explicitly labeled in the
+  artifact (`accepted_alternative_verified`). An acceptance that cannot be
+  verified is a bug.
 
-## Faz D ekleri (stage 12–15; yalnız EKLEME)
+## Phase D additions (stage 12–15; addition ONLY)
 
-- **K33 — PDF-tabanlı çapa disiplini**: makale metninden alınan her çapa
-  denklem numarası taşır; basılı değer türetilenle çelişiyorsa M30
-  baskı-notu düşülür (kümülatif tablo: docs/phase-d-retrospective.md —
-  sekiz teşhis, hepsi bağımsız denetçi teyitli). Adaş-farklı-nesne
-  uyarıları (ör. iki makalenin δ₁/δ₂'si) adlandırmaya işlenir.
-- **Çok-makale çapraz-sentineller (M36 tipi)**: iki bağımsız modül aynı
-  fiziksel konfigürasyonda AYNI sonucu vermek zorundadır (Symmetry-genel
-  ↔ PRB; paper Eq. 29 ↔ JOSA A HVector) — kalıcı testler.
-- **İndirgeme-kesinlik ispatları**: boyut-indirgeyen her çözüm yolu
-  (2×2 xy-blok, rank-1 skaler) denetimde TAM sisteme (3D dyadic 6×6)
-  karşı doğrulanır; "yaklaşım değil kesin" hükmü kayda geçer.
+- **K33 — PDF-based anchor discipline**: every anchor taken from the paper
+  text carries an equation number; if the printed value conflicts with the
+  derived one, an M30 print-note is filed (cumulative table:
+  docs/phase-d-retrospective.md — eight diagnoses, all independent-auditor
+  confirmed). Namesake-different-object warnings (e.g. the δ₁/δ₂ of two
+  papers) are recorded into the naming.
+- **Multi-paper cross-sentinels (M36 type)**: two independent modules must
+  give the SAME result for the same physical configuration (Symmetry-general ↔
+  PRB; paper Eq. 29 ↔ JOSA A HVector) — permanent tests.
+- **Reduction-exactness proofs**: every dimension-reducing solution path
+  (2×2 xy-block, rank-1 scalar) is verified in the audit against the FULL
+  system (3D dyadic 6×6); the ruling "exact, not approximate" is put on
+  record.
 
-## Sınırlar (dürüstlük)
+## Limits (honesty)
 
-- Sayısal doğrulama (katman 2/4) ispat değildir; "rastgele nokta kümesinde
-  eşitlik" kanıtıdır. Polinom-tipi özdeşliklerde pratik güveni yüksektir;
-  yeni-aday özdeşlikler yayın iddiasına dönüşmeden önce katman 1'den
-  (sembolik-kesin) geçirilmek ZORUNDADIR (Faz B boru hattı kuralı).
-- Konvansiyon hatalarına karşı savunma: literatürden elle sabitlenmiş
-  beklenen-değer fixture'ları (`tests/test_fixtures.py`) — rota-rotaya
-  testlerin gizleyebileceği korelasyonlu hataları yakalamak için.
-- Fizik YORUMU (hangi özdeşlik ilginç, hangisi yayın-değer) bu sistemin
-  dışındadır; Kuntman/grup geri bildirimi gerektirir (Faz C/D pencereleri).
+- Numeric verification (layer 2/4) is not a proof; it is evidence of
+  "equality on a random set of points". Its practical confidence is high for
+  polynomial-type identities; new-candidate identities MUST be passed through
+  layer 1 (symbolic-exact) before turning into a publication claim (Phase B
+  pipeline rule).
+- Defense against convention errors: expected-value fixtures hand-fixed from
+  the literature (`tests/test_fixtures.py`) — to catch correlated errors that
+  route-to-route tests could hide.
+- The physics INTERPRETATION (which identity is interesting, which is
+  publication-worthy) is outside this system; it requires Kuntman/group
+  feedback (Phase C/D windows).

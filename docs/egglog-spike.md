@@ -1,48 +1,51 @@
-# egglog Spike Bulguları (Aşama 1)
+# egglog Spike Findings (Stage 1)
 
-**Tarih**: 2026-07-13 · **egglog-python**: 13.2.0 · **Sonuç**: BAŞARILI
+**Date**: 2026-07-13 · **egglog-python**: 13.2.0 · **Result**: SUCCESS
 
-## Ne denendi
+## What was tried
 
-Stokes-Mueller formalizminin komütatif olmayan iskeleti — kuaterniyon birim
-cebri {1, i, j, k} + negasyon — egglog e-graph'ında rewrite kurallarıyla
-modellendi (`spikes/egglog_quaternion.py`). Komütatiflik aksiyomu bilinçli
-olarak VERİLMEDİ; Hamilton ilişkileri (i²=j²=k²=−1, ij=k, ji=−k, ...) +
-çift yönlü asosiyatiflik + negasyonun merkezîliği kural olarak girildi.
+The non-commutative skeleton of the Stokes-Mueller formalism — the quaternion
+unit algebra {1, i, j, k} + negation — was modeled with rewrite rules in an
+egglog e-graph (`spikes/egglog_quaternion.py`). The commutativity axiom was
+deliberately NOT GIVEN; the Hamilton relations (i²=j²=k²=−1, ij=k, ji=−k, ...)
++ two-way associativity + centrality of negation were entered as rules.
 
-Saturasyon sonrası dört denklik `check` ile doğrulandı:
+After saturation, four equivalences were verified with `check`:
 
-| Sorgu | Sonuç |
+| Query | Result |
 |---|---|
 | i·j·k ≡ −1 | PASS |
 | (i·j)·(j·k) ≡ j | PASS |
 | k·(k·k) ≡ −k | PASS |
 | (j·i)·k ≡ 1 | PASS |
 
-## Bulgular
+## Findings
 
-1. **Komütatif olmayan çarpım doğal**: kural vermeyerek elde ediliyor; e-graph
-   tüm parantezlemeleri tek eşdeğerlik sınıfında tutuyor. v2'nin Z-matris /
-   kuaterniyon çarpımları için temel engel YOK.
-2. **Skaler (karmaşık) katsayılar henüz modellenmedi** — asıl açık soru bu.
-   İki seçenek: (a) katsayıları rasyonel çiftler (re, im) olarak egglog'a
-   gömmek, (b) **hibrit mimari**: egglog yalnızca terim-yapısı denkliği
-   (structural equivalence) için, katsayı aritmetiği ve doğrulama SymPy'da.
-   **Öneri: (b) hibrit** — float/karmaşık tamlık riskini e-graph'a taşımaz,
-   Aşama 0-1'in SymPy doğrulama boru hattını aynen kullanır.
-3. **API notları**: `vars_("a b c", Q)` tek çağrıda; tek isimli `vars_`
-   üreteç döndürüyor (tuzak). Kural planlaması `ruleset(...)` +
-   `egraph.run(rs.saturate())`; denklik testi `egraph.check(eq(l).to(r))`.
-4. **Ölçek**: bu fragman milisaniyelerde sature oluyor. Gerçek keşif yükü
-   (terim enumerasyonu × kanonik form) Aşama 2'nin ölçüm konusu.
+1. **Non-commutative product is natural**: it is obtained by not giving a rule;
+   the e-graph keeps all parenthesizations in a single equivalence class. There
+   is NO fundamental obstacle to v2's Z-matrix / quaternion products.
+2. **Scalar (complex) coefficients are not yet modeled** — this is the real
+   open question. Two options: (a) embedding the coefficients into egglog as
+   rational pairs (re, im), (b) a **hybrid architecture**: egglog only for
+   term-structure equivalence (structural equivalence), with coefficient
+   arithmetic and verification in SymPy.
+   **Recommendation: (b) hybrid** — it does not push the float/complex
+   correctness risk into the e-graph, and reuses Stage 0-1's SymPy verification
+   pipeline as is.
+3. **API notes**: `vars_("a b c", Q)` in a single call; a single-name `vars_`
+   returns a generator (a trap). Rule scheduling is `ruleset(...)` +
+   `egraph.run(rs.saturate())`; the equivalence test is `egraph.check(eq(l).to(r))`.
+4. **Scale**: this fragment saturates in milliseconds. The real discovery load
+   (term enumeration × canonical form) is Stage 2's measurement subject.
 
-## Aşama 2'ye girdiler
+## Inputs to Stage 2
 
-- Hibrit mimari kabul edilirse: egglog tarafında soyut terim cebri
-  (Z-çarpımı, eşlenik `conj` unary, `mueller(z) = z * conj(z)` gömmesi),
-  SymPy tarafında parametre-düzeyi verifikasyon.
-- Kanonik form üretimi için extraction (en küçük terim) denenmeli.
-- Aday özdeşlik = saturasyon sonrası aynı e-sınıfa düşen, sözdizimsel olarak
-  farklı terim çiftleri; karmaşıklık sınırı enumerasyonda uygulanır.
-- egglog pyproject bağımlılığı OLMADI (karar M9); Aşama 2'de `discovery`
-  extra'sı olarak eklenebilir: `pip install organon-mueller[discovery]`.
+- If the hybrid architecture is accepted: the abstract term algebra on the
+  egglog side (Z-product, conjugate `conj` unary, `mueller(z) = z * conj(z)`
+  embedding), parameter-level verification on the SymPy side.
+- Extraction (smallest term) should be tried for canonical form generation.
+- A candidate identity = syntactically distinct term pairs that land in the
+  same e-class after saturation; the complexity bound is applied in
+  enumeration.
+- egglog was NOT a pyproject dependency (decision M9); in Stage 2 it can be
+  added as a `discovery` extra: `pip install organon-mueller[discovery]`.

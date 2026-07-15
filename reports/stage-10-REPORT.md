@@ -1,79 +1,79 @@
-# AŞAMA 10 — RAPOR (Faz C: Rank-3 Üç-Terimli Ayrışım + Keşif Köprüsü)
+# STAGE 10 — REPORT (Phase C: Rank-3 Three-Term Decomposition + Discovery Bridge)
 
-**Tarih**: 2026-07-13 · **Spec**: `specs/stage-10.md` · **Mod**: otonom
-**Sonuç**: TAMAMLANDI — 149/149 test yeşil; **makale-ötesi bölgede ilk
-sonuçlar**: üç çift için rank-3 ayrışım türetildi (probe-doğrulamalı el
-formülleriyle sembolik birebir + denetçinin bağımsız türetimleriyle
-birebir), **teklik-dışılık bulgusu** kapalı formda doğrulandı, keşif→minor
-köprüsü v0 çalışıyor.
+**Date**: 2026-07-13 · **Spec**: `specs/stage-10.md` · **Mode**: autonomous
+**Result**: COMPLETED — 149/149 tests green; **first results in the beyond-paper
+region**: rank-3 decomposition derived for three pairs (symbolically verbatim against
+probe-verified hand formulas + verbatim against the reviewer's independent
+derivations), the **non-uniqueness finding** verified in closed form, and the
+discovery→minor bridge v0 working.
 
 ---
 
-## 1. Teslim edilenler
+## 1. Deliverables
 
 - **`decomposition/rank3.py`**: `H = α_A·H_A + α_B·H_B + α_G·|u⟩⟨u|`.
-  - {1,2} ve {1,3}: SIRALI PEEL — tip-1'in desteği yalnız köşeler; B'nin
-    merkez parametresi merkez minöründen, kenarı kenar minöründen LİNEER
-    çözülür (yapısal guard: seçili minörler çözülmemiş bileşene DEĞEMEZ —
-    K31); B çıkarılır, kalan stage-8 çözücüsüne DELEGE edilir (onun tüm
-    guard'ları miras — M33 tek yönlü katmanlama).
-  - {2,3}: destekler tam örtüşür → KOMBİNASYON DEĞİŞKENLERİ (σ,p,m,s,d);
-    beş minör SIRAYLA lineer; geri-inşadan sonra **k₂+e₃=σ fazladan
-    belirlenimi ZORUNLU tutarlılık guard'ı (K32)**.
-  - `propose_decompositions` (köprü v0): rank'e göre tüm hipotezleri
-    dener; başarısızlıklar GEREKÇELİ (K21 — sessiz eleme yok).
-  - `sweep_rank3` → `reports/sweep-03-rank3.json`: 12/12 sentetik geri
-    kazanım (en kötü α hatası 2.4e-15), negatif kontroller gerekçeli.
-- **`probes/probe-rank3-prespec.py`**: spec-öncesi probe repoya alındı
-  (spec §0'ın kanıtı; tip-3 kenar formülündeki işaret hatasını probe
-  yakaladı — mekanizma yine çalıştı).
+  - {1,2} and {1,3}: ORDERED PEEL — the support of type-1 is only the corners; B's
+    center parameter solved LINEARLY from the center minor, its edge from the edge minor
+    (structural guard: the selected minors CANNOT TOUCH the unsolved component —
+    K31); B is extracted, and the remainder is DELEGATED to the stage-8 solver
+    (all its guards inherited — M33 one-way layering).
+  - {2,3}: the supports fully overlap → COMBINATION VARIABLES (σ,p,m,s,d);
+    five minors linear IN ORDER; after reconstruction the **k₂+e₃=σ over-determination
+    is a MANDATORY consistency guard (K32)**.
+  - `propose_decompositions` (bridge v0): tries all hypotheses by rank;
+    failures are JUSTIFIED (K21 — no silent elimination).
+  - `sweep_rank3` → `reports/sweep-03-rank3.json`: 12/12 synthetic
+    recovery (worst α error 2.4e-15), negative controls justified.
+- **`probes/probe-rank3-prespec.py`**: the pre-spec probe taken into the repo
+  (proof of spec §0; the probe caught the sign error in the type-3 edge formula —
+  the mechanism worked again).
 
-## 2. Ana bulgu: TEKLİK-DIŞILIK (aday gözlem — iddia değil)
+## 2. Main finding: NON-UNIQUENESS (candidate observation — not a claim)
 
-İki tip-2 saf + jenerik olarak KURULAN veri, {1,2} hipotezi altında da
-KESİN geçerli bir ayrışım verdi (rekonstrüksiyon 3e-17; tüm bileşenler
-saf/PSD). Denetçi kapalı formunu çıkardı: T₁(P=W=P̄=δ/K̄)+T₂′, δ=KK̄−|W|²,
-α₁=2δ/K̄ — kod çıktısıyla 1e-16'da eşleşti. **Sonuç çerçevesi**: rank-3'te
-çözüm "*bir* ayrışımdır, *tek* ayrışım değil"; sweep artefaktı kabul edilen
-alternatifleri AYRICA doğrular (`accepted_alternative_verified`), fizik
-seçimi insana/novelty-protokolüne kalır. Öte yandan denetçi {2,3} için
-tekliği HİPOTEZ-İÇİ analitik ispata yükseltti: beş formül yalnız H'ye
-bağlı → geçerli her {2,3}+jenerik ayrışımı zorlanmış (tek).
+Data CONSTRUCTED as two type-2 pure + generic also gave an EXACT valid
+decomposition under the {1,2} hypothesis (reconstruction 3e-17; all components
+pure/PSD). The reviewer extracted its closed form: T₁(P=W=P̄=δ/K̄)+T₂′, δ=KK̄−|W|²,
+α₁=2δ/K̄ — matched the code output at 1e-16. **Result framing**: in rank-3 the solution
+is "*a* decomposition, not *the* decomposition"; the sweep artifact ALSO verifies the
+accepted alternatives (`accepted_alternative_verified`), the physics choice is left to
+the human/novelty protocol. On the other hand the reviewer raised uniqueness for {2,3} to
+an IN-HYPOTHESIS analytic proof: the five formulas depend only on H → every valid
+{2,3}+generic decomposition is forced (unique).
 
-## 3. Bağımsız denetim
+## 3. Independent audit
 
-Verdict: **PASS** (1 MAJOR + 3 MINOR + 1 DOC — hepsi giderildi):
-- MAJOR: K32 guard'ının test kapsamı yoktu → tüm-REEL kovaryans ailesi
-  (s,d kendiliğinden reel → realness guard'ları geçer) ile deterministik
-  regresyon testi eklendi (tohum 0, |k₂+e₃−σ|=2.8e-02 ile fırlatıyor).
-- MINOR: merkez-only saf (kenar w=0, meşru Tablo-1 noktası) dış-birincil
-  şablon inşasında sıfır matrise çöküyordu → inşa guard'lı-pozitif
-  MERKEZ birincille yapılıyor; sınır ailesi artık KESİN çözülüyor (test).
-- MINOR: NaN, |iz−1| karşılaştırmalarından sızıp eigvalsh'ta ham çöküş
-  veriyordu → üç çözücüye de sonluluk guard'ı; köprü artık gerekçeli
-  rapor döndürüyor (test).
-- MINOR: çapraz-çift dürüstlüğü 3×2 tam yön matrisine, u₀=u₃ dejenerasyonu
-  spec kabulüne uygun teste genişletildi.
-- DOC: {2,3}'te asıl eleme yükünü s/d REELLİK kontrollerinin taşıdığı
-  (her biri kendi başına bir fazladan belirlenim; K32 daha ince stratumda
-  devrede) modül docstring'ine işlendi.
-- Denetçinin bağımsız türetimleri: beş {2,3} formülü, iki peel çifti,
-  payda≡eksik-anizotropi yorumları ({1,2}: α_G|u₁−u₂|²; {1,3}:
-  α_G|u₁+u₂|²; {2,3}: α_G|u₀−u₃|² — ara tekil çarpanlar sembolik
-  sadeleşiyor) — HEPSİ birebir eşleşti.
+Verdict: **PASS** (1 MAJOR + 3 MINOR + 1 DOC — all resolved):
+- MAJOR: the K32 guard had no test coverage → a deterministic regression test added with
+  the all-REAL covariance family (s,d self-consistently real → the realness guards pass)
+  (seed 0, throws with |k₂+e₃−σ|=2.8e-02).
+- MINOR: center-only pure (edge w=0, a legitimate Table-1 point) collapsed to the
+  zero matrix in the outer-primary template construction → construction done with a
+  guarded-positive CENTER primary; the boundary family is now solved EXACTLY (test).
+- MINOR: NaN leaked past the |trace−1| comparisons and gave a raw collapse in eigvalsh
+  → a finiteness guard added to all three solvers; the bridge now returns a justified
+  report (test).
+- MINOR: cross-pair honesty extended to the full 3×2 direction matrix, and the u₀=u₃
+  degeneracy to a test consistent with the spec acceptance.
+- DOC: the fact that in {2,3} the s/d REALNESS checks carry the actual elimination burden
+  (each one an over-determination in its own right; K32 engages at a finer stratum) was
+  recorded in the module docstring.
+- The reviewer's independent derivations: the five {2,3} formulas, the two peel pairs,
+  the denominator≡missing-anisotropy interpretations ({1,2}: α_G|u₁−u₂|²; {1,3}:
+  α_G|u₁+u₂|²; {2,3}: α_G|u₀−u₃|² — intermediate singular factors symbolically
+  simplify) — ALL matched verbatim.
 
-## 4. M34 dürüstlük çerçevesi (kayıt)
+## 4. M34 honesty framework (record)
 
-Bu bölgede makale çapası YOK; K28'in yerine üç katman kondu: probe'lu el
-türetimi (spec §0) + türetici-el sembolik birebirliği (testler) + denetçi
-bağımsız türetimi. Yenilik/fizik İDDİASI yapılmadı — sweep notu ve rapor
-"aday" der; novelty-protocol 5. adım (insan) değişmedi.
+There is NO paper anchor in this region; in place of K28 three layers were put:
+probed hand derivation (spec §0) + deriver-hand symbolic verbatim (tests) + reviewer
+independent derivation. NO novelty/physics CLAIM was made — the sweep note and the report
+say "candidate"; novelty-protocol step 5 (human) unchanged.
 
-## 5. Sıradaki aşama (otonom devam)
+## 5. Next stage (autonomous continuation)
 
-**Aşama 11 — İter + Kuntman feedback penceresi #1** (FROZEN-22, Faz C
-kapanışı): Faz C retrospektifi; birikmiş yükümlülükler (rank-3 a/b minor
-varyantları, köprü v1 parmak-izi ön-sıralaması, guarded-atoms ikinci yarı
-yükümlülükleri); Kuntman'a sunulabilir Türkçe/İngilizce özet paketi
-HAZIRLANIR (dış temas YOK — paylaşım kararı kritik-karar protokolüyle
-kullanıcıda).
+**Stage 11 — Iter + Kuntman feedback window #1** (FROZEN-22, Phase C
+closure): Phase C retrospective; accumulated obligations (rank-3 a/b minor
+variants, bridge v1 fingerprint pre-ordering, guarded-atoms second-half
+obligations); a Turkish/English summary package presentable to Kuntman is
+PREPARED (NO external contact — the sharing decision rests with the user via the
+critical-decision protocol).

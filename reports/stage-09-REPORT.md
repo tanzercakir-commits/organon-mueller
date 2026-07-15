@@ -1,95 +1,95 @@
-# AŞAMA 9 — RAPOR (Faz C: Bileşik Simetriler + Guarded Atoms İlk Yarı)
+# STAGE 9 — REPORT (Phase C: Composite Symmetries + Guarded Atoms First Half)
 
-**Tarih**: 2026-07-13 · **Spec**: `specs/stage-09.md` · **Mod**: otonom
-**Sonuç**: TAMAMLANDI — 126/126 test yeşil; **bileşik tipler (1-2, 1-3, 2-3)
-üç-parametreli sıralı minor çözümüyle türetildi ve Tablo 4 ile 3/3 sembolik
-birebir eşleşti**; `underivable` kanalının İLK dolu çıktısı üretildi
-(üç Horn-koşullu özdeşlik, M32 dörtlü kanıtla).
+**Date**: 2026-07-13 · **Spec**: `specs/stage-09.md` · **Mode**: autonomous
+**Result**: COMPLETED — 126/126 tests green; **composite types (1-2, 1-3, 2-3)
+derived by a three-parameter ordered-minor solution and matched Table 4
+symbolically verbatim 3/3**; the FIRST filled output of the `underivable`
+channel was produced (three Horn-conditional identities, with M32 quadruple proof).
 
 ---
 
-## 1. Teslim edilenler
+## 1. Deliverables
 
-### (a) `decomposition/composite.py` — bileşik tipler (M31: ayrı modül)
-- **Şablonlar (Tablo 3)**: üç birincil {x, g, h} — 1-2/1-3'te merkez
-  x=α₁B + α₁G, α₁H; 2-3'te köşe x=α₁A + α₁G\*, α₁H\*; bağımlılar rank-1
-  ilişkilerinden (AB=GG\*, GH\*=MB, BC=HH\* / 2-3: AB=GG\*, HG\*=AY, AC=HH\*).
-- **Sıralı minor türetimi** (M28 disiplini sürer): x-minoru g/h'siz çözülür,
-  sonra g-minoru (lineer, conj(g)'siz, h'siz), sonra h-minoru; her yapısal
-  ihlal fırlatır (K29). Tablo-4 çapalarıyla **tam sembolik sıfır** (K28).
-- **`decompose_composite`**: K26 guard'ları — rank-2, payda~0 (eksik-tip
-  anizotropi/örtüşme), birincil reel+pozitif, α₁∈(0,1), H₂ PSD + rank-1,
-  **iz-1 konvansiyon guard'ı** (aşağıda).
+### (a) `decomposition/composite.py` — composite types (M31: separate module)
+- **Templates (Table 3)**: three primaries {x, g, h} — center in 1-2/1-3
+  x=α₁B + α₁G, α₁H; corner in 2-3 x=α₁A + α₁G\*, α₁H\*; dependents from rank-1
+  relations (AB=GG\*, GH\*=MB, BC=HH\* / 2-3: AB=GG\*, HG\*=AY, AC=HH\*).
+- **Ordered minor derivation** (M28 discipline continues): the x-minor solved without g/h,
+  then the g-minor (linear, conj(g)-free, h-free), then the h-minor; every structural
+  violation throws (K29). **Exact symbolic zero** against the Table-4 anchors (K28).
+- **`decompose_composite`**: K26 guards — rank-2, denominator~0 (missing-type
+  anisotropy/overlap), primary real+positive, α₁∈(0,1), H₂ PSD + rank-1,
+  **trace-1 convention guard** (below).
 
-### (b) `discovery/guards.py` — guarded atoms (tasarım notunun ilk yarısı)
-- `GuardedAtom(name, guard)`: `Atom` alt sınıfı — e-graph ve aksiyomlar
-  guard'ı GÖRMEZ (ses maliyeti sıfır, K24 dokunulmadı); `provable()` böylece
-  "guard'sız türetilebilir mi" sorusunun kendisi olur.
-- Kısıtlı üreteçler (K30: kısıt parametre inşasıyla girer, varsayım
-  enjeksiyonu yok): hermitian → 4 reel; unitary → τ reel + sanal vektör;
-  class2_ta/tb/tg → (τ,α,0,0)/(τ,0,β,0)/(τ,0,0,γ). Sayısal + sembolik.
-- `_validated_guards` (denetim sonrası): guards sözlüğü terimlerdeki gömülü
-  etiketlerle çapraz doğrulanır — yanlış etiketlenmiş sözlük sessiz Horn
-  kanıtı üretemez, fırlatır.
+### (b) `discovery/guards.py` — guarded atoms (first half of the design note)
+- `GuardedAtom(name, guard)`: an `Atom` subclass — the e-graph and axioms
+  do NOT SEE the guard (zero soundness cost, K24 untouched); `provable()` thus becomes
+  the very question "is it derivable without the guard".
+- Restricted generators (K30: the restriction enters by parameter construction, no assumption
+  injection): hermitian → 4 real; unitary → τ real + imaginary vector;
+  class2_ta/tb/tg → (τ,α,0,0)/(τ,0,β,0)/(τ,0,0,γ). Numeric + symbolic.
+- `_validated_guards` (post-audit): the guards dictionary is cross-verified against the
+  embedded labels in the terms — a mislabeled dictionary cannot silently produce a Horn
+  proof, it throws.
 
-## 2. Doğrulama sonuçları
+## 2. Verification results
 
-- **Tablo 4**: 3/3 tip sembolik birebir (`sp.simplify(fark) == 0`).
-- **Roundtrip**: 3 tip × 3 deterministik örnek, kesin geri kazanım
-  (α₁ ~1e-8, H'ler ~1e-7; denetçi ~1e-15 gözledi).
-- **Guard'lı kampanya (M32 dörtlü kanıt)**: üç bulgu — class2_ta ({1,i}),
-  class2_tb ({1,j}, denetim önerisi 2 ile eklendi), class2_tg ({1,k}):
-  guard'lı sembolik-KESİN ✓ · guard'lı sayısal ✓ · e-graph ispatı ✗ ·
-  guard'sız sembolik ✗ → `is_conditional_identity` üçünde de doğru.
-  Karışık guard (ta×tg) negatif kontrolü değişmiyor ✓. **Bunlar bilinen
-  gerçekler** (kuaterniyonun {1,q} düzlemleri değişmeli) — amaç kanal
-  mekanizmasının ispatıydı, novelty İDDİASI YOKTUR (protokol değişmedi).
-- **Dejenere guard'lar**: aynı-simetri karışımı üç bileşik tipte de payda
-  çökmesiyle reddediliyor (parametrize test, denetim önerisi 3); rank≠2
-  açık hata.
-- Eski 110 test + yeni 16 = **126/126 yeşil** (py3.12 lokal; CI matrisi
-  push'ta koşacak).
+- **Table 4**: 3/3 types symbolically verbatim (`sp.simplify(difference) == 0`).
+- **Roundtrip**: 3 types × 3 deterministic examples, exact recovery
+  (α₁ ~1e-8, H's ~1e-7; reviewer observed ~1e-15).
+- **Guarded campaign (M32 quadruple proof)**: three findings — class2_ta ({1,i}),
+  class2_tb ({1,j}, added by audit suggestion 2), class2_tg ({1,k}):
+  guarded symbolic-EXACT ✓ · guarded numeric ✓ · e-graph proof ✗ ·
+  unguarded symbolic ✗ → `is_conditional_identity` correct in all three.
+  The mixed guard (ta×tg) negative control does not change ✓. **These are known
+  facts** (the {1,q} planes of the quaternion are commutative) — the goal was proof of the
+  channel mechanism, there is NO CLAIM of novelty (protocol unchanged).
+- **Degenerate guards**: same-symmetry mixture rejected by denominator collapse in all three
+  composite types (parametrized test, audit suggestion 3); rank≠2
+  explicit error.
+- Old 110 tests + new 16 = **126/126 green** (py3.12 local; CI matrix
+  runs on push).
 
-## 3. Spec düzeltmesi — implementasyon ÖNCESİ probe kazancı
+## 3. Spec correction — probe win BEFORE implementation
 
-İlk taslak hedef `unitary(a) → (a·conj(a))·b ≡ b·(a·conj(a))` sayısal
-probe'da YANLIŞ çıktı ve spec'e retraksiyon notuyla işlendi: elementwise
-conj ≠ dagger (hh†=1 kuaterniyon-Hermitsel eşlenik ister; ZZ\* bir retarder
-Mueller'idir, skaler·I değil — stage-7'nin "dagger dilde ifade edilemez"
-teoremiyle tutarlı). Ders: **kampanya hedefleri spec'e yazılmadan önce
-sayısal probe zorunlu** — yanlış hedef koda hiç değmeden elendi.
+The first draft target `unitary(a) → (a·conj(a))·b ≡ b·(a·conj(a))` came out WRONG in the
+numeric probe and was recorded into the spec with a retraction note: elementwise
+conj ≠ dagger (hh†=1 requires the quaternion-Hermitian conjugate; ZZ\* is a retarder
+Mueller, not scalar·I — consistent with stage-7's "dagger is inexpressible in the
+language" theorem). Lesson: **a numeric probe is mandatory before campaign targets are
+written into the spec** — the wrong target was eliminated without touching the code at all.
 
-## 4. Bağımsız denetim
+## 4. Independent audit
 
-Verdict: **PASS** (2 doküman-düzeyi kusur + 3 öneri — hepsi uygulandı):
-- D1: composite.py 2-3 şablonundaki karışık y-yorumu düzeltildi
-  (Y\* = H\*G/A → ölçekli h·conj(g)/x zinciri açık yazıldı).
-- D2: spec'teki "guard ∈ CONDITIONS anahtarları" ifadesi düzeltildi —
-  GUARD_KEYS, CONDITIONS'ı class2_ta/tb/tg ile GENİŞLETİR.
-- Öneri 1 → **iz-1 konvansiyon guard'ı** hem `decompose_composite`'a hem
-  (miras aynı tehlike) stage-8 `decompose`'a eklendi: ölçekli kovaryans
-  sessizce ölçekli α₁ döndürürdü (K26 ihlali olurdu).
-- Öneri 2 → class2_tb kampanyaya eklendi (üç düzlem tam simetri).
-- Öneri 3 → eksik-anizotropi testi üç tipe parametrize edildi.
-- Denetçinin guard-sözlüğü endişesi → `_validated_guards` çapraz kontrolü.
+Verdict: **PASS** (2 document-level defects + 3 suggestions — all applied):
+- D1: the mixed y-interpretation in the composite.py 2-3 template was fixed
+  (Y\* = H\*G/A → the scaled h·conj(g)/x chain written out explicitly).
+- D2: the spec's "guard ∈ CONDITIONS keys" statement was fixed —
+  GUARD_KEYS EXTENDS CONDITIONS with class2_ta/tb/tg.
+- Suggestion 1 → the **trace-1 convention guard** was added both to `decompose_composite` and
+  (same hazard by inheritance) to stage-8 `decompose`: a scaled covariance would silently
+  return a scaled α₁ (would be a K26 violation).
+- Suggestion 2 → class2_tb added to the campaign (three planes, full symmetry).
+- Suggestion 3 → the missing-anisotropy test parametrized over the three types.
+- The reviewer's guard-dictionary concern → the `_validated_guards` cross-check.
 
-Denetçi notu (belgelendi): bir bileşik-simetrik H₁, BAŞKA tipte ikinci
-bileşenle karışınca çapraz-tip çözüm de fiziksel olarak geçerli alternatif
-bir ayrışım verebilir — teklik iddiası yok, makale de yapmıyor; kullanıcıya
-dönen sonuç `symmetry` etiketini açık taşıyor.
+Reviewer note (documented): when a composite-symmetric H₁ is mixed with a second
+component of ANOTHER type, the cross-type solution may also give a physically valid
+alternative decomposition — no uniqueness claim, and the paper does not make one either; the
+result returned to the user carries the `symmetry` label explicitly.
 
-## 5. A10 zemini (rank-3'e köprü)
+## 5. A10 groundwork (bridge to rank-3)
 
-Rank-3 için kalan nesne H − α₁H₁ₛ − α₂H₂ₛ; iki simetrik bileşenin
-minorları SIRALI çözülebilir (bu aşamanın üç-bilinmeyenli sıralı mekanizması
-birebir genelleşir). Fingerprint→minor köprüsü: keşif motorunun bucket'ları
-aday simetri sınıfını önerir, minor makinesi kesin çözer. **Aşama 10 =
-rank-3 keşif taraması** — yayın-adayı bölge (Kuntman-Arteaga rank-3'ü
-sistematik taramadı); novelty protokolü 5. adım (insan onayı) geçerli.
+For rank-3 the remaining object is H − α₁H₁ₛ − α₂H₂ₛ; the minors of the two symmetric
+components can be solved IN ORDER (this stage's three-unknown ordered mechanism
+generalizes verbatim). Fingerprint→minor bridge: the discovery engine's buckets
+propose the candidate symmetry class, the minor machine solves exactly. **Stage 10 =
+rank-3 discovery sweep** — a publication-candidate region (Kuntman-Arteaga did not
+sweep rank-3 systematically); step 5 of the novelty protocol (human approval) applies.
 
-## 6. Sıradaki aşama (otonom devam)
+## 6. Next stage (autonomous continuation)
 
-**Aşama 10 — Rank-3 ayrışım + keşif taraması**: üç-terimli ayrışım
-(2 simetrik + 1 jenerik saf), sıralı minor genelleştirmesi, sentetik
-roundtrip'ler, dejenere guard'lar; keşif motoruyla ilk köprü (fingerprint
-bucket'larından simetri adayı önerme).
+**Stage 10 — Rank-3 decomposition + discovery sweep**: three-term decomposition
+(2 symmetric + 1 generic pure), ordered-minor generalization, synthetic
+roundtrips, degenerate guards; the first bridge with the discovery engine (proposing a
+symmetry candidate from fingerprint buckets).

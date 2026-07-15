@@ -1,58 +1,57 @@
-# AŞAMA 5 — RAPOR
+# STAGE 5 — REPORT
 
-**Tarih**: 2026-07-13 · **Spec**: `specs/stage-05.md` · **Mod**: otonom
-**Sonuç**: TAMAMLANDI — 80/80 test yeşil; geri-kazanım kampanyası çalışıyor;
-terim dilinin sınır haritası çıktı; egglog upstream taslağı hazır (gönderilmedi).
+**Date**: 2026-07-13 · **Spec**: `specs/stage-05.md` · **Mode**: autonomous
+**Result**: COMPLETED — 80/80 tests green; the recovery campaign works;
+the term language's boundary map was drawn; the egglog upstream draft is ready (not submitted).
 
 ---
 
-## 1. Geri-kazanım kampanyası sonucu
+## 1. Recovery campaign result
 
-Motor, elle kodlanmış I1–I21 kütüphanesinin terim diline çevrilebilen alt
-kümesini üç katmandan (e-graph ispatı + sayısal + sembolik-kesin, K20)
-geçirerek KENDİ başına yeniden buldu:
+The engine rediscovered ON ITS OWN the subset of the hand-coded I1–I21 library that is translatable
+into the term language, by passing it through three layers (e-graph proof + numerical +
+symbolic-exact, K20):
 
-| Durum | Özdeşlikler | Not |
+| Status | Identities | Note |
 |---|---|---|
-| **Kazanıldı (2)** | I1 (Z·Z\*=Z\*·Z **ve** M-gerçelliği t≡conj(t) formunda), I10 (komütasyon + seri Mueller yasası) | 4/4 çift üç katmandan geçti; harvest-kanıtı testli |
-| **Yapısal (2)** | I7, I8 | Dilin semantiğinin tanımı (motor kendi yorumlama fonksiyonunu "keşfedemez") — denetçi bu kategorinin dürüstlüğünü ayrıca savundu; suite'te sembolik ispatları zaten var |
-| **Çevrilemez (17)** | kalanlar | Her biri adlandırılmış eksik-özellik anahtarlarıyla (K19) |
+| **Recovered (2)** | I1 (Z·Z\*=Z\*·Z **and** M-reality in the t≡conj(t) form), I10 (commutation + serial Mueller law) | 4/4 pairs passed the three layers; harvest-proof tested |
+| **Structural (2)** | I7, I8 | The definition of the language's semantics (the engine cannot "discover" its own interpretation function) — the auditor separately defended the honesty of this category; their symbolic proofs are already in the suite |
+| **Untranslatable (17)** | the rest | Each with named missing-property keys (K19) |
 
-Eksik-özellik birleşimi → `docs/term-language-extensions.md` (önceliklendirilmiş):
-1) `addition`+`scalars` (koherent süperpozisyon, I15-I18) → **Aşama 6+ ana hedef**;
-2) `guarded_atoms` (I4, I12-I13, I19-I21) → Faz C bağlantısı;
-3) `dagger`+`stokes_sort` (I9, I13-I14) — denetçi dagger'ın mevcut dilde
-   ifade EDİLEMEZLİĞİNİ derece argümanıyla ispatladı;
-4) `entry_level` — e-graph'a girmeyecek, SymPy katmanında kalacak;
+The union of missing properties → `docs/term-language-extensions.md` (prioritized):
+1) `addition`+`scalars` (coherent superposition, I15-I18) → **Stage 6+ main target**;
+2) `guarded_atoms` (I4, I12-I13, I19-I21) → Phase C link;
+3) `dagger`+`stokes_sort` (I9, I13-I14) — the auditor proved the INEXPRESSIBILITY of dagger in the
+   current language with a degree argument;
+4) `entry_level` — will not enter the e-graph, will stay in the SymPy layer;
 5) `constants`.
-M22 monotonluk guard'ı: dil genişledikçe kazanım seti yalnız BÜYÜYEBİLİR.
+The M22 monotonicity guard: as the language expands, the recovery set can only GROW.
 
-## 2. egglog upstream taslağı (M23 — GÖNDERİLMEDİ)
+## 2. egglog upstream draft (M23 — NOT SUBMITTED)
 
-`docs/egglog-upstream-issue-draft.md`: İngilizce, paketten bağımsız,
-kendi kendine yeten repro. Delta-debug ile küçültüldü: **tek ground kural +
-29 kayıtlı terim** — çocuk sınıflar birleşiyor, sözdizimsel özdeş ebeveynler
-birleşmiyor (kongruans ihlali); kayıt SIRASINA bağlı (çift önce kaydedilirse
-geçiyor); seminaive/ek-iterasyon etkisiz. Denetçi taslak kodunu birebir
-çalıştırıp tüm kontrol tablosunu ve 29 terimin **1-minimalliğini** (her tekil
-çıkarma hatayı yok ediyor) doğruladı. Gönderim kullanıcı onayı bekliyor.
+`docs/egglog-upstream-issue-draft.md`: English, package-independent,
+self-contained repro. Reduced with delta-debug: **a single ground rule +
+29 registered terms** — child classes merge, syntactically identical parents
+do not merge (congruence violation); depends on the registration ORDER (passes if the pair is registered
+first); seminaive/extra-iteration ineffective. The auditor ran the draft code verbatim
+and verified the whole control table and the **1-minimality** of the 29 terms (each single
+removal destroys the bug). Submission awaits user approval.
 
-## 3. Bağımsız denetim
+## 3. Independent audit
 
-Verdict: **PASS** (iki doküman-satırı düzeltmesi şartıyla — yapıldı).
-Denetçi 21 kaydın her birinin hükmünü tek tek sorguladı: I1-gerçellik
-çevirisinin sadakati (elementwise conj ⇔ gerçeklik), I7/I8'in "yapısal"
-kategorisinin meşruiyeti, dagger'ın ifade edilemezliği (derece-homojenlik
-argümanı) ve kısmi-gölge taraması (I15 çapraz-terimi = I10'a eşdeğer, zaten
-kazanılmış). Uygulanan öneriler: genişletme tablosu birleşim-semantiğine
-düzeltildi (I18/I2 satır hataları), kampanyaya bilinmeyen-durum guard'ı +
-katman-bazlı hata kaydı eklendi, patoloji↔taslak çapraz referansı ve I15
-kısmi-gölge notu işlendi.
+Verdict: **PASS** (conditional on two document-line corrections — done).
+The auditor questioned the verdict of each of the 21 records one by one: the fidelity of the
+I1-reality translation (elementwise conj ⇔ reality), the legitimacy of the "structural"
+category of I7/I8, the inexpressibility of dagger (the degree-homogeneity
+argument), and the partial-shadow sweep (the I15 cross-term = equivalent to I10, already
+recovered). Applied suggestions: the extension table was corrected to the union
+semantics (I18/I2 row errors), an unknown-status guard + layer-based error logging were added
+to the campaign, the pathology↔draft cross-reference and the I15 partial-shadow note were recorded.
 
-## 4. Sıradaki aşama (otonom devam; kullanıcı direktifi: aralık 5 dk)
+## 4. Next stage (autonomous continuation; user directive: interval 5 min)
 
-**Aşama 6 — Yeni-aday taraması #1 + literatür karşılaştırma disiplini**:
-mevcut dil fragmanında (2-3 atom, derin boyut) sistematik tarama; `underivable`
-kanalı boş çıkarsa (aksiyomlar tam görünüyor) bu KENDİSİ raporlanabilir bir
-tamlık gözlemi; paralelde `addition`+`scalars` genişletmesinin tasarım notu
-(Aşama 7 spec girdisi). "Yeni" iddiası için literatür karşılaştırma şablonu.
+**Stage 6 — New-candidate sweep #1 + literature comparison discipline**:
+a systematic sweep in the current language fragment (2-3 atoms, deep size); if the `underivable`
+channel comes out empty (the axioms appear complete) this ITSELF is a reportable
+completeness observation; in parallel the design note for the `addition`+`scalars` extension
+(Stage 7 spec input). A literature comparison template for the "new" claim.

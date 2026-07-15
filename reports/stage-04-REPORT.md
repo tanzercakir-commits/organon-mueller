@@ -1,63 +1,61 @@
-# AŞAMA 4 — RAPOR
+# STAGE 4 — REPORT
 
-**Tarih**: 2026-07-13 · **Spec**: `specs/stage-04.md` · **Mod**: otonom
-**Sonuç**: TAMAMLANDI — 75/75 test yeşil; sembolik-kesin katman keşfe bağlandı;
-runtime guard'lar üretim kodunda (kullanıcı direktifinin kod karşılığı).
+**Date**: 2026-07-13 · **Spec**: `specs/stage-04.md` · **Mode**: autonomous
+**Result**: COMPLETED — 75/75 tests green; the symbolic-exact layer was bound to discovery;
+runtime guards in production code (the code counterpart of the user directive).
 
 ---
 
-## 1. Teslim edilenler
+## 1. Deliverables
 
-- **`discovery/symbolic.py` (katman-1 keşif bağlantısı, M19)**: soyut terim →
-  atom başına bağımsız jenerik parametreli sembolik Z-matris; `expand` tabanlı
-  **KESİN** eşitlik ispatı (örneklem değil teorem). Denetçi, prosedürün bu
-  terim dili için hem sound hem complete olduğunu ispatladı (z/z̄
-  polarizasyon argümanı) ve 66-terimlik havuzda ispat≡sembolik katmanların
-  birebir örtüştüğünü (68/68 çift) doğruladı.
-- **Sertifikasyon modları** `certify ∈ {none, underivable, all}` (varsayılan
-  `underivable`): yayın-aday `underivable` kanalına giren her çift artık
-  kesin ispatlı; geçemeyen `demoted_by_symbolic`'e düşer (K16, şeffaf).
-  `certify="all"`: verified çiftleri de sertifikalanır. Yeni kurtarma yolu:
-  ispatlı + sembolik-doğru + sayısal-yanlış → sayısal katman yanlış-negatifi
-  (jitter) olarak verified'a alınır ve sayaçlanır (yanıltıcı alarm önlenir).
-- **Runtime invariant guard'ları (M20)**: `DiscoveryResult.check_invariants()`
-  motor tarafından her koşu sonunda çağrılır — kategori ayrıklığı, çift
-  muhasebesi (çakışmalı durumda bile kayıp-çift denetimi), NaN/negatif sayaç,
-  dejenere çift. Bilinçli bozulmuş sonuçla guard'ın gerçekten ateşlediği
-  testli. Atom adı tekilliği kurucuda doğrulanıyor.
-- **Property-based testler (hypothesis, derandomize — K2/K18)**: P1
-  ispat⇒sayısal (ses sözleşmesi), P2 sembolik⇒sayısal (katman tutarlılığı),
-  P3 enumerasyon determinizmi. Denetçi ilk sürümde antecedent'lerin neredeyse
-  hiç ateşlemediğini ölçtü (%4.6 taban oranı) → kurulmuş-eşit-çift üreteci
-  eklendi; şimdi her deterministik koşuda **13/30 nontrivial isabet**.
-- **3-atom ölçekleme** (bu sandbox): pruned-7 → 825 terim / 630 verified /
-  18.5 sn; pruned-8 → 2499 / 2196 / 68 sn; tümü 0 underivable/demoted/refuted.
-  2-atom pruned-7 `certify="all"`: 156/156 sertifikalı, ~13 sn.
-- Patoloji dokümanı güncellendi: kullanıcı kararı (upstream bildirimi yok) +
-  **elenen hipotezler** — bellek yönetimi (kanıt deseni uyumsuz) ve
-  `seminaive` bayrağı (iki ayarda da aynı davranış; kullanıcı sorusu üzerine
-  test edildi).
+- **`discovery/symbolic.py` (layer-1 discovery binding, M19)**: abstract term →
+  per-atom independent generic-parameter symbolic Z-matrix; `expand`-based
+  **EXACT** equality proof (a theorem, not a sample). The auditor proved that the procedure is both
+  sound and complete for this term language (a z/z̄
+  polarization argument) and verified that in a 66-term pool the proof≡symbolic layers
+  coincide one-to-one (68/68 pairs).
+- **Certification modes** `certify ∈ {none, underivable, all}` (default
+  `underivable`): every pair entering the publication-candidate `underivable` channel now has an
+  exact proof; one that fails to pass drops to `demoted_by_symbolic` (K16, transparent).
+  `certify="all"`: verified pairs are also certified. New recovery path:
+  proven + symbolic-correct + numerically-wrong → taken into verified as a numerical-layer
+  false-negative (jitter) and counted (a misleading alarm is prevented).
+- **Runtime invariant guards (M20)**: `DiscoveryResult.check_invariants()`
+  is called by the engine at the end of each run — category disjointness, pair
+  accounting (missing-pair check even in the collision case), NaN/negative counter,
+  degenerate pair. It is tested that the guard actually fires with a deliberately corrupted
+  result. Atom name uniqueness is verified in the constructor.
+- **Property-based tests (hypothesis, derandomize — K2/K18)**: P1
+  proof⇒numerical (the soundness contract), P2 symbolic⇒numerical (layer consistency),
+  P3 enumeration determinism. The auditor measured that in the first version the antecedents almost
+  never fired (4.6% base rate) → a constructed-equal-pair generator was
+  added; now **13/30 nontrivial hits** in each deterministic run.
+- **3-atom scaling** (this sandbox): pruned-7 → 825 terms / 630 verified /
+  18.5 s; pruned-8 → 2499 / 2196 / 68 s; all with 0 underivable/demoted/refuted.
+  2-atom pruned-7 `certify="all"`: 156/156 certified, ~13 s.
+- Pathology document updated: the user decision (no upstream report) +
+  **eliminated hypotheses** — memory management (proof pattern does not match) and
+  the `seminaive` flag (same behavior in both settings; tested upon the user's question).
 
-## 2. Bağımsız denetim
+## 2. Independent audit
 
-Verdict: **PASS**. Sembolik katmanın ispat-değeri formel olarak gerekçelendi;
-sınıflandırma yolları ve çakışma-kuyruğu hedefli bozma denemelerine dayandı
-(5-terimli kova, 4-tur kaskadda her çift tam bir kez incelendi); tüm
-benchmark sayıları bağımsız yeniden üretildi. Üç önerisi de uygulandı:
-property-test üreteci, sayısal-yanlış-negatif kurtarma yolu, guard
-sıkılaştırması (+ docstring güncellemeleri).
+Verdict: **PASS**. The symbolic layer's proof-value was formally justified;
+the classification paths and the collision-queue withstood targeted corruption attempts
+(a 5-term bucket, in a 4-round cascade each pair was examined exactly once); all
+benchmark numbers were independently reproduced. All three of its suggestions were applied:
+the property-test generator, the numerical-false-negative recovery path, guard
+tightening (+ docstring updates).
 
-## 3. Kararlar
+## 3. Decisions
 
-- M19 gereği "yeni özdeşlik" iddiası taşıyabilecek her çıktı bundan böyle
-  kesin ispat katmanından geçer; sayısal-yalnız hiçbir sonuç bulgu kanalına
-  giremez.
-- 3-atom ölçekleme pruned-8'de 68 sn — Faz B ilerisi için kabul edilebilir;
-  daha derin taramalar (Aşama 6) kova-paralelleştirme adayı (not düşüldü).
+- Per M19, every output that could carry a "new identity" claim henceforth passes through the
+  exact-proof layer; no numerical-only result can enter the finding channel.
+- 3-atom scaling is 68 s on pruned-8 — acceptable for beyond Phase B;
+  deeper sweeps (Stage 6) are a bucket-parallelization candidate (noted).
 
-## 4. Sıradaki aşama (otonom devam)
+## 4. Next stage (autonomous continuation)
 
-**Aşama 5 — Geri-kazanım kampanyası**: motor, kütüphanedeki I1–I21'in terim
-diline çevrilebilen alt kümesini KENDİ başına yeniden bulmalı; çevrilemeyenler
-(skaler katsayı/Stokes gerektirenler) açıkça listelenir → Faz B sonrası terim
-dili genişletmesinin gereksinim listesi bu boşluktan çıkar.
+**Stage 5 — Recovery campaign**: the engine must rediscover on its own the subset of I1–I21 in the
+library that is translatable into the term language; the untranslatable ones
+(those requiring scalar coefficients/Stokes) are listed explicitly → the requirement list for
+the post-Phase-B term language expansion emerges from this gap.

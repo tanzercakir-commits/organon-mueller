@@ -1,56 +1,55 @@
-# AŞAMA 15 — RAPOR (Faz D Kapanışı: İter + Feedback Penceresi #2)
+# STAGE 15 — REPORT (Phase D Closure: Iterate + Feedback Window #2)
 
-**Tarih**: 2026-07-14 · **Spec**: `specs/stage-15.md` · **Mod**: otonom
-**Sonuç**: TAMAMLANDI — 204/204 test yeşil; **FAZ D KAPANDI (A12–A15)**;
-Kuntman paketi DİPOL EKİ incelemeye hazır (gönderim kullanıcıda).
+**Date**: 2026-07-14 · **Spec**: `specs/stage-15.md` · **Mode**: autonomous
+**Result**: COMPLETED — 204/204 tests green; **PHASE D CLOSED (A12–A15)**;
+Kuntman package DIPOLE ADDENDUM ready for review (submission with the user).
 
-## 1. Teslim edilenler
+## 1. Deliverables
 
-- **`docs/kuntman-package/ADDENDUM-dipoles-tr/-en.md`**: Faz D'de
-  doğrulananlar (PRB ayrışım teoremi + kapalı formlar 14-17 artık KALICI
-  SEMBOLİK testli; ω±/hibrit baz; Symmetry A11 + Perrin genel teoremi;
-  ensemble formalizmi + δ=0⇒γ_z≡0 teoremi; köprü) + **6 baskı-artefakt
-  satırı** (M30 #3-#8, konumlu, saygılı teyit-rica diliyle) — denetçi her
-  satırı üç PDF'e karşı HARFİYEN doğruladı (Eq. 30'un "i(J₁₂−J₁₂)"
-  dizgisi ve Eq. 32'nin k'sız fazları dahil).
-- **demo.py bölüm 4**: GERÇEK direct-4×4-çözüm vs üç-terim form
-  (1.7e-16); γ-haritası (eş-düzlem kör 1.3e-17 / düzlem-dışı 4.6e-3);
-  ensemble üçlüsü (n=400; kiral/akiral oranı ~1687×); smoke test.
-- **`docs/phase-d-retrospective.md`**: M35-M37 + K33 taraması; **M30
-  kümülatif tablosu (8 teşhis)**; borç envanteri (N>2 dipol ertelendi —
-  gerekçe: 2-dipol tam-3D+ensemble teslim edildi, N>2 motivasyonu
-  Kuntman feedback'ine bağlı; guarded-atoms 2. yarı A16 spec'inde
-  değerlendirilecek; Fano "future work" — PRB'nin kendisi gibi).
-- **VERIFICATION.md Faz D ekleri**: K33 çapa disiplini; çok-makale
-  çapraz-sentineller; indirgeme-kesinlik pratikleri.
+- **`docs/kuntman-package/ADDENDUM-dipoles-tr/-en.md`**: what was
+  verified in Phase D (PRB decomposition theorem + closed forms 14-17 now with a PERMANENT
+  SYMBOLIC test; ω±/hybrid basis; Symmetry A11 + Perrin general theorem;
+  ensemble formalism + δ=0⇒γ_z≡0 theorem; bridge) + **6 print-artifact
+  lines** (M30 #3-#8, located, in respectful confirmation-request language) — the reviewer
+  verified each line LITERALLY against the three PDFs (including Eq. 30's "i(J₁₂−J₁₂)"
+  typo and Eq. 32's k-less phases).
+- **demo.py section 4**: REAL direct-4×4-solution vs three-term form
+  (1.7e-16); γ-map (co-planar blind 1.3e-17 / out-of-plane 4.6e-3);
+  ensemble triple (n=400; chiral/achiral ratio ~1687×); smoke test.
+- **`docs/phase-d-retrospective.md`**: M35-M37 + K33 sweep; **M30
+  cumulative table (8 diagnoses)**; debt inventory (N>2 dipole deferred —
+  rationale: 2-dipole full-3D+ensemble delivered, N>2 motivation
+  depends on Kuntman feedback; guarded-atoms 2nd half to be evaluated in the A16 spec;
+  Fano "future work" — like the PRB itself).
+- **VERIFICATION.md Phase D additions**: K33 anchor discipline; multi-paper
+  cross-sentinels; reduction-precision practices.
 
-## 2. Bağımsız denetim — dürüstlük sınavı
+## 2. Independent audit — honesty test
 
-İlk verdict **FAIL (koşullu)**: dış-yüzlü ADDENDUM'da ÜÇ kanıt-sınıfı
-abartısı yakalandı — (i) Eqs. 14-17 "sembolik" deniyordu ama yalnız
-arşiv probe'unda sayısaldı → KALICI SEMBOLİK TEST EKLENDİ (iddia
-doğrulandı, zayıflatılmadı); (ii) demo "direct solve" etiketiyle aynı
-formülü iki kez değerlendiriyordu → gerçek direct çözüm çağrısına
-bağlandı; (iii) 3D indirgeme "kesin ispatlandı" fiili kayıttaki sayısal
-teyidi aşıyordu → "~3e-16 doğrulandı (xy-blok analoğu sembolik)" olarak
-düzeltildi. + γ-haritası demo'ya eklendi; retrospektif sayım/atıf
-düzeltmeleri; ensemble marjı sertleştirildi (47-tohum taraması, en kötü
-4.39× > 2.5× eşik). Yeniden doğrulama: **PASS**. Ders (kayda):
-dışarı gidecek dokümanda fiil seçimi de doğrulama konusudur — "sayısal
-doğrulandı" ≠ "sembolik ispatlandı" (VERIFICATION.md Sınırlar bölümünün
-dokümanlara uygulanması).
+Initial verdict **FAIL (conditional)**: THREE evidence-class
+overstatements were caught in the externally-facing ADDENDUM — (i) Eqs. 14-17 were called "symbolic" but
+were only numeric in the archive probe → PERMANENT SYMBOLIC TEST ADDED (claim
+verified, not weakened); (ii) the demo evaluated the same formula twice
+under the "direct solve" label → bound to a real direct-solution call; (iii) the 3D reduction "rigorously proven" verb
+exceeded the numerical confirmation in the record → corrected to "~3e-16 verified (xy-block analog symbolic)".
++ γ-map added to the demo; retrospective count/citation
+corrections; ensemble margin hardened (47-seed sweep, worst
+4.39× > 2.5× threshold). Re-verification: **PASS**. Lesson (for the record):
+in an outgoing document, verb choice is also a matter of verification — "numerically
+verified" ≠ "symbolically proven" (application of the VERIFICATION.md Limits section
+to documents).
 
-## 3. Faz D bilançosu
+## 3. Phase D balance sheet
 
-4 aşama · 4+1 denetim (A15 iki turlu) · test 192→204 · üç makalenin ana
-sonuçları teorem düzeyinde · 8 M30 teşhisi (hepsi bağımsız teyitli) ·
-Green→Jones→HVector→kovaryans→ayrışım zinciri uçtan-uca.
+4 stages · 4+1 audits (A15 two-round) · tests 192→204 · the main
+results of three papers at theorem level · 8 M30 diagnoses (all independently confirmed) ·
+Green→Jones→HVector→covariance→decomposition chain end-to-end.
 
-## 4. Sıradaki aşama (otonom devam — FAZ E AÇILIŞI)
+## 4. Next stage (autonomous continuation — PHASE E OPENING)
 
-**Aşama 16 — LaTeX rapor üreteci**: kullanıcının paketleme vizyonunun
-ilk ayağı (son kullanıcı terminal kullanamaz; rapor çıktısı birinci
-sınıf). Kapsam: ayrışım/keşif/dipol sonuçlarından derlenmiş, kaynak
-makale referanslı, doğrulama-durumu etiketli LaTeX/PDF raporu; Kuntman
-paketi ilk gerçek senaryo. Guarded-atoms 2. yarı kapsam değerlendirmesi
-A16 spec'inde (retrospektif borcu).
+**Stage 16 — LaTeX report generator**: the first leg of the user's packaging vision
+(the end user cannot use a terminal; report output is first-
+class). Scope: a LaTeX/PDF report compiled from decomposition/discovery/dipole results,
+referencing the source papers, labeled with verification-status; the Kuntman
+package is the first real scenario. Guarded-atoms 2nd-half scope assessment is
+in the A16 spec (retrospective debt).

@@ -1,87 +1,86 @@
-# AŞAMA 0 — Repo İskeleti + Temsil Katmanı + Bilinen-Özdeşlik Regresyon Çekirdeği
+# STAGE 0 — Repo Skeleton + Representation Layer + Known-Identity Regression Core
 
-**Tarih**: 2026-07-13
-**Proje**: organon-mueller (Organon_V2)
-**Önceki aşama**: — (ilk aşama)
+**Date**: 2026-07-13
+**Project**: organon-mueller (Organon_V2)
+**Previous stage**: — (first stage)
 
 ---
 
-## 1. Bağlam
+## 1. Context
 
-Organon v1 (FOL tabanlı fizik akıl yürütme sistemi, frozen-55, `v1.0`) kapandı. v2'nin
-sub-problem'i: **Stokes-Mueller polarizasyon formalizminde otomatik özdeşlik keşfi**
-(automated identity discovery). Domain referansları: Kuntman ve ark. 2016–2020 yayınları
-(JOSA A 34,80; PRA 95,063819; PRB 98,045410; Applied Optics 55,2543; JOSA A kuaterniyon).
+Organon v1 (FOL-based physics reasoning system, frozen-55, `v1.0`) is closed. The
+sub-problem of v2: **automated identity discovery in the Stokes-Mueller polarization
+formalism**. Domain references: Kuntman et al. 2016–2020 publications
+(JOSA A 34,80; PRA 95,063819; PRB 98,045410; Applied Optics 55,2543; JOSA A quaternion).
 
-v2'nin mantık çerçevesi: FOL'un **denklemsel fragmanı** (equational logic, Birkhoff
-kuralları) + **Horn-koşullu kurallar** (P(x) → t₁ = t₂). Keşif motoru (egglog) sonraki
-aşamalarda; bu aşama motorun üstünde koşacağı zemini döker.
+The logical framework of v2: the **equational fragment** of FOL (equational logic, Birkhoff
+rules) + **Horn-conditional rules** (P(x) → t₁ = t₂). The discovery engine (egglog) comes in
+later stages; this stage lays the ground on which the engine will run.
 
-## 2. Hedefler
+## 2. Goals
 
-1. Repo iskeleti: `specs/`, `reports/`, `src/organon_mueller/`, `tests/`, CI.
-2. **Temsil katmanı**: altı izomorf temsil — Jones J (2×2), Mueller M (4×4),
-   kovaryans matrisi H (4×4 Hermitian), kovaryans vektörü |h⟩ = (τ,α,β,γ)ᵀ,
-   Z matrisi (4×4), h bikuaterniyonu — ve aralarındaki dönüşümler.
-3. **Bilinen-özdeşlik kütüphanesi (çekirdek)**: literatürdeki temel özdeşlikler,
-   kaynak + yan koşul (guard) metadata'sıyla kayıtlı.
-4. **Regresyon testleri**: her bilinen özdeşlik sembolik (SymPy) ve/veya sayısal
-   (NumPy rastgele örneklem) olarak doğrulanır. Hedef: bilineni %100 kurtarma.
-5. CI: GitHub Actions, her push'ta pytest.
+1. Repo skeleton: `specs/`, `reports/`, `src/organon_mueller/`, `tests/`, CI.
+2. **Representation layer**: six isomorphic representations — Jones J (2×2), Mueller M (4×4),
+   covariance matrix H (4×4 Hermitian), covariance vector |h⟩ = (τ,α,β,γ)ᵀ,
+   Z matrix (4×4), h biquaternion — and the transformations among them.
+3. **Known-identity library (core)**: fundamental identities from the literature, recorded
+   with source + side-condition (guard) metadata.
+4. **Regression tests**: each known identity is verified symbolically (SymPy) and/or
+   numerically (NumPy random sampling). Target: 100% recovery of the known.
+5. CI: GitHub Actions, pytest on every push.
 
-## 3. Mimari kararlar
+## 3. Architectural decisions
 
-- **M1. Kaynak temsil |h⟩**: içsel durum (τ,α,β,γ) dörtlüsüdür; diğer beş temsil
-  bundan üretilir. Gerekçe: rank-1 H ↔ |h⟩ birebir; Z, J, h hepsi aynı parametrelerle
-  lineer.
-- **M2. Çifte doğrulama**: her özdeşlik önce sembolik denenir; sembolik maliyetliyse
-  sayısal örneklem (N≥50 rastgele karmaşık parametre, tol=1e-9) kabul edilir. Hangi
-  modda doğrulandığı identity kaydında tutulur.
-- **M3. Yan koşullar birinci sınıf**: her özdeşlik `conditions` alanı taşır
-  (örn. `nondepolarizing`, `tau_real`, `unitary`). Horn-koşullu kural altyapısının
-  tohumudur.
-- **M4. API durumsuz ve serileştirilebilir**: fonksiyonel çekirdek; girdi/çıktılar
-  SymPy ifadeleri/matrisleri. İleride MCP server sarmalaması için JSON köprüsü
-  sonraki aşamalarda.
-- **M5. Konvansiyonlar Kuntman-Arteaga makalelerine sabitlenir**: Pauli sırası
-  (σ0,σ1,σ2,σ3), A matrisi, Z'nin açık formu, kuaterniyon işaretleri JOSA A 34,80
-  ve arXiv:1705.07147'deki gibi. Farklı konvansiyonlu literatür (Gil vb.) dönüşümle
-  eşlenir, çekirdek değişmez.
-- **M6. egglog bu aşamada YOK**: keşif motoru Aşama 2+ (önce spike). Bu aşama
-  yalnızca zemin.
+- **M1. Source representation |h⟩**: the internal state is the quadruple (τ,α,β,γ); the other
+  five representations are generated from it. Rationale: rank-1 H ↔ |h⟩ is one-to-one; Z, J, h
+  are all linear in the same parameters.
+- **M2. Double verification**: every identity is first attempted symbolically; if symbolic is
+  costly, numerical sampling (N≥50 random complex parameters, tol=1e-9) is accepted. Which
+  mode it was verified in is kept in the identity record.
+- **M3. Side conditions first-class**: every identity carries a `conditions` field
+  (e.g. `nondepolarizing`, `tau_real`, `unitary`). This is the seed of the Horn-conditional
+  rule infrastructure.
+- **M4. API stateless and serializable**: functional core; inputs/outputs are SymPy
+  expressions/matrices. A JSON bridge for later MCP server wrapping comes in subsequent stages.
+- **M5. Conventions fixed to the Kuntman-Arteaga papers**: Pauli order
+  (σ0,σ1,σ2,σ3), the A matrix, the explicit form of Z, and the quaternion signs as in JOSA A 34,80
+  and arXiv:1705.07147. Literature with different conventions (Gil et al.) is mapped via
+  transformation; the core does not change.
+- **M6. egglog is ABSENT at this stage**: the discovery engine is Stage 2+ (spike first). This
+  stage is only the ground.
 
-## 4. Katı kurallar
+## 4. Strict rules
 
-- K1. Test edilmemiş hiçbir dönüşüm/özdeşlik `main`'e girmez.
-- K2. Sayısal testlerde sabit tohum (seed) — CI deterministik olmalı.
-- K3. `src/organon_mueller` içinde print/side-effect yok; saf fonksiyonlar.
-- K4. Python ≥3.10; bağımlılık: sympy, numpy (test: pytest). Başka bağımlılık eklenmez.
-- K5. Dosya/dizin adları bu spec'teki gibi; runner-dokunulmazlığı ilkesi burada
-  "temsil katmanı API'si dokunulmaz" olarak devam eder (Aşama 1+'da imzalar değişmez,
-  yalnızca eklenir).
+- K1. No untested transformation/identity goes into `main`.
+- K2. Fixed seed in numerical tests — CI must be deterministic.
+- K3. No print/side-effect inside `src/organon_mueller`; pure functions.
+- K4. Python ≥3.10; dependencies: sympy, numpy (test: pytest). No other dependency is added.
+- K5. File/directory names as in this spec; the runner-immutability principle continues here
+  as "the representation layer API is immutable" (in Stage 1+ signatures do not change,
+  only additions).
 
-## 5. Teslim
+## 5. Deliverable
 
 ```
 organon-mueller/
-├── README.md                       (proje tanıtımı, v1 bağı, durum)
+├── README.md                       (project intro, v1 link, status)
 ├── pyproject.toml                  (src-layout, pip install -e ".[test]")
 ├── .gitignore
 ├── .github/workflows/ci.yml        (pytest, py3.11 + py3.12)
-├── specs/stage-00.md               (bu dosya)
+├── specs/stage-00.md               (this file)
 ├── reports/stage-00-REPORT.md
 ├── src/organon_mueller/
-│   ├── __init__.py                 (sürüm + üst düzey API dışa aktarımı)
+│   ├── __init__.py                 (version + top-level API export)
 │   ├── algebra/
 │   │   ├── __init__.py
-│   │   ├── basis.py                (Pauli, A, Πij, kuaterniyon baz matrisleri 1,I,J,K)
-│   │   ├── quaternion.py           (BiQuaternion: Hamilton çarpımı, bar/†, matris temsili)
-│   │   └── states.py               (HVector + tüm dönüşümler + Stokes yardımcıları)
-│   ├── conditions.py               (yüklemler: nondepolarizing, hermitian_state, unitary_state)
-│   ├── verify.py                   (sembolik/sayısal doğrulama yardımcıları, örnekleyici)
+│   │   ├── basis.py                (Pauli, A, Πij, quaternion basis matrices 1,I,J,K)
+│   │   ├── quaternion.py           (BiQuaternion: Hamilton product, bar/†, matrix representation)
+│   │   └── states.py               (HVector + all transformations + Stokes helpers)
+│   ├── conditions.py               (predicates: nondepolarizing, hermitian_state, unitary_state)
+│   ├── verify.py                   (symbolic/numerical verification helpers, sampler)
 │   └── identities/
 │       ├── __init__.py
-│       └── known.py                (Identity kaydı + KNOWN_IDENTITIES kütüphanesi)
+│       └── known.py                (Identity record + KNOWN_IDENTITIES library)
 └── tests/
     ├── test_basis.py
     ├── test_quaternion.py
@@ -90,50 +89,50 @@ organon-mueller/
     └── test_conditions.py
 ```
 
-## 6. Doğrulama (bu aşamanın "bilineni kurtarma" listesi)
+## 6. Verification (this stage's "recover the known" list)
 
-| # | Özdeşlik | Kaynak | Koşul | Mod |
+| # | Identity | Source | Condition | Mode |
 |---|---|---|---|---|
-| I1 | M = ZZ\* = Z\*Z | JOSA A 34,80 Eq.(34) | nondepolarizing | sembolik |
-| I2 | M = A(J⊗J\*)A⁻¹ ile I1 tutarlı | standart + Eq.(35) | — | sembolik |
-| I3 | det Z = (τ²−α²−β²−γ²)² | JOSA A 34,80 Eq.(48) | — | sembolik |
-| I4 | Z⁻¹ açık formu (işaret çevirme) | Eq.(50) | det≠0 | sembolik |
-| I5 | ⟨h|h⟩ = M₀₀ | Eq.(17) | — | sembolik |
-| I6 | tr(MᵀM) = 4M₀₀² | Gil-Bernabeu | nondepolarizing | sayısal |
-| I7 | h₂h₁ ↔ Z₂|h₁⟩ (kuaterniyon çarpımı) | arXiv:1705.07147 Eq.(21-23) | — | sembolik |
-| I8 | Z = τ1+iαI+iβJ+iγK (matris temsili = Z) | Eq.(13) | — | sembolik |
-| I9 | s′ = hsh† ↔ |s′⟩ = M|s⟩ ve S′ = ZSZ† | Eq.(10),(26) | — | sayısal |
-| I10 | Z_iZ_j\* = Z_j\*Z_i (komütasyon) → M(Z₂Z₁)=M₂M₁ | JOSA A 34,80 Eq.(38) | — | sembolik+sayısal |
-| I11 | Rotasyon: |h(θ)⟩=R(θ)|h⟩, h(θ)=rhr†, M(θ)=R(θ)MR(−θ) | Eq.(30-34) | — | sayısal |
-| I12 | Hermitsel durum: τ,α,β,γ ∈ ℝ ⇒ M = Mᵀ | Eq.(46),(53) | hermitian_state | sayısal |
-| I13 | Üniter durum: τ∈ℝ, α,β,γ∈iℝ ⇒ MMᵀ = M₀₀²·I | Eq.(54-56) | unitary_state | sayısal |
-| I14 | Rank(H)=1 ⇔ nondepolarize; H=|h⟩⟨h|; Mij=tr(ΠijH) | Cloude/Gil | — | sayısal |
+| I1 | M = ZZ\* = Z\*Z | JOSA A 34,80 Eq.(34) | nondepolarizing | symbolic |
+| I2 | M = A(J⊗J\*)A⁻¹ consistent with I1 | standard + Eq.(35) | — | symbolic |
+| I3 | det Z = (τ²−α²−β²−γ²)² | JOSA A 34,80 Eq.(48) | — | symbolic |
+| I4 | Explicit form of Z⁻¹ (sign flip) | Eq.(50) | det≠0 | symbolic |
+| I5 | ⟨h|h⟩ = M₀₀ | Eq.(17) | — | symbolic |
+| I6 | tr(MᵀM) = 4M₀₀² | Gil-Bernabeu | nondepolarizing | numerical |
+| I7 | h₂h₁ ↔ Z₂|h₁⟩ (quaternion product) | arXiv:1705.07147 Eq.(21-23) | — | symbolic |
+| I8 | Z = τ1+iαI+iβJ+iγK (matrix representation = Z) | Eq.(13) | — | symbolic |
+| I9 | s′ = hsh† ↔ |s′⟩ = M|s⟩ and S′ = ZSZ† | Eq.(10),(26) | — | numerical |
+| I10 | Z_iZ_j\* = Z_j\*Z_i (commutation) → M(Z₂Z₁)=M₂M₁ | JOSA A 34,80 Eq.(38) | — | symbolic+numerical |
+| I11 | Rotation: |h(θ)⟩=R(θ)|h⟩, h(θ)=rhr†, M(θ)=R(θ)MR(−θ) | Eq.(30-34) | — | numerical |
+| I12 | Hermitian state: τ,α,β,γ ∈ ℝ ⇒ M = Mᵀ | Eq.(46),(53) | hermitian_state | numerical |
+| I13 | Unitary state: τ∈ℝ, α,β,γ∈iℝ ⇒ MMᵀ = M₀₀²·I | Eq.(54-56) | unitary_state | numerical |
+| I14 | Rank(H)=1 ⇔ nondepolarizing; H=|h⟩⟨h|; Mij=tr(ΠijH) | Cloude/Gil | — | numerical |
 
-Kabul ölçütü: 14/14 doğrulanır; pytest tamamı yeşil; CI dosyası sözdizimsel geçerli.
+Acceptance criterion: 14/14 verified; entire pytest suite green; CI file syntactically valid.
 
-## 7. Teslim formatı
+## 7. Delivery format
 
-Dosyalar kullanıcının `C:\Projects\organon-mueller` klonuna yazılır +
-`reports/stage-00-REPORT.md` sonuç raporu + önerilen commit mesajı. Push kullanıcıda.
+Files are written to the user's `C:\Projects\organon-mueller` clone +
+`reports/stage-00-REPORT.md` result report + suggested commit message. Push is on the user.
 
-## 8. Özel uyarılar
+## 8. Special warnings
 
-1. SymPy'da karmaşık eşlenik: parametreler `sympy.symbols(..., complex=True)` ile;
-   `conjugate()` kullan, `.T` yerine `.H`'ye dikkat (H = conjugate transpose).
-2. Kuaterniyon Hermitsel eşleniği h† = τ\*1+iα\*i+iβ\*j+iγ\*k — bileşen bazında
-   naif `conjugate` DEĞİL (bkz. bikuaterniyon: h† = conj(bar(h)) bileşenleri).
-3. Sayısal rank testi: eşik 1e-9·λ_max; mutlak eşik kullanma.
-4. R(θ) 2θ'lıdır (Mueller uzayı); kuaterniyon rotator r = cosθ·1 + sinθ·k
-   (arXiv Eq.(33)) — θ/2 karışıklığına dikkat.
-5. Windows klonu: dosyalar LF ile yazılır; .gitignore'a `__pycache__`, `.pytest_cache`,
-   `*.egg-info`, `.venv` eklenir.
+1. Complex conjugate in SymPy: parameters with `sympy.symbols(..., complex=True)`;
+   use `conjugate()`, and watch out for `.H` instead of `.T` (H = conjugate transpose).
+2. The quaternion Hermitian conjugate h† = τ\*1+iα\*i+iβ\*j+iγ\*k — NOT the naive component-wise
+   `conjugate` (see biquaternion: h† = conj(bar(h)) components).
+3. Numerical rank test: threshold 1e-9·λ_max; do not use an absolute threshold.
+4. R(θ) is in 2θ (Mueller space); the quaternion rotator r = cosθ·1 + sinθ·k
+   (arXiv Eq.(33)) — watch out for the θ/2 confusion.
+5. Windows clone: files are written with LF; add `__pycache__`, `.pytest_cache`,
+   `*.egg-info`, `.venv` to .gitignore.
 
-## 9. Kapsam dışı
+## 9. Out of scope
 
-- egglog / keşif motoru (Aşama 2+, önce spike)
-- Ayrışım türetici, dipol modülü (Aşama 3+)
-- MCP server / web UI / LaTeX rapor üretici (paketleme aşamaları)
-- LICENSE seçimi (kullanıcı kararı — repo private, aciliyet yok)
-- Depolarize M için genel rank-2/3/4 işlemleri (yalnızca yüklem düzeyi var)
+- egglog / discovery engine (Stage 2+, spike first)
+- Decomposition deriver, dipole module (Stage 3+)
+- MCP server / web UI / LaTeX report generator (packaging stages)
+- LICENSE choice (user decision — repo private, no urgency)
+- General rank-2/3/4 operations for depolarizing M (only predicate level exists)
 
-**DUR BURAYA** — bu spec dışına çıkma; belirsizlikte REPORT'a "açık soru" yaz.
+**STOP HERE** — do not go outside this spec; when uncertain write an "open question" to the REPORT.

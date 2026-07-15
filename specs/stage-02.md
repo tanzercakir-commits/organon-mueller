@@ -1,106 +1,105 @@
-# AŞAMA 2 — Keşif Motoru Çekirdeği v0 (Hibrit egglog + SymPy) + FROZEN-N
+# STAGE 2 — Discovery Engine Core v0 (Hybrid egglog + SymPy) + FROZEN-N
 
-**Tarih**: 2026-07-13
-**Önceki aşama**: stage-01 (21 özdeşlik, serileştirme, egglog spike BAŞARILI)
-**Not**: Bu aşamadan itibaren proje otonom modda yürür (kullanıcı mandası,
-2026-07-13): kritik-karar eşiği dışında tüm kararlar spec+rapor içinde
-gerekçelendirilir; güven çıpası doğrulama sistemidir (docs/VERIFICATION.md).
+**Date**: 2026-07-13
+**Previous stage**: stage-01 (21 identities, serialization, egglog spike SUCCESSFUL)
+**Note**: From this stage on the project runs in autonomous mode (user mandate,
+2026-07-13): outside the critical-decision threshold, all decisions are justified within
+the spec+report; the trust anchor is the verification system (docs/VERIFICATION.md).
 
 ---
 
-## 1. Bağlam
+## 1. Context
 
-Spike, kuaterniyon/Z cebrinin komütatif olmayan iskeletinin egglog'da sature
-edilebildiğini gösterdi. Bu aşama öneriyi mimariye çevirir: **hibrit motor** —
-egglog terim-yapısı denkliği (equality saturation) üretir, SymPy/NumPy her
-adayı bağımsız doğrular. Motorun İLK işi yeni şey bulmak değil, **bilineni
-kendi başına yeniden bulmaktır** (v1 "bilineni kurtar" disiplini, keşif
-düzeyinde).
+The spike showed that the non-commutative skeleton of the quaternion/Z algebra can be
+saturated in egglog. This stage turns the proposal into architecture: **hybrid engine** —
+egglog produces term-structure equivalence (equality saturation), SymPy/NumPy independently
+verifies each candidate. The engine's FIRST job is not to find something new but to
+**re-find the known on its own** (the v1 "recover the known" discipline, at the discovery
+level).
 
-## 2. Hedefler
+## 2. Goals
 
-1. `discovery/` paketi: terim dili, egglog aksiyom modeli, enumerasyon,
-   e-sınıf hasadı, SymPy yorumlayıcı + doğrulama boru hattı.
-2. Kabul (yeniden keşif): motor, atomlar {a,b} ve ops {mul, conj} üzerinde
-   şunları KENDİSİ bulmalı (düzeltme: R3 terimlerinin boyutları 8 ve 9 —
-   ilk taslaktaki "boyut 7" aritmetik hatasıydı; kabul saturasyonu boyut 9
-   enumerasyonu üzerinde koşar, hasat/CI ekonomisi için tam-boru-hattı testi
-   boyut 7'de kalır):
+1. `discovery/` package: term language, egglog axiom model, enumeration,
+   e-class harvesting, SymPy interpreter + verification pipeline.
+2. Acceptance (rediscovery): the engine, over atoms {a,b} and ops {mul, conj}, must find
+   the following ITSELF (correction: the sizes of the R3 terms are 8 and 9 — the "size 7"
+   in the first draft was an arithmetic error; the acceptance saturation runs over the size 9
+   enumeration, for harvest/CI economy the full-pipeline test stays at size 7):
    - R1: conj(conj(a)) ≡ a
-   - R2: a·conj(b) ≡ conj(b)·a  (I10 komütasyonu)
-   - R3: (a·b)·conj(a·b) ≡ (a·conj(a))·(b·conj(b))  (seri Mueller çarpımı, I10 sonucu)
-3. Negatif kontroller: a·b ≢ b·a ve conj(a)·conj(b) ≢ conj(b)·conj(a)
-   e-graph'ta AYRI kalmalı (saturasyon komütatiflik icat etmemeli).
-4. Üretilen HER aday çift SymPy sayısal yorumlamayla doğrulanmalı; doğrulama
-   oranı %100 olmalı (aksi motor hatası → aşama başarısız).
-5. `docs/VERIFICATION.md` (güven sözleşmesi) + ROADMAP frozen-N ilanı.
+   - R2: a·conj(b) ≡ conj(b)·a  (I10 commutation)
+   - R3: (a·b)·conj(a·b) ≡ (a·conj(a))·(b·conj(b))  (serial Mueller product, consequence of I10)
+3. Negative controls: a·b ≢ b·a and conj(a)·conj(b) ≢ conj(b)·conj(a) must stay SEPARATE
+   in the e-graph (saturation must not invent commutativity).
+4. EVERY generated candidate pair must be verified by numerical SymPy interpretation; the
+   verification rate must be 100% (otherwise engine error → stage fails).
+5. `docs/VERIFICATION.md` (trust contract) + ROADMAP frozen-N declaration.
 
-## 3. Mimari kararlar
+## 3. Architectural decisions
 
-- **M10. Hibrit sınır**: egglog yalnız YAPI (atomlar soyut, katsayı yok);
-  parametre düzeyi tamamen SymPy'da. egglog hiçbir zaman tek doğrulayıcı değil.
-- **M11. Ses (soundness) kuralları**: komütasyon SADECE atom düzeyinde
-  (a·conj(b) = conj(b)·a, a,b atom). Genel x·conj(y)=conj(y)·x KURAL DEĞİL —
-  conj-conj çiftleri komütatif olmadığından unsound olur; türetilebilenler
-  asosiyatiflik + atom kuralından saturasyonla çıkar. conj dağılımı sıra
-  KORUYARAK: conj(x·y) = conj(x)·conj(y) (elementwise eşlenik, transpoze değil).
-- **M12. Aday tanımı**: aynı e-sınıfta düşen, sözdizimsel olarak farklı terim
-  çiftleri; hasat `extract` gruplamasıyla (temsilci dizgisi anahtar).
-- **M13. egglog `[discovery]` extra'sı**: temel kurulum egglog'suz çalışır;
-  discovery testleri `pytest.importorskip` ile atlanır. CI discovery dahil kurar.
-- **M14. FROZEN-N = 22**: ROADMAP'teki 6 faz / 22 aşama bu aşamayla donar.
-  Değişiklik ancak kritik-karar notuyla kullanıcıya gider.
+- **M10. Hybrid boundary**: egglog is STRUCTURE only (atoms abstract, no coefficients); the
+  parameter level is entirely in SymPy. egglog is never the sole verifier.
+- **M11. Soundness rules**: commutation ONLY at the atom level
+  (a·conj(b) = conj(b)·a, a,b atoms). General x·conj(y)=conj(y)·x is NOT A RULE —
+  since conj-conj pairs are non-commutative it would be unsound; what is derivable follows
+  from associativity + the atom rule via saturation. conj distribution PRESERVING order:
+  conj(x·y) = conj(x)·conj(y) (element-wise conjugate, not transpose).
+- **M12. Candidate definition**: syntactically different term pairs that fall into the same
+  e-class; harvest by `extract` grouping (representative string as key).
+- **M13. egglog `[discovery]` extra**: the base setup works without egglog; discovery tests
+  are skipped with `pytest.importorskip`. CI installs including discovery.
+- **M14. FROZEN-N = 22**: the 6 phases / 22 stages in the ROADMAP freeze with this stage.
+  A change only goes to the user with a critical-decision note.
 
-## 4. Katı kurallar
+## 4. Strict rules
 
-- K9. Motor "keşfettim" diyemez → doğrulanmamış hiçbir çift raporlanamaz.
-- K10. Doğrulama başarısız aday = test hatası (sessiz eleme YASAK; unsound
-  aksiyom sinyalidir).
-- K11. Aşama 0-1 API'leri dokunulmaz.
-- K12. Enumerasyon deterministik (sıralı üretim, seed'li örnekleme yok).
+- K9. The engine cannot say "I discovered" → no unverified pair can be reported.
+- K10. A candidate that fails verification = test error (silent elimination FORBIDDEN; it is
+  the signal of an unsound axiom).
+- K11. Stage 0-1 APIs are immutable.
+- K12. Enumeration is deterministic (ordered generation, no seeded sampling).
 
-## 5. Teslim
+## 5. Deliverable
 
 ```
 src/organon_mueller/discovery/
-├── __init__.py          (egglog yokluğunda nazik ImportError)
-├── terms.py             (Atom/Mul/Conj, boyut, deterministik enumerasyon)
-├── axioms.py            (egglog modeli: ZTerm, kural seti — M11 sınırları)
-├── interpret.py         (terim → SymPy/NumPy Z-matris değeri; sayısal denklik)
-└── engine.py            (saturate → e-sınıf hasadı → doğrulama → DiscoveryResult)
-tests/test_discovery.py  (kabul R1-R3, negatif kontroller, %100 doğrulama)
+├── __init__.py          (graceful ImportError in the absence of egglog)
+├── terms.py             (Atom/Mul/Conj, size, deterministic enumeration)
+├── axioms.py            (egglog model: ZTerm, rule set — M11 boundaries)
+├── interpret.py         (term → SymPy/NumPy Z-matrix value; numerical equivalence)
+└── engine.py            (saturate → e-class harvest → verify → DiscoveryResult)
+tests/test_discovery.py  (acceptance R1-R3, negative controls, 100% verification)
 docs/VERIFICATION.md
-docs/ROADMAP.md          (frozen-22 ilanı)
+docs/ROADMAP.md          (frozen-22 declaration)
 specs/stage-02.md, reports/stage-02-REPORT.md
 pyproject.toml           ([discovery] extra; CI ".[test,discovery]")
 ```
 
-## 6. Doğrulama
+## 6. Verification
 
-- R1/R2/R3 e-graph `check` ile; negatif kontroller check-başarısızlığı ile.
-- Hasat edilen tüm çiftler: 3 bağımsız rastgele Z-ataması × sayısal karşılaştırma.
-- Tam suite yeşil (egglog'lu ve egglog'suz kurulumda).
-- Bağımsız denetçi (adversarial) PASS.
+- R1/R2/R3 via e-graph `check`; negative controls via check-failure.
+- All harvested pairs: 3 independent random Z-assignments × numerical comparison.
+- Full suite green (both with and without egglog installed).
+- Independent (adversarial) auditor PASS.
 
-## 7. Teslim formatı
+## 7. Delivery format
 
-PAT ile doğrudan `main`'e push (5cf0bb9 üstüne) + rapor + kullanıcıya kısa özet.
+Push directly to `main` with PAT (on top of 5cf0bb9) + report + short summary to the user.
 
-## 8. Özel uyarılar
+## 8. Special warnings
 
-1. (AB)* = A*B* — elementwise eşlenik SIRA KORUR; (AB)^T/† ile karıştırma.
-2. Atom-komütasyon kuralını x,y serbest değişkenli YAZMA (unsound, bkz. M11).
-3. extract temsilcisi deterministik olmayabilir — gruplamayı aynı EGraph
-   nesnesi içinde yap, oturumlar arası karşılaştırma yapma.
-4. Ölçülen maliyetler (bu ortam): boyut 7 → 570 terim; boyut 9 → 5698 terim,
-   saturasyon 0.15 sn, extract ~21 sn (darboğaz extract; check ucuz). Kabul
-   testleri check-tabanlı (boyut 9), hasat testi boyut 7.
+1. (AB)* = A*B* — the element-wise conjugate PRESERVES ORDER; do not confuse it with (AB)^T/†.
+2. Do NOT WRITE the atom-commutation rule with free variables x,y (unsound, see M11).
+3. The extract representative may not be deterministic — do the grouping within the same
+   EGraph object, do not compare across sessions.
+4. Measured costs (this environment): size 7 → 570 terms; size 9 → 5698 terms,
+   saturation 0.15 s, extract ~21 s (bottleneck is extract; check is cheap). Acceptance
+   tests are check-based (size 9), the harvest test is size 7.
 
-## 9. Kapsam dışı
+## 9. Out of scope
 
-- Skaler/karmaşık katsayılı terimler (Faz B'de, hibrit sınır korunarak)
-- Kanonik form extraction maliyet fonksiyonu ayarı
-- Yeni-aday literatür karşılaştırması (Aşama 6)
+- Scalar/complex-coefficient terms (in Phase B, preserving the hybrid boundary)
+- Canonical-form extraction cost function tuning
+- New-candidate literature comparison (Stage 6)
 - MCP/UI
 
-**DUR BURAYA**
+**STOP HERE**

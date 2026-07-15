@@ -1,85 +1,85 @@
-# AŞAMA 7 — Dil Genişletmesi: Sum + Scale — ve Faz B İterasyon Değerlendirmesi
+# STAGE 7 — Language Extension: Sum + Scale — and Phase B Iteration Evaluation
 
-**Tarih**: 2026-07-13 · **Önceki**: stage-06 (tarama #1, tamlık teoremi)
-**Mod**: otonom · **Girdi**: `docs/design-note-addition-scalars.md` (denetçi ses-onaylı)
+**Date**: 2026-07-13 · **Previous**: stage-06 (sweep #1, completeness theorem)
+**Mode**: autonomous · **Input**: `docs/design-note-addition-scalars.md` (auditor soundness-approved)
 
 ---
 
-## 1. Bağlam
+## 1. Context
 
-Mul/Conj fragmanı ispatlanabilir biçimde TAM (stage-06). Yeni matematik
-ihtimali ancak dil genişleyince doğar. Bu aşama tasarım notunu uygular ve
-FROZEN-22'nin A7'si (iterasyon değerlendirmesi) ile birleşik yürür
-(stage-06 raporu §5'te ilan edildi).
+The Mul/Conj fragment is provably COMPLETE (stage-06). New math
+possibility arises only once the language is extended. This stage implements the design note and
+runs jointly with A7 of FROZEN-22 (iteration evaluation)
+(announced in stage-06 report §5).
 
-## 2. Hedefler
+## 2. Goals
 
-1. **Terim dili**: `Sum(t,t)`, `Scale(c,t)`, `ScalarAtom(name)`,
-   `ScalarConj(c)` düğümleri; boyutlar (Sum/Scale +1; ScalarAtom 1;
-   ScalarConj +1); genişletilmiş conj-normal (Conj yalnız Atom'da,
-   ScalarConj yalnız ScalarAtom'da).
-2. **Aksiyomlar** (yalnız tasarım notundaki ses-onaylı tablo): Sum
-   komütatif+asosiyatif; Mul'un Sum üzerine iki yanlı dağılımı (çift yön);
-   Conj-Sum dağılımı; Conj-Scale eşlenik kuralı; Scale merkezîliği (iki yan);
-   iç içe Scale takası (skaler çarpım OLUŞTURMADAN — opaklık M10);
-   skaler-conj involüsyonu. Serbest-değişkenli YENİ komütasyon YOK.
-3. **Katmanlar**: interpret (skaler→rastgele karmaşık), symbolic
-   (skaler→bağımsız jenerik sembol, K17 genişler), fingerprint
-   **ölçek-göreli** (Frobenius normuna bölünmüş girdiler; ‖M‖≈0 → "ZERO"
-   özel anahtarı; oransal-farklı terimlerin çakışması BEKLENİR ve aşağı
-   katmanlar eler — M15 değişmez).
-4. **Enumerasyon** `enumerate_extended(atoms, scalars, max_size,
-   max_sums=1, max_scale_depth=1)` — patlama sınırları spec'li; K12
-   determinizm korunur. Eski `enumerate_terms` DEĞİŞMEZ (K11).
-5. **Kabul (tasarım notu §Kabul)**:
-   - A: I15 açılımı — (aZ_a+bZ_b)·conj(aZ_a+bZ_b) dört-terimli iç-içe-Scale
-     formuna İSPATLA eşit (provable) + sembolik-kesin + sayısal.
-   - B: I15 çapraz-terim gerçelliği — yapısal formda t ≡ conj(t) İSPATLI.
-   - C: Geri-kazanım kampanyası: I15 → translatable; sonuç kümesi
-     {I1, I10, I15} (M22 monotonluk); I16/I18 "interpreted_scalars" yeni
-     eksik-özellik anahtarına taşınır (opak skaler evrensel-nicelenmiş
-     özdeşlikler için DOĞRU; sabit-katsayılılar için yetersiz — dürüst ayrım).
-   - D: K11 (eski dil/API) korunur — eski enumerasyon sayıları sabit
-     (sentinel testli); recovery tablo testleri M22 gereği YÜKSELTİLİR
-     (kazanım seti büyür), bu K11 ihlali değildir.
-   - E: Mini-harvest (2 atom + 2 skaler, sınırlı boyut) uçtan uca koşar;
-     refuted=0; underivable çıkarsa novelty-protocol zinciri (İDDİA YOK).
-6. **Faz B iter retrospektifi** (rapor bölümü): A3-A7 dersleri, metrikler,
-   Faz C'ye devreden riskler.
+1. **Term language**: `Sum(t,t)`, `Scale(c,t)`, `ScalarAtom(name)`,
+   `ScalarConj(c)` nodes; sizes (Sum/Scale +1; ScalarAtom 1;
+   ScalarConj +1); extended conj-normal (Conj only on Atom,
+   ScalarConj only on ScalarAtom).
+2. **Axioms** (only the soundness-approved table in the design note): Sum
+   commutative+associative; two-sided distribution of Mul over Sum (both directions);
+   Conj-Sum distribution; Conj-Scale conjugate rule; Scale centrality (two sides);
+   nested Scale swap (WITHOUT FORMING a scalar product — opacity M10);
+   scalar-conj involution. NO NEW free-variable commutation.
+3. **Layers**: interpret (scalar→random complex), symbolic
+   (scalar→independent generic symbol, K17 extends), fingerprint
+   **scale-relative** (inputs divided by Frobenius norm; ‖M‖≈0 → "ZERO"
+   special key; collision of proportionally-different terms is EXPECTED and lower
+   layers filter it out — M15 unchanged).
+4. **Enumeration** `enumerate_extended(atoms, scalars, max_size,
+   max_sums=1, max_scale_depth=1)` — explosion limits spec'd; K12
+   determinism preserved. Old `enumerate_terms` UNCHANGED (K11).
+5. **Acceptance (design note §Acceptance)**:
+   - A: I15 expansion — (aZ_a+bZ_b)·conj(aZ_a+bZ_b) PROVABLY equal to the four-term nested-Scale
+     form (provable) + symbolic-exact + numeric.
+   - B: I15 cross-term reality — t ≡ conj(t) PROVEN in structural form.
+   - C: Recovery campaign: I15 → translatable; result set
+     {I1, I10, I15} (M22 monotonicity); I16/I18 moved to the new "interpreted_scalars"
+     missing-feature key (CORRECT for opaque scalar universally-quantified
+     identities; insufficient for fixed-coefficient ones — honest distinction).
+   - D: K11 (old language/API) preserved — old enumeration counts fixed
+     (sentinel tested); recovery table tests are RAISED per M22
+     (recovery set grows), this is not a K11 violation.
+   - E: Mini-harvest (2 atoms + 2 scalars, limited size) runs end-to-end;
+     refuted=0; if underivable appears, the novelty-protocol chain (NO CLAIM).
+6. **Phase B iter retrospective** (report section): A3-A7 lessons, metrics,
+   risks carried over to Phase C.
 
-## 3. Mimari kararlar
+## 3. Architectural decisions
 
-- **M26. Opak skaler semantiği = evrensel nicelenme** (denetçi düzeltmesiyle):
-  dildeki skalerli bir özdeşlik "TÜM karmaşık katsayılar için" okunur (I15 tam
-  bu). Sabit KATSAYI DEĞERLERİ (e^{iφ}, (1+i)/2) `interpreted_scalars` ister.
-  Amitsur-Levitzki için İNCE AYRIM (stage-7 denetçi bulgusu D1): ±1'li FORM
-  yorumlanan skaler ister, ama özdeşliğin KENDİSİ işaretsiz ifade edilebilir —
-  S₄=0 ⟺ (çift permütasyon toplamı) = (tek permütasyon toplamı), yalnız
-  Sum+Mul ile, 4 atom, boyut ~95. Yani AL-türü eksik-tamlık bu dilde
-  PRENSİPTE ifade edilebilir; mevcut enumerasyon sınırlarının (max_sums=1,
-  boyut ≤~11) ERİŞEMEYECEĞİ kadar büyük. Stage-06 beklentisi ifade-gücü
-  anlamında doğruydu; erişilebilirlik ayrı konu.
-- **M27. Tek kural seti**: Sum/Scale kuralları structural_rules'a eklenir;
-  eski terimler yeni kurallardan etkilenmez (tip bazlı eşleşme), motor tek
-  provable yolu korur (M18 yalıtım aynen).
+- **M26. Opaque scalar semantics = universal quantification** (with auditor correction):
+  an identity with a scalar in the language reads "for ALL complex coefficients" (I15 is exactly
+  this). Constant COEFFICIENT VALUES (e^{iφ}, (1+i)/2) require `interpreted_scalars`.
+  A FINE DISTINCTION for Amitsur-Levitzki (stage-7 auditor finding D1): the FORM with ±1
+  requires an interpreted scalar, but the identity ITSELF can be expressed sign-free —
+  S₄=0 ⟺ (sum of even permutations) = (sum of odd permutations), with only
+  Sum+Mul, 4 atoms, size ~95. So an AL-type incompleteness is IN PRINCIPLE expressible
+  in this language; it is just too large for the current enumeration limits (max_sums=1,
+  size ≤~11) to REACH. The stage-06 expectation was correct in terms of expressive
+  power; reachability is a separate matter.
+- **M27. Single rule set**: Sum/Scale rules are added to structural_rules;
+  old terms are unaffected by the new rules (type-based matching), the engine keeps a single
+  provable path (M18 isolation as-is).
 
-## 4. Katı kurallar
+## 4. Strict rules
 
-K23. Skaler aritmetik düğümü (c+d, c·d) e-graph'a GİRMEZ (M10).
-K24. Yeni kural eklemek = ses analizi + denetçi onayı (bu spec'teki tablo dışına çıkma).
-K25. Kampanya/harvest yeniden-üretim girdileri artefakt/rapora gömülür (K21 devam).
+K23. A scalar arithmetic node (c+d, c·d) does NOT ENTER the e-graph (M10).
+K24. Adding a new rule = soundness analysis + auditor approval (going outside the table in this spec).
+K25. Campaign/harvest reproduction inputs are embedded in the artifact/report (K21 continues).
 
-## 5-6. Teslim + Doğrulama
+## 5-6. Delivery + Verification
 
-terms/axioms/interpret/symbolic/fingerprint/engine/recovery güncellemeleri ·
-`tests/test_extended_language.py` · recovery testleri güncel · mini-harvest
-sonucu raporda · Faz B retrospektif bölümü · rapor. Suite: 84 eski + yeniler yeşil.
+terms/axioms/interpret/symbolic/fingerprint/engine/recovery updates ·
+`tests/test_extended_language.py` · recovery tests current · mini-harvest
+result in report · Phase B retrospective section · report. Suite: 84 old + new ones green.
 
 ## 7-9.
 
-Push + rapor + Aşama 8 (5 dk; Faz C: ayrışım türetici başlangıcı). Uyarılar:
-ölçek-göreli anahtarda -0.0 normalizasyonu KORUNUR; Scale'li çiftlerde
-sembolik sertifikasyon maliyeti ölçülür. Kapsam dışı: interpreted_scalars,
-Sum>1/derin Scale enumerasyonu, tarama #2 tam kampanyası, AL-türü arayış.
+Push + report + Stage 8 (5 min; Phase C: start of decomposition deriver). Warnings:
+-0.0 normalization in the scale-relative key is PRESERVED; symbolic certification cost
+is measured for Scale'd pairs. Out of scope: interpreted_scalars,
+Sum>1/deep Scale enumeration, full campaign of sweep #2, AL-type search.
 
-**DUR BURAYA**
+**STOP HERE**

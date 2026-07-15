@@ -1,77 +1,83 @@
-# Faz C Retrospektifi (A8–A11) — stage-11
+# Phase C Retrospective (A8–A11) — stage-11
 
-v1 iter geleneği; Faz B retrospektifi stage-07 raporundaydı, Faz C'ninki
-bağımsız doküman (ayrışım katmanı kalıcı bir alt-sistem haline geldi).
+v1 iter convention; the Phase B retrospective was in the stage-07 report, but
+Phase C's is a standalone document (the decomposition layer has become a
+permanent subsystem).
 
-## 1. Ne kuruldu
+## 1. What was built
 
-`decomposition/` paketi dört adımda: türetici (A8: Tablo 2, 6/6 sembolik
-birebir) → bileşik tipler (A9: Tablo 4, 3/3) → rank-3 (A10: makale-ötesi,
-M34 çerçevesi) → köprü + skorlar (A10-11). Yanında guarded-atoms ilk
-yarısı (A9) `underivable` kanalının ilk dolu çıktısını verdi.
+The `decomposition/` package in four steps: deriver (A8: Table 2, 6/6
+symbolic one-to-one) → composite types (A9: Table 4, 3/3) → rank-3
+(A10: beyond-the-paper, M34 framework) → bridge + scores (A10-11). Alongside
+it, the first half of guarded-atoms (A9) gave the first non-empty output of
+the `underivable` channel.
 
-## 2. Karar/kural tutarlılık taraması (M28–M34, K26–K32)
+## 2. Decision/rule consistency scan (M28–M34, K26–K32)
 
-- **M28 (denklemler türetilir, kopyalanmaz)** — üç aşamada da korundu;
-  rank-3'te anchor'ın kendisi yokken bile türetim disiplini değişmedi.
-- **M29 (baz ayrımı)** / **M30 (OCR güvenilmezliği — üst-çizgi kayıpları
-  çapa girişlerinde gerekçeyle belgelenir)** / **M31 (bileşik ayrı
-  modül)** / **M33 (tek yönlü katmanlama)** — dosya yapısı bu sınırlara
-  birebir uyuyor; rank3 yalnız solve'un PUBLIC decompose'unu çağırıyor;
-  M30 disiplini Tablo-2/4 çapa notlarında ve iki baskı-hatası teşhisinde
-  işledi.
-- **M32 (Horn hüküm formatı)** — dörtlü kanıt kaydı `GuardedFinding`'te;
-  guard'sız-yanlış kontrolü zorunlu ve test ediliyor.
-- **M34 (makale-çapası ikamesi)** — üç katman (probe'lu el türetimi +
-  türetici birebirliği + bağımsız denetçi türetimi) A10'da tam işledi;
-  denetçi beş formülü ve payda yorumlarını bağımsız doğruladı.
-- **K26 (sessiz yanlış yok)** — iz-1, sonluluk, payda, alan, PSD/rank-1,
-  tutarlılık (K32) guard'ları üç çözücüde; "yanlış SEBEPLE ret" bile
-  kusur sayıldı ve düzeltildi (merkez-only sınır ailesi).
-- **K28 çapa disiplini** — Tablo 2/4 çapaları elle girilip AYRI test
-  dosyalarında; rank-3'te bilinçli olarak K28 yerine M34.
-- **K27 (deterministik tohumlar)** — tüm sweep/kampanya/roundtrip
-  testleri sabit tohumlu (20260713, 424242; K32 ailesi 0); artefaktlar
-  tohumları taşıyor (K21 ile birlikte).
-- **K29/K31 (yapısal minor guard'ları)** — türetim zamanı fırlatır;
-  çözüm-sırası duyarlılığı (K31) rank-3'ün yeni katkısı.
-- **K30 (kısıt-inşayla, varsayım-enjeksiyonsuz)** — guarded üreteçler
-  parametrizasyonla kısıtlanıyor; sympy assumption enjeksiyonu yok;
-  sadakat meta-testi (stage-11) bunu yapısallaştırdı.
-- **K32 (fazladan-belirlenim zorunlu kontrol)** — denetçinin MAJOR'ı
-  üzerine kendi regresyon testine kavuştu (tüm-reel aile, tohum 0).
+- **M28 (equations are derived, not copied)** — preserved in all three
+  stages; even in rank-3, where the anchor itself is absent, the derivation
+  discipline did not change.
+- **M29 (basis separation)** / **M30 (OCR unreliability — overline losses
+  in anchor entries are documented with rationale)** / **M31 (composite is a
+  separate module)** / **M33 (one-way layering)** — the file structure
+  conforms exactly to these boundaries; rank3 only calls solve's PUBLIC
+  decompose; the M30 discipline operated in the Table-2/4 anchor notes and in
+  two typo diagnoses.
+- **M32 (Horn ruling format)** — the four-part evidence record is in
+  `GuardedFinding`; the guard-free-false control is mandatory and tested.
+- **M34 (paper-anchor substitution)** — the three layers (probe-backed hand
+  derivation + deriver one-to-one match + independent auditor derivation)
+  operated fully in A10; the auditor independently verified five formulas and
+  the denominator interpretations.
+- **K26 (no silent errors)** — trace-1, finiteness, denominator, domain,
+  PSD/rank-1, consistency (K32) guards in all three solvers; even "rejection
+  for the WRONG REASON" was counted as a defect and fixed (the center-only
+  boundary family).
+- **K28 anchor discipline** — Table 2/4 anchors entered by hand and in
+  SEPARATE test files; in rank-3, M34 was used deliberately instead of K28.
+- **K27 (deterministic seeds)** — all sweep/campaign/roundtrip tests are
+  fixed-seed (20260713, 424242; the K32 family is 0); artifacts carry the
+  seeds (together with K21).
+- **K29/K31 (structural minor guards)** — thrown at derivation time; the
+  solve-order sensitivity (K31) is rank-3's new contribution.
+- **K30 (by constraint-construction, no assumption-injection)** — guarded
+  generators are constrained by parametrization; there is no sympy assumption
+  injection; the fidelity meta-test (stage-11) structuralized this.
+- **K32 (over-determination mandatory check)** — the auditor's MAJOR got its
+  own regression test (the all-real family, seed 0).
 
-## 3. Teknik borç envanteri
+## 3. Technical debt inventory
 
-| Borç | Durum | Gerekçe/pencere |
+| Debt | Status | Rationale/window |
 |---|---|---|
-| rank-3 a/b minor varyantları (M33 notu) | ERTELENDİ | varyant paydaları yalnız ölçü-sıfır dejenerasyonlarda ayrışıyor (u₁=0 vs u₂=0); gürültülü gerçek veri bu noktalara oturmaz; deneysel veri geldiğinde açılır |
-| köprü v1 ön-sıralama | KAPANDI (stage-11) | `ProposeReport.scores`, payda-sağlığı skoru; yalnız sıralar |
-| guard-üreteç sadakati (tasarım-notu Y1) | YAPISALLAŞTI (stage-11) | GUARD_KEYS↔üreteç meta-testi; yeni anahtar üreteçsiz giremez |
-| interpreted_scalars payda yan-koşulları (Y2) | KOŞULLU BORÇ | özellik dilde yok (K19); dile girdiği aşamada zorunlu kabul maddesi |
-| guarded-atoms 2. yarı (unitary/hermitian kampanyaları) | AÇIK | Faz D-E arasına; şu an üreteç+sadakat testiyle sınırlı (dürüst kapsam) |
-| stage-10 denetçi önerileri | KAPANDI (stage-10) | primary="center" inşa, sonluluk, K32/u₀=u₃/çapraz-çift testleri, sıfır-matris guard'ı |
+| rank-3 a/b minor variants (M33 note) | DEFERRED | the variant denominators separate only in measure-zero degenerations (u₁=0 vs u₂=0); noisy real data does not settle on these points; opens up when experimental data arrives |
+| bridge v1 pre-ranking | CLOSED (stage-11) | `ProposeReport.scores`, denominator-health score; only ranks |
+| guard-generator fidelity (design-note O1) | STRUCTURALIZED (stage-11) | GUARD_KEYS↔generator meta-test; a new key cannot enter without a generator |
+| interpreted_scalars denominator side-conditions (O2) | CONDITIONAL DEBT | the feature is not in the language (K19); a mandatory acceptance item at the stage it enters the language |
+| guarded-atoms 2nd half (unitary/hermitian campaigns) | OPEN | between Phase D-E; currently limited to the generator+fidelity test (honest scope) |
+| stage-10 auditor suggestions | CLOSED (stage-10) | primary="center" construction, finiteness, K32/u₀=u₃/cross-pair tests, zero-matrix guard |
 
-## 4. Dersler
+## 4. Lessons
 
-1. **Probe-before-spec iki kez kazandırdı**: yanlış unitary hedefi (A9)
-   koda değmeden elendi; tip-3 kenar işaret hatası (A10) spec'e girmeden
-   yakalandı. Kural artık yürütme zincirinin parçası.
-2. **pytest'i pipe'lama kuralı bir kez ihlal edildi** (A10 içinde, tail
-   ile) — çıktı exit'i maskeledi; aynı turda fark edilip bare tekrar
-   koşuldu. Kural hatırlatıcısı proje dokümanında kalıyor.
-3. **"Negatif kontrol reddedilmeli" varsayımı yanlıştı**: rank-3'te
-   kabul edilen alternatif GEÇERLİ çıktı (teklik-dışılık). Doğru çerçeve
-   "kabul → doğrula": sweep artık kabul edilen alternatifleri ayrıca
-   doğruluyor. Ders: dürüstlük, reddetmekte değil doğrulamakta.
-4. **Denetçi katmanı teorem üretiyor**: reshuffle özdeşliği (A8), {2,3}
-   hipotez-içi teklik ispatı (A10) denetimden çıktı — katman 5 yalnız
-   hata bulmuyor, matematiği güçlendiriyor.
+1. **Probe-before-spec paid off twice**: a wrong unitary target (A9) was
+   eliminated before touching code; a type-3 edge sign error (A10) was caught
+   before entering the spec. The rule is now part of the execution chain.
+2. **The rule to not pipe pytest was violated once** (within A10, with tail) —
+   the output masked the exit; it was noticed in the same round and rerun
+   bare. The rule reminder stays in the project document.
+3. **The assumption "a negative control must be rejected" was wrong**: in
+   rank-3 the accepted alternative was a VALID output (non-uniqueness). The
+   correct framing is "accept → verify": the sweep now separately verifies the
+   accepted alternatives too. Lesson: honesty is in verifying, not in
+   rejecting.
+4. **The auditor layer produces theorems**: the reshuffle identity (A8), the
+   {2,3} within-hypothesis uniqueness proof (A10) came out of the audit —
+   layer 5 does not just find errors, it strengthens the mathematics.
 
-## 5. Faz D'ye devir
+## 5. Handoff to Phase D
 
-Coupled-dipole modülü (A12-15) için hazır zemin: HVector/kuaterniyon
-temsilleri, keşif motoru + guarded atoms (dimer simetrileri doğal guard
-adayları), ayrışım çözücüleri (dimer kovaryanslarının tip analizi),
-novelty protokolü. Kuntman paketi feedback'i Faz D iç sırasını
-değiştirebilir (FROZEN-22 gereği sayı/kapsam değişmez).
+Ready ground for the coupled-dipole module (A12-15): HVector/quaternion
+representations, discovery engine + guarded atoms (dimer symmetries are
+natural guard candidates), decomposition solvers (type analysis of dimer
+covariances), novelty protocol. Feedback from the Kuntman package may change
+Phase D's internal order (per FROZEN-22 the count/scope does not change).

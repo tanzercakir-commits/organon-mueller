@@ -1,52 +1,52 @@
-# AŞAMA 0 — RAPOR
+# STAGE 0 — REPORT
 
-**Tarih**: 2026-07-13
+**Date**: 2026-07-13
 **Spec**: `specs/stage-00.md`
-**Sonuç**: TAMAMLANDI — kabul ölçütü karşılandı (14/14 bilinen özdeşlik kurtarıldı, 36/36 test yeşil)
+**Result**: COMPLETED — acceptance criterion met (14/14 known identities recovered, 36/36 tests green)
 
 ---
 
-## 1. Teslim edilenler
+## 1. Deliverables
 
-- Repo iskeleti: `specs/`, `reports/`, `src/organon_mueller/`, `tests/`, `.github/workflows/ci.yml`, `pyproject.toml`, `.gitignore`, README.
-- **Temsil katmanı** (`algebra/`): altı izomorf temsil — Jones J, Mueller M, kovaryans matrisi H, kovaryans vektörü |h⟩=(τ,α,β,γ), Z matrisi, h bikuaterniyonu — ve tüm dönüşümler. Kaynak temsil |h⟩ (karar M1). Konvansiyonlar Kuntman-Arteaga makalelerine sabit (karar M5).
-- **Bikuaterniyon cebri** (`algebra/quaternion.py`): Hamilton çarpımı, iki eşlenik (bar ve †), 4×4 matris temsili (Z ile örtüşür — sembolik ispatlı homomorfizm).
-- **Bilinen-özdeşlik kütüphanesi** (`identities/known.py`): 14 özdeşlik, her biri kaynak + yan koşul (guard) + doğrulama modu metadata'sıyla. `verify_all()` tek çağrıda hepsini koşar.
-- **Yüklem katmanı tohumu** (`conditions.py`): `CONDITIONS` sözlüğü (nondepolarizing, det_nonzero, hermitian_state, unitary_state) — Horn-koşullu kural altyapısının (karar M3) ilk hali; identity kayıtlarındaki koşul anahtarları testle bu sözlüğe bağlandı.
-- **Doğrulama yardımcıları** (`verify.py`): sembolik (expand tabanlı, polinom özdeşlikler için kesin) + deterministik sayısal örneklem (seed=20260713, karar M2/K2).
-- **Literatür sabitleyicileri** (`tests/test_fixtures.py`): yatay/dikey polarizör, çeyrek dalga plakası, rotator durumu — elle türetilmiş beklenen Mueller girdileriyle sabitlenmiş dış çapa testleri.
+- Repo skeleton: `specs/`, `reports/`, `src/organon_mueller/`, `tests/`, `.github/workflows/ci.yml`, `pyproject.toml`, `.gitignore`, README.
+- **Representation layer** (`algebra/`): six isomorphic representations — Jones J, Mueller M, covariance matrix H, covariance vector |h⟩=(τ,α,β,γ), Z matrix, h biquaternion — and all conversions. Source representation |h⟩ (decision M1). Conventions fixed to the Kuntman-Arteaga papers (decision M5).
+- **Biquaternion algebra** (`algebra/quaternion.py`): Hamilton product, two conjugates (bar and †), 4×4 matrix representation (overlaps with Z — symbolically proven homomorphism).
+- **Known-identity library** (`identities/known.py`): 14 identities, each with source + side condition (guard) + verification mode metadata. `verify_all()` runs them all in a single call.
+- **Predicate layer seed** (`conditions.py`): `CONDITIONS` dictionary (nondepolarizing, det_nonzero, hermitian_state, unitary_state) — the first form of the Horn-conditioned rule infrastructure (decision M3); the condition keys in the identity records were bound to this dictionary by test.
+- **Verification helpers** (`verify.py`): symbolic (expand-based, exact for polynomial identities) + deterministic numerical sampling (seed=20260713, decision M2/K2).
+- **Literature anchors** (`tests/test_fixtures.py`): horizontal/vertical polarizer, quarter-wave plate, rotator state — external anchor tests fixed with hand-derived expected Mueller entries.
 
-## 2. Doğrulama sonuçları
+## 2. Verification results
 
-- `pytest`: **36/36 yeşil** (~15 sn). Spec §6 listesi I1–I14: **14/14 kurtarıldı** (I1–I5, I7, I8 sembolik-kesin; I6, I9, I11–I14 sayısal-deterministik; I10 sembolik+sayısal).
-- CI: GitHub Actions, Python 3.10/3.11/3.12 matrisi — ilk push'ta koşacak.
+- `pytest`: **36/36 green** (~15 s). Spec §6 list I1–I14: **14/14 recovered** (I1–I5, I7, I8 symbolic-exact; I6, I9, I11–I14 numeric-deterministic; I10 symbolic+numeric).
+- CI: GitHub Actions, Python 3.10/3.11/3.12 matrix — will run on first push.
 
-## 3. Bağımsız denetim (adversarial review)
+## 3. Independent audit (adversarial review)
 
-İmplementasyonu yazmayan denetçi ajan, 7 özdeşliği makale formüllerinden **bağımsız yollarla** yeniden hesaplayıp doğruladı (örn. M_ij = ½tr(σᵢJσⱼJ†) rotası, elle yazılmış kuaterniyon çarpımı, koherans-matrisi rotası ρ′=JρJ†). Verdict: **PASS**. Bulgular ve yapılanlar:
+An auditor agent that did not write the implementation recomputed and verified 7 identities via **independent routes** from the paper formulas (e.g. the M_ij = ½tr(σᵢJσⱼJ†) route, hand-written quaternion product, coherence-matrix route ρ′=JρJ†). Verdict: **PASS**. Findings and actions taken:
 
-| Bulgu | Aksiyon |
+| Finding | Action |
 |---|---|
-| `hvector_from_covariance` τ=0'da sessizce sıfır durum döndürüyor | ✅ ValueError guard eklendi + regresyon testi |
-| Rapor dosyası eksik | ✅ bu dosya |
-| Rota-rotaya testler korelasyonlu konvansiyon hatasını gizleyebilir | ✅ 4 literatür sabitleyici test eklendi |
-| `det_nonzero` koşul anahtarı yüklem karşılıksız | ✅ `has_nonzero_det_params` + `CONDITIONS` sözlüğü + doğrulayan test |
-| CI 3.10 tabanını test etmiyor | ✅ matrise 3.10 eklendi |
-| Girdi hijyeni (raw float/yanlış tip) | ✅ `__post_init__` sympify + `__mul__` NotImplemented |
-| I9'un matris ayağı yarı-totolojik (homomorfizmden zaten çıkıyor) | ℹ️ Not edildi; yük taşıyan ayak (kuaterniyon sandviç vs M|s⟩) bağımsız. Değişiklik gerekmedi |
+| `hvector_from_covariance` silently returns a zero state at τ=0 | ✅ ValueError guard added + regression test |
+| Report file missing | ✅ this file |
+| Route-to-route tests can hide a correlated convention error | ✅ 4 literature anchor tests added |
+| `det_nonzero` condition key has no corresponding predicate | ✅ `has_nonzero_det_params` + `CONDITIONS` dictionary + verifying test |
+| CI does not test the 3.10 baseline | ✅ 3.10 added to the matrix |
+| Input hygiene (raw float/wrong type) | ✅ `__post_init__` sympify + `__mul__` NotImplemented |
+| I9's matrix leg is semi-tautological (already follows from the homomorphism) | ℹ️ Noted; the load-bearing leg (quaternion sandwich vs M|s⟩) is independent. No change needed |
 
-## 4. Kararlar ve açık sorular
+## 4. Decisions and open questions
 
-1. **LICENSE**: bilinçli olarak eklenmedi — MIT/Apache seçimi kullanıcı kararı (repo private, aciliyet yok). → *Açık soru #1*
-2. **egglog**: bu aşamada yok (karar M6). Aşama 2 öncesi küçük bir spike (karmaşık-değerli, komütatif olmayan matris cebri egglog'da nasıl kodlanır) şart.
-3. **τ=0 simetri sınıfları** (yarım dalga plakası tipi durumlar): `hvector_from_covariance` kapsamı dışında bırakıldı, guard ile korunuyor. İleride Class-1 üreteçleriyle genelleştirilecek. → *Açık soru #2*
-4. Stokes örneklemleri cebirsel amaçla fiziksel-olmayan vektörler içeriyor (s₀² ≥ s₁²+s₂²+s₃² şartı aranmıyor) — özdeşlikler tüm ℝ⁴'te geçerli olduğundan bilinçli tercih.
+1. **LICENSE**: deliberately not added — the MIT/Apache choice is a user decision (repo private, no urgency). → *Open question #1*
+2. **egglog**: absent at this stage (decision M6). A small spike before Stage 2 (how to encode complex-valued, noncommutative matrix algebra in egglog) is essential.
+3. **τ=0 symmetry classes** (half-wave plate type states): left out of `hvector_from_covariance` scope, protected by a guard. To be generalized later with Class-1 generators. → *Open question #2*
+4. Stokes samples contain non-physical vectors for algebraic purposes (the s₀² ≥ s₁²+s₂²+s₃² condition is not required) — a deliberate choice, since the identities hold over all of ℝ⁴.
 
-## 5. Sıradaki aşama önerisi
+## 5. Next stage proposal
 
-**Aşama 1 — Özdeşlik kütüphanesi genişletme + serileştirme**: PRA 95,063819'daki koherent süperpozisyon özdeşlikleri (Z = aZ_a + bZ_b, koherans terimleri), Applied Optics 2016'nın Tip 1/2/3 simetri-kovaryans ilişkileri (Tablo 1) kütüphaneye eklenir; ifadelerin JSON/dize serileştirmesi (MCP-hazırlık, karar M4) yazılır. Paralelinde **egglog spike** (zaman kutulu, sonucu Aşama 2 spec'ini şekillendirir).
+**Stage 1 — Identity library expansion + serialization**: the coherent superposition identities from PRA 95,063819 (Z = aZ_a + bZ_b, coherence terms) and the Type 1/2/3 symmetry-covariance relations of Applied Optics 2016 (Table 1) are added to the library; JSON/string serialization of the expressions (MCP-preparation, decision M4) is written. In parallel, the **egglog spike** (time-boxed, its result shapes the Stage 2 spec).
 
-## 6. Önerilen commit
+## 6. Proposed commit
 
 ```
 git add -A

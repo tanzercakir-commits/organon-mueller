@@ -1,78 +1,78 @@
-# AŞAMA 7 — RAPOR (Dil Genişletmesi + Faz B İterasyon Değerlendirmesi)
+# STAGE 7 — REPORT (Language Extension + Phase B Iteration Assessment)
 
-**Tarih**: 2026-07-13 · **Spec**: `specs/stage-07.md` · **Mod**: otonom
-**Sonuç**: TAMAMLANDI — 92/92 test yeşil; **Sum+Scale dilde**; **I15 motor
-tarafından kazanıldı** (kampanya: {I1, I10, I15}); Faz B kapandı.
+**Date**: 2026-07-13 · **Spec**: `specs/stage-07.md` · **Mode**: autonomous
+**Result**: COMPLETED — 92/92 tests green; **Sum+Scale in the language**; **I15 won by
+the engine** (campaign: {I1, I10, I15}); Phase B closed.
 
 ---
 
-## 1. Dil genişletmesi (tasarım notu birebir + K24 onaylı bir ek)
+## 1. Language extension (design note verbatim + one K24-approved addition)
 
-- Yeni düğümler: `Sum`, `Scale`, `ScalarAtom`, `ScalarConj` — skalerler OPAK
-  (M10/K23: skaler aritmetik düğümü yok; skaler çarpımı iç-içe Scale kodlar).
-- Aksiyomlar: tasarım notundaki ses-onaylı tablo + denetim sonrası
-  denetçi-doğrulamalı **scale-over-sum** çifti (K24 süreciyle eklendi —
-  aksi halde Scale(c, Sum) şekilleri sahte-"underivable" üretirdi).
-- Katmanlar: sayısal/sembolik değerlendirme skalerli; K17 bağımsızlık
-  skalerlere genişledi; parmak izi **ölçek-göreli** (Frobenius-normalize;
-  sınır payı ölçüldü: 2.2e-7 ≫ 1e-12 titreme; ZERO anahtarı erişilmez).
-- Dürüst düğmeler: `max_sums>1` sessiz düşüş yerine NotImplementedError;
-  motor genişletilmiş modda conj_normal'ı gerçekte koştuğu gibi kaydeder.
+- New nodes: `Sum`, `Scale`, `ScalarAtom`, `ScalarConj` — scalars are OPAQUE
+  (M10/K23: no scalar-arithmetic node; scalar multiplication is encoded by nested Scale).
+- Axioms: the soundness-approved table in the design note + the post-audit
+  reviewer-verified **scale-over-sum** pair (added via the K24 process —
+  otherwise Scale(c, Sum) shapes would produce spurious "underivable" results).
+- Layers: numeric/symbolic evaluation with scalars; K17 independence
+  extended to scalars; fingerprint is **scale-relative** (Frobenius-normalized;
+  margin measured: 2.2e-7 ≫ 1e-12 jitter; ZERO key unreachable).
+- Honest knobs: `max_sums>1` now raises NotImplementedError instead of silently dropping;
+  the engine records conj_normal as it actually runs it in extended mode.
 
-## 2. Kabul sonuçları
+## 2. Acceptance results
 
-- **A (I15 açılımı)**: (pZ_a+qZ_b)·conj(·) ≡ dört-terimli iç-içe-Scale formu
-  — İSPATLI + sembolik-kesin + sayısal ✅
-- **B (çapraz-terim gerçelliği)**: t ≡ conj(t) İSPATLI — üstelik M26 gereği
-  TÜM karmaşık katsayılar için (makalenin Eq. (10) nicelenmesine birebir
-  sadık; denetçi sadakati paper-side yapıyla ayrıca doğruladı) ✅
-- **C (kampanya)**: recovered = {I1, I10, **I15**}; M22 tabanı yükseltildi;
-  I16/I18/I4/I11/I17 `interpreted_scalars` anahtarına taşındı ✅
-- **D (K11)**: eski dil/API dokunulmadı; enumerasyon sentinelleri sabit ✅
-- **E (mini-harvest, sweep-02 artefaktı)**: boyut-6: 340 terim → 202 verified;
-  boyut-7: 1036 → 722 verified; **0 refuted, 0 underivable, 0 demoted**;
-  16 parmak izi çakışması — denetçi hepsinin dürüst olduğunu doğruladı
-  (X vs X+X oransal ailesi; kayıp çift yok) ✅
+- **A (I15 expansion)**: (pZ_a+qZ_b)·conj(·) ≡ four-term nested-Scale form
+  — PROVEN + symbolic-exact + numeric ✅
+- **B (cross-term realness)**: t ≡ conj(t) PROVEN — and by M26 for
+  ALL complex coefficients (faithful verbatim to the paper's Eq. (10) quantification;
+  reviewer additionally verified fidelity against the paper-side structure) ✅
+- **C (campaign)**: recovered = {I1, I10, **I15**}; M22 basis raised;
+  I16/I18/I4/I11/I17 moved to the `interpreted_scalars` key ✅
+- **D (K11)**: old language/API untouched; enumeration sentinels stable ✅
+- **E (mini-harvest, sweep-02 artifact)**: dimension-6: 340 terms → 202 verified;
+  dimension-7: 1036 → 722 verified; **0 refuted, 0 underivable, 0 demoted**;
+  16 fingerprint collisions — reviewer verified all of them are honest
+  (X vs X+X proportional family; no lost pair) ✅
 
-## 3. Bağımsız denetim
+## 3. Independent audit
 
-Verdict: **PASS**. Denetçi: tüm yeni kuralları 200 çekilişle bağımsız
-doğruladı; aksiyom-etkileşim saldırıları (13 hedefli sahte çift + 394
-rastgele çapraz-kova çifti) hiçbir unsound birleşme bulamadı; sweep-02'yi
-alan-alan yeniden üretti. İki doküman kusuru düzeltildi:
+Verdict: **PASS**. Reviewer: independently verified all new rules with 200 draws;
+axiom-interaction attacks (13 targeted fake pairs + 394
+random cross-bucket pairs) found no unsound merges; reproduced sweep-02
+field-by-field. Two documentation defects were fixed:
 
-| Bulgu | Aksiyon |
+| Finding | Action |
 |---|---|
-| D1: M26'nın AL iddiası fazla-düzeltmeydi — AL-türü özdeşlikler İŞARETSİZ bölmeyle (çift-perm toplamı = tek-perm toplamı) bu dilde ifade EDİLEBİLİR (denetçi S₄'ü sayısal doğruladı); erişilemeyen şey enumerasyon | ✅ spec M26 ve extensions doc ince ayrımla yeniden yazıldı |
-| D2: extensions doc eski sözlükle çelişiyordu | ✅ dokuman yeni tabloyla yeniden yazıldı |
-| Scale-over-sum türetim boşluğu | ✅ kural K24 onayıyla eklendi + test |
-| Dürüst olmayan düğmeler (max_sums, conj_normal kaydı) | ✅ düzeltildi |
+| D1: M26's AL claim was over-correction — AL-type identities ARE expressible in this language via UNSIGNED partition (even-perm sum = odd-perm sum) (reviewer numerically verified S₄); what is unreachable is the enumeration | ✅ spec M26 and extensions doc rewritten with the fine distinction |
+| D2: extensions doc contradicted the old vocabulary | ✅ document rewritten with the new table |
+| Scale-over-sum derivation gap | ✅ rule added with K24 approval + test |
+| Dishonest knobs (max_sums, conj_normal recording) | ✅ fixed |
 
-## 4. FAZ B İTERASYON DEĞERLENDİRMESİ (A3–A7 retrospektifi, v1 iter geleneği)
+## 4. PHASE B ITERATION ASSESSMENT (A3–A7 retrospective, v1 iter tradition)
 
-**Sayılar**: 5 aşama; test 56→92; kütüphane 21 özdeşlik + motor-kazanımı 3;
-tarama artefaktları 2 (22.560 + 924 çift, tümü doğrulanmış, 0 çürütme);
-5 adversarial denetim, 5 PASS, ~15 uygulanmış denetçi önerisi.
+**Numbers**: 5 stages; tests 56→92; library 21 identities + 3 engine-wins;
+sweep artifacts 2 (22,560 + 924 pairs, all verified, 0 refutations);
+5 adversarial audits, 5 PASS, ~15 applied reviewer suggestions.
 
-**Ne iyi çalıştı**:
-1. **Katmanlı doğrulama mimarisi kendini iki kez kanıtladı**: egglog
-   büyük-graf patolojisini (A3) ve tüm küçük hataları o yakaladı; kullanıcı
-   direktifi ("tek sigorta testler") mimariyle örtüştü.
-2. **Denetçi ajanlar sadece hata bulmadı, matematik üretti**: fragman-tamlık
-   TEOREMİ (A6), dagger-ifade-edilemezlik ispatı (A5), AL ince ayrımı (A7).
-3. Negatif sonuç disiplini (M24): "boş kanal" gözlemleri teoremle taçlandı.
+**What worked well**:
+1. **The layered verification architecture proved itself twice**: egglog
+   caught the large-graph pathology (A3) and all the small bugs; the user
+   directive ("tests are the only fuse") aligned with the architecture.
+2. **Reviewer agents didn't just find bugs, they produced mathematics**: the fragment-completeness
+   THEOREM (A6), the dagger-inexpressibility proof (A5), the AL fine distinction (A7).
+3. Negative-result discipline (M24): "empty channel" observations crowned with a theorem.
 
-**Ne öğrenildi/düzeltildi**: boyut aritmetiği hatası (A2 spec), pytest exit-kod
-maskeleme (A6), fazla-düzeltme refleksi (A7 M26) — hepsi kayıtlı emsal.
+**What was learned/fixed**: dimension-arithmetic error (A2 spec), pytest exit-code
+masking (A6), over-correction reflex (A7 M26) — all recorded precedent.
 
-**Faz C'ye devreden**: `guarded_atoms` genişletmesi ayrışım türeticinin ön
-şartı (extensions doc önceliği); egglog probe her sürüm yükseltmede;
-underivable kanalı hâlâ hiç aday üretmedi — İLK adaylar muhtemelen Faz C'nin
-kısıtlı-atom sınıflarından gelecek.
+**Carried forward to Phase C**: the `guarded_atoms` extension is a precondition of the
+decomposition deriver (extensions doc priority); egglog probe at every version bump;
+the underivable channel has still produced no candidate — the FIRST candidates will
+probably come from Phase C's restricted-atom classes.
 
-## 5. Sıradaki aşama (otonom devam)
+## 5. Next stage (autonomous continuation)
 
-**Aşama 8 — Faz C başlangıcı: simetri-koşullu ayrışım türetici (AO2016
-otomasyonu)**: `guarded_atoms` tasarımı + Tip 1/2/3 ayrışım denklemlerinin
-(AO 55,2543 Tablo 2) sembolik türetilmesi — kütüphanedeki elle-türetilmiş
-tabloyu motorun kendisinin üretmesi hedefi.
+**Stage 8 — Phase C start: symmetry-conditional decomposition deriver (AO2016
+automation)**: `guarded_atoms` design + symbolic derivation of the Type 1/2/3
+decomposition equations (AO 55,2543 Table 2) — the goal being for the engine
+itself to produce the hand-derived table in the library.

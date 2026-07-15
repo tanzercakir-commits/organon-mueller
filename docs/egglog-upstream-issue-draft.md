@@ -1,8 +1,8 @@
 # DRAFT — egglog upstream issue (NOT SUBMITTED)
 
-> Durum: TASLAK. Gönderim kullanıcı onayına bağlı (karar M23).
-> Hedef repo: egglog-python (ya da yönlendirirlerse çekirdek egglog).
-> Gönderilirse: tarih/link buraya işlenecek.
+> Status: DRAFT. Submission depends on user approval (decision M23).
+> Target repo: egglog-python (or core egglog if they redirect us).
+> If submitted: date/link to be recorded here.
 
 ---
 

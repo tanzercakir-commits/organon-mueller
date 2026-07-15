@@ -58,7 +58,7 @@ pip install -e ".[test]"             # base (Python >= 3.10)
 pip install -e ".[test,discovery]"   # + discovery engine (egglog needs Python >= 3.11)
 pip install -e ".[test,discovery,mcp]"  # + MCP server surface
 
-python -m pytest -q                  # full suite: 286 tests collected (discovery self-skips on py3.10)
+python -m pytest -q                  # full suite: 287 tests collected (discovery self-skips on py3.10)
 ```
 
 ```python

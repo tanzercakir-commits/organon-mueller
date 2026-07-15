@@ -1,55 +1,55 @@
-# AŞAMA 18 — Opsiyonel Web UI (statik; HOST ETME YOK) (Faz E 3/4)
+# STAGE 18 — Optional Web UI (static; NO HOSTING) (Phase E 3/4)
 
-**Tarih**: 2026-07-14 · **Mod**: otonom · **Probe**: mekanizma yok; ortam
-probe'u (playwright + node mevcut → headless render smoke yapılır).
+**Date**: 2026-07-14 · **Mode**: autonomous · **Probe**: no mechanism; environment
+probe (playwright + node available → headless render smoke is done).
 
-## 1. Kapsam KARARI (gerekçeli)
+## 1. Scope DECISION (reasoned)
 
-**STATİK tek dosya `web/index.html`** — inline CSS+JS, CDN'siz, sunucu
-YOK, hosting YOK (A17 güvenlik çizgisinin devamı: sunucu yüzeyi = saldırı
-yüzeyi; statik dosyanın saldırı yüzeyi yok). Kullanıcı vizyonu ("son
-kullanıcı terminal kullanamaz") ile uyumlu: çift-tıkla tarayıcıda açılır.
+**STATIC single file `web/index.html`** — inline CSS+JS, no CDN, NO server,
+NO hosting (continuation of the A17 security line: server surface = attack
+surface; a static file has no attack surface). Consistent with the user's vision ("the end
+user cannot use a terminal"): opens in the browser with a double-click.
 
-**Hesap nerede**: numpy/sympy tarayıcıda yok. Seçenek (a) DÜRÜST KAPSAM
-seçildi (pyodide DEĞİL — ~10MB indirme + sympy build karmaşası; dürüst
-olmayan "tam tarayıcı motoru" izlenimi verir): sayfa bir **sonuç
-GÖRÜNTÜLEYİCİ** — kullanıcı MCP/CLI tool çıktısını (JSON) yapıştırır,
-sayfa güvenli biçimde tablolar/matrisler olarak render eder. Gömülü
-ÖRNEK JSON ile "Load example" düğmesi (indirmeden çalışır). Rapor
-üretecinin LaTeX çıktısını da (varsa) monospace blokta gösterir.
-Sınır dürüstçe yazılır: "hesap Python paketinde; bu sayfa sunumdur."
+**Where the computation lives**: numpy/sympy are not in the browser. Option (a) HONEST SCOPE
+was chosen (NOT pyodide — ~10MB download + sympy build complexity; it gives the dishonest
+impression of a "full browser engine"): the page is a **result
+VIEWER** — the user pastes the MCP/CLI tool output (JSON), and the
+page renders it safely as tables/matrices. A "Load example" button with embedded
+SAMPLE JSON (works without a download). It also shows the report
+generator's LaTeX output (if any) in a monospace block.
+The boundary is written honestly: "the computation is in the Python package; this page is presentation."
 
-## 2. Güvenlik (XSS — A17 ruhu)
+## 2. Security (XSS — A17 spirit)
 
-- Kullanıcı girdisi/JSON İÇERİĞİ yalnızca `textContent` ile basılır;
-  `innerHTML` HİÇBİR yerde kullanıcı verisiyle KULLANILMAZ (sabit iskelet
-  hariç). DOM `createElement`/`textContent` ile kurulur.
-- `JSON.parse` try/catch; hata mesajı textContent.
-- Sayısal alanlar `Number.isFinite` süzülür; beklenmeyen anahtarlar
-  sessiz atlanmaz, "unrecognized field" olarak GÖSTERİLİR (K21 ruhu).
+- User input/JSON CONTENT is printed only via `textContent`;
+  `innerHTML` is NEVER USED anywhere with user data (except the fixed skeleton).
+  The DOM is built with `createElement`/`textContent`.
+- `JSON.parse` try/catch; error message via textContent.
+- Numeric fields are filtered through `Number.isFinite`; unexpected keys
+  are not silently skipped, they are DISPLAYED as "unrecognized field" (K21 spirit).
 - `<meta http-equiv="Content-Security-Policy" content="default-src
   'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'">` —
-  ağ yok, yalnız inline; dış kaynak çekilemez.
-- Hiçbir `eval`/`Function`/`setTimeout(string)` yok.
+  no network, only inline; external resources cannot be fetched.
+- No `eval`/`Function`/`setTimeout(string)` at all.
 
 ## 3. Test (`tests/test_web_ui.py`)
 
-- Yapısal: dosya var; CSP meta; beklenen element id'leri (json girişi,
-  render hedefi, örnek düğmesi); `innerHTML` kullanıcı-veri deseni YOK
-  (kaynak taraması: `innerHTML =` yalnız sabit/temizlenmiş); `eval(`/
-  `Function(` yok.
-- Örnek JSON şema uyumu: gömülü örnek, MCP tool çıktı şemasıyla tutarlı
-  (tool'u çağırıp anahtar kümesini karşılaştır).
-- **Headless render smoke** (playwright mevcut): sayfayı aç, örnek yükle,
-  render hedefinde beklenen metin; **XSS payload testi**: JSON'a
-  `<img src=x onerror=alert(1)>` / `"</script>"` benzeri string koy →
-  DOM'da SCRIPT çalışmaz, metin olarak görünür (textContent kanıtı);
-  console'da hata/alert yok. (skipif playwright yoksa yapısal yeter.)
+- Structural: file exists; CSP meta; expected element ids (json input,
+  render target, example button); NO `innerHTML` user-data pattern
+  (source scan: `innerHTML =` only fixed/sanitized); no `eval(`/
+  `Function(`.
+- Sample JSON schema conformance: the embedded sample is consistent with the MCP tool output schema
+  (call the tool and compare the key set).
+- **Headless render smoke** (playwright available): open the page, load the example,
+  expected text in the render target; **XSS payload test**: put a string like
+  `<img src=x onerror=alert(1)>` / `"</script>"` into the JSON →
+  SCRIPT does not run in the DOM, it appears as text (textContent proof);
+  no error/alert in the console. (skipif no playwright, structural is enough.)
 
-## 4. Kabul
+## 4. Acceptance
 
-Statik dosya + CSP; XSS-güvenli render (headless payload testi script
-çalıştırmıyor); örnek JSON tool şemasıyla uyumlu; sınır-dürüstlük metni
-sayfada; 268 eski test yeşil; XSS-odaklı denetim PASS.
+Static file + CSP; XSS-safe render (the headless payload test does not run script);
+sample JSON consistent with the tool schema; boundary-honesty text on the
+page; 268 existing tests green; XSS-focused audit PASS.
 
-**DUR BURAYA**
+**STOP HERE**

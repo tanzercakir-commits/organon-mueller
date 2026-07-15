@@ -1,51 +1,51 @@
-# AŞAMA 16 — LaTeX Rapor Üreteci (FAZ E açılışı)
+# STAGE 16 — LaTeX Report Generator (PHASE E opening)
 
-**Tarih**: 2026-07-14 · **Mod**: otonom · **Probe notu**: yeni matematiksel
-mekanizma YOK → sayısal probe gerekmiyor; ortam probe'u yapıldı
-(pdflatex/latexmk/xelatex mevcut → PDF derleme testli, CI'da
-skipif-korumalı).
+**Date**: 2026-07-14 · **Mode**: autonomous · **Probe note**: NO new mathematical
+mechanism → no numeric probe needed; environment probe done
+(pdflatex/latexmk/xelatex available → PDF compilation tested, skipif-guarded
+in CI).
 
-## 1. Hedefler — `reporting/` modülü
+## 1. Goals — `reporting/` module
 
-1. **Kanıt-sınıfı etiketleri** (A15 dersi kurumsallaşıyor): her rapor
-   bloğu `evidence ∈ {symbolic-proof, numeric-deterministic, candidate}`
-   taşır; etiketler VERIFICATION.md katman 1/2/novelty-kanalına bağlanır;
-   şablon fiilleri etikete göre seçilir ("proven" yalnız symbolic-proof).
-2. **Blok üreteçleri** (M28 ruhu: sonuç nesnelerinden, elle metinden
-   değil): `decomposition_section` (DecompositionResult / CompositeResult
-   / Rank3Result — α'lar, bileşen matrisleri, guard bilgisi),
-   `propose_section` (skor-sıralı tablo + GEREKÇELİ retler — K21),
-   `guarded_finding_section` (M32 dörtlü kanıt tablosu + aday dili),
-   `dipole_section` (γ-haritası değerleri + ensemble istatistikleri).
-3. **Determinizm**: aynı girdi → bayt-bayt aynı LaTeX (test); \today ve
-   zaman damgası YASAK (tarih açık parametre); sayısal yuvarlama sabit
-   (6 hane); tohumlar/tekrar-üretim bilgisi her blokta (K21).
-4. **Güvenlik** (A17 MCP hazırlığı): üreteç YALNIZ kendi sonuç
-   nesnelerimizden LaTeX YAZAR — dış girdi sympify edilmez (STAGE-2 GATE
-   ile uyum); serbest metin (başlıklar, ret gerekçeleri) LaTeX-escape
-   edilir; pdflatex `-no-shell-escape` ile çağrılır.
-5. **PDF derleme**: `compile_pdf` (nonstopmode, no-shell-escape; hata
-   log kuyruğuyla fırlatır); test `skipif(pdflatex yok)` — CI'da dürüst
-   opsiyonellik.
-6. **İlk senaryo**: `build_kuntman_report()` — demo.main() sonuçlarını
-   rapora döker; `docs/kuntman-package/sample-report.tex` ÖRNEK çıktı
-   (gönderim değil); PDF derlenebilirliği testte.
-7. Şablonda fizik-yorumu İDDİASI yok; novelty adım-5 dipnotu sabit.
+1. **Evidence-class labels** (A15 lesson being institutionalized): each report
+   block carries `evidence ∈ {symbolic-proof, numeric-deterministic, candidate}`;
+   labels bind to the VERIFICATION.md layer 1/2/novelty-channel;
+   template verbs are chosen by label ("proven" only for symbolic-proof).
+2. **Block generators** (M28 spirit: from result objects, not from hand-written
+   text): `decomposition_section` (DecompositionResult / CompositeResult
+   / Rank3Result — the α's, component matrices, guard info),
+   `propose_section` (score-sorted table + REASONED rejections — K21),
+   `guarded_finding_section` (M32 four-fold evidence table + candidate language),
+   `dipole_section` (γ-map values + ensemble statistics).
+3. **Determinism**: same input → byte-for-byte same LaTeX (test); \today and
+   timestamp FORBIDDEN (date is an explicit parameter); numeric rounding fixed
+   (6 digits); seeds/reproduction info in every block (K21).
+4. **Security** (A17 MCP preparation): the generator writes LaTeX ONLY from our own
+   result objects — external input is not sympify'd (consistent with the STAGE-2 GATE);
+   free text (titles, rejection rationales) is LaTeX-escaped;
+   pdflatex is called with `-no-shell-escape`.
+5. **PDF compilation**: `compile_pdf` (nonstopmode, no-shell-escape; raises
+   with an error-log tail); test `skipif(no pdflatex)` — honest
+   optionality in CI.
+6. **First scenario**: `build_kuntman_report()` — dumps demo.main() results
+   into the report; `docs/kuntman-package/sample-report.tex` SAMPLE output
+   (not a submission); PDF compilability under test.
+7. No physics-interpretation CLAIM in the template; novelty step-5 footnote fixed.
 
-## 2. Guarded-atoms 2. yarı — kapsam KARARI (retrospektif borcu)
+## 2. Guarded-atoms 2nd half — scope DECISION (retrospective debt)
 
-**A20'ye ERTELENDİ.** Gerekçe: (i) Faz E'nin ihtiyacı novelty-kanal
-çıktılarının RAPORLANABİLMESİ — `guarded_finding_section` bunu bu aşamada
-teslim ediyor; (ii) unitary/hermitian kampanyaları yeni bilinen-gerçek
-üretir (mekanizma ispatı A9'da class2 düzlemleriyle tamamlandı) —
-konsolidasyon taramasının (A20) doğal parçası; (iii) araya sıkıştırmak
-Faz E'nin dış-yüzey güvenlik odağını (A17 GATE) sulandırır.
+**DEFERRED to A20.** Rationale: (i) Phase E's need is that novelty-channel
+outputs BE REPORTABLE — `guarded_finding_section` delivers this at this stage;
+(ii) unitary/hermitian campaigns produce new known-truths (the mechanism proof
+was completed in A9 with the class2 planes) — a natural part of the
+consolidation sweep (A20); (iii) squeezing it in
+dilutes Phase E's external-surface security focus (A17 GATE).
 
-## 3. Kabul
+## 3. Acceptance
 
-Determinizm testi (bayt-bayt); üç ayrışım tipi + propose + guarded +
-dipol blokları render; kanıt-etiket eşlemesi zorunlu (bilinmeyen etiket
-fırlatır); escape testi; \today/timestamp yasağı testi; Kuntman örnek
-raporu üretilir + pdflatex ile derlenir (skipif'li); 204 eski test yeşil.
+Determinism test (byte-for-byte); three decomposition types + propose + guarded +
+dipole blocks render; evidence-label mapping mandatory (unknown label
+raises); escape test; \today/timestamp prohibition test; Kuntman sample
+report is produced + compiled with pdflatex (skipif'd); 204 existing tests green.
 
-**DUR BURAYA**
+**STOP HERE**

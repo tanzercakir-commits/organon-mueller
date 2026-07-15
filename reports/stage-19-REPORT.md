@@ -1,54 +1,54 @@
-# AŞAMA 19 — RAPOR (Dokümantasyon — Faz E kapanışı)
+# STAGE 19 — REPORT (Documentation — Phase E closure)
 
-**Tarih**: 2026-07-14 · **Spec**: `specs/stage-19.md` · **Mod**: otonom
-**Sonuç**: TAMAMLANDI — 286/286 test yeşil; **FAZ E KAPANDI (A16-A19)**;
-README + mimari + kullanıcı kılavuzu repo gerçeğine karşı fact-check'li.
+**Date**: 2026-07-14 · **Spec**: `specs/stage-19.md` · **Mode**: autonomous
+**Result**: COMPLETED — 286/286 tests green; **PHASE E CLOSED (A16-A19)**;
+README + architecture + user guide fact-checked against repo reality.
 
-## 1. Teslim edilenler
+## 1. Deliverables
 
-- **README.md** baştan yazıldı (eski "Stage 2" durumu bayattı): deneysel
-  yazılım etiketi; doğrulanmış/aday ayrımı; LİSANS-yok notu (kullanıcı
-  kararı, açık); üç yüzey (paket/MCP/web — hiçbiri host edilmiyor);
-  çalışan hızlı-başlangıç; doğrulama sözleşmesi özeti + linkler;
-  altı kaynak makale.
-- **docs/architecture.md**: ASCII katman diyagramı; her katmanın
-  sorumluluğu + tek-yönlü bağımlılık yönleri; M-serisi (M7-M37) ve
-  K-serisi (K9-K33) yük-taşıyan karar indeks tablosu; güvenlik sınırı.
-- **docs/user-guide.md**: "hangi soru → hangi araç" tablosu; üç yüzeyin
-  kullanımı; kanıt etiketlerinin okunuşu; rank-3 teklik-dışılık uyarısı.
-- **docs/ROADMAP.md**: A0-A19 durum işaretleri (✅ + kısa deliverable);
-  A18 "hosted → statik, hosting'siz" kapsam-değişikliği notu (FROZEN-22
-  sayısı değişmedi, kapsam güvenlik gerekçesiyle revize).
-- **tests/test_docs.py** (yeni, 10 test): göreli link çözünürlüğü; README
-  Python snippet import + sembol varlığı; belirtilen test sayısı = gerçek
-  toplama (drift guard); 21-özdeşlik iddiası; MCP komutu gerçek; bayat
-  "Stage 2" yok; pyproject extra tutarlılığı.
+- **README.md** rewritten from scratch (the old "Stage 2" status was stale): experimental
+  software label; verified/candidate distinction; NO-LICENSE note (user
+  decision, explicit); three surfaces (package/MCP/web — none hosted);
+  working quick-start; verification contract summary + links;
+  six source papers.
+- **docs/architecture.md**: ASCII layer diagram; each layer's
+  responsibility + one-way dependency directions; the load-bearing decision index table for the
+  M-series (M7-M37) and K-series (K9-K33); the security boundary.
+- **docs/user-guide.md**: "which question → which tool" table; usage of the three surfaces;
+  reading of the evidence labels; rank-3 non-uniqueness warning.
+- **docs/ROADMAP.md**: A0-A19 status markers (✅ + short deliverable);
+  A18 "hosted → static, hosting-free" scope-change note (the FROZEN-22
+  count did not change, the scope was revised for security reasons).
+- **tests/test_docs.py** (new, 10 tests): relative link resolution; README
+  Python snippet import + symbol existence; the stated test count = real
+  total (drift guard); 21-identity claim; MCP command real; no stale
+  "Stage 2"; pyproject extra consistency.
 
-## 2. Bağımsız denetim (fact-check)
+## 2. Independent audit (fact-check)
 
-Verdict: **PASS** (2 LOW — giderildi). 16 yük-taşıyan iddia repo
-gerçeğine (ve komut çalıştırmasına) karşı doğrulandı: 286 test toplama,
-pyproject extra'ları, MCP entry-point, demo çalışması, README snippet'leri,
-21 özdeşlik, altı temsil, M30×8, M35 tek-köprü (dipoles yalnız
-algebra.HVector import ediyor — grep'le teyit), safe_parse GATE, lisans-yok
-(LICENSE dosyası YOK — teyit), host-yok (CSP + otomatik-başlatma yok).
-LOW'lar: test_docs docstring'inde bayat "276" (→ sayı-agnostik); README
-test-sayısı nüansı ("collected; py3.10'da discovery self-skip"). A15
-fiil-disiplini dış yüze uygulandı: "proven" yalnız symbolic-proof
-etiketinde.
+Verdict: **PASS** (2 LOW — resolved). 16 load-bearing claims verified against repo
+reality (and command execution): 286 test total,
+pyproject extras, MCP entry-point, demo run, README snippets,
+21 identities, six representations, M30×8, M35 single-bridge (dipoles imports only
+algebra.HVector — confirmed with grep), safe_parse GATE, no-license
+(NO LICENSE file — confirmed), no-host (CSP + no auto-start).
+The LOWs: stale "276" in the test_docs docstring (→ count-agnostic); README
+test-count nuance ("collected; discovery self-skips on py3.10"). The A15
+verb-discipline was applied to the external surface: "proven" only on the symbolic-proof
+label.
 
-## 3. Faz E bilançosu (A16-A19)
+## 3. Phase E balance sheet (A16-A19)
 
-LaTeX rapor üreteci (kanıt-etiketli, deterministik) → MCP server + GATE
-sertleştirmesi (5-tur güvenlik denetimi) → statik web UI (XSS-güvenli,
-hosting'siz) → dokümantasyon. Üç kullanım yüzeyi hazır; hiçbiri host
-edilmedi (kullanıcı kararı). Kullanıcının "son kullanıcı terminal
-kullanamaz" vizyonu: rapor + web + MCP ile karşılandı.
+LaTeX report generator (evidence-labeled, deterministic) → MCP server + GATE
+hardening (5-round security audit) → static web UI (XSS-safe,
+hosting-free) → documentation. Three usage surfaces ready; none hosted
+(user decision). The user's "the end user cannot use a terminal"
+vision: met with report + web + MCP.
 
-## 4. Sıradaki aşama (otonom devam — FAZ F AÇILIŞI)
+## 4. Next stage (autonomous continuation — PHASE F OPENING)
 
-**Aşama 20 — Konsolidasyon**: guarded-atoms 2. yarı borcu (unitary/
-hermitian kampanyaları) değerlendir+uygula; tüm keşif kanallarının
-(verified/refuted/underivable) durum konsolidasyonu; genel tutarlılık
-taraması; yayın-aday sonuçların (rank-3 teklik-dışılık, guarded
-özdeşlikler) tek yerde toplanması (novelty protokolü adım 5 insanda).
+**Stage 20 — Consolidation**: evaluate+apply the guarded-atoms 2nd-half debt (unitary/
+hermitian campaigns); status consolidation of all discovery channels
+(verified/refuted/underivable); general consistency
+sweep; gathering the publication-candidate results (rank-3 non-uniqueness, guarded
+identities) in one place (novelty protocol step 5 with the human).

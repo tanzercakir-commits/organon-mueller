@@ -94,3 +94,44 @@ def test_guarded_atom_is_atom_but_distinct():
     assert isinstance(guarded, Atom)
     assert guarded != plain  # dataclass eq is class-aware
     assert guarded.render() == "a{class2_ta}"
+
+# -- stage-20: closure of the hermitian/unitary second half (negative) --------
+
+def test_no_reachable_horn_identity_in_hermitian_unitary():
+    """Stage-20 closure: the hermitian_state / unitary_state guarded
+    classes yield NO enumeration-reachable Horn-conditional identity
+    (dagger properties are inexpressible in the elementwise-conj term
+    language — stage-7). Locks the negative result: a future change that
+    'discovers' one here signals an unsound generator or a language
+    extension reaching dagger, and must be reviewed."""
+    from organon_mueller.discovery.symbolic import evaluate_symbolic
+    from organon_mueller.discovery.terms import Conj, Mul
+    from organon_mueller.verify import symbolic_equal
+
+    a, b = Atom("a"), Atom("b")
+    ca, cb = Conj(a), Conj(b)
+    terms = [a, b, ca, cb, Mul(a, b), Mul(b, a), Mul(a, ca), Mul(ca, a),
+             Mul(a, cb), Mul(b, ca), Mul(ca, cb), Mul(cb, ca),
+             Mul(Mul(a, b), a), Mul(a, Mul(b, a))]
+
+    def sym_eq(t1, t2, guards):
+        A = {n: guarded_symbolic_hvector(n, g).to_z() for n, g in guards.items()} \
+            if guards else {"a": sp.sympify(0)}
+        return symbolic_equal(evaluate_symbolic(t1, A), evaluate_symbolic(t2, A))
+
+    def unguarded_eq(t1, t2):
+        from organon_mueller.algebra.states import HVector
+        A = {"a": HVector.generic("a").to_z(), "b": HVector.generic("b").to_z()}
+        return symbolic_equal(evaluate_symbolic(t1, A), evaluate_symbolic(t2, A))
+
+    for guard in ("hermitian_state", "unitary_state"):
+        g = {"a": guard, "b": guard}
+        for i in range(len(terms)):
+            for j in range(i + 1, len(terms)):
+                if unguarded_eq(terms[i], terms[j]):
+                    continue  # unconditional identity, not a guarded finding
+                # a genuine guarded-only identity would be guard-true here;
+                # assert there is NONE
+                assert not sym_eq(terms[i], terms[j], g), (
+                    f"unexpected guarded-only identity in {guard}: "
+                    f"{terms[i].render()} == {terms[j].render()}")

@@ -1,27 +1,28 @@
-# Terim Dili Genişletme Gereksinimleri (Aşama 5 çıktısı; Aşama 7'de güncellendi)
+# Term-Language Extension Requirements (Stage 5 output; updated at Stage 7)
 
-Durum (Aşama 7 sonrası): kütüphanenin 21 özdeşliğinden **3'ü tam kazanıldı**
-(I1, I10, **I15** — Sum/Scale genişletmesiyle), **2'si yapısal** (I7, I8 —
-dilin semantiğinde gömülü), **16'sı** dil dışında. ~~`addition` ve opak
-`scalars`~~ **TESLİM EDİLDİ** (Aşama 7): terim toplamı + evrensel-nicelenmiş
-katsayılar (M26) dilde; parmak izi ölçek-göreli anahtara geçti.
+Status (after Stage 7): of the library's 21 identities, **3 are fully
+recovered** (I1, I10, **I15** — via the Sum/Scale extension), **2 are
+structural** (I7, I8 — embedded in the semantics of the language), **16** are
+outside the language. ~~`addition` and opaque `scalars`~~ **DELIVERED**
+(Stage 7): term summation + universally-quantified coefficients (M26) are in
+the language; the fingerprint switched to a scale-relative key.
 
-Satır semantiği: her satır, o özelliği `missing` listesinde **anan**
-RECOVERY_TABLE kayıtlarının birleşimidir.
+Row semantics: each row is the union of the RECOVERY_TABLE records that
+**mention** that feature in their `missing` list.
 
-| Öncelik | Özellik | Kilitlediği özdeşlikler | Not |
+| Priority | Feature | Identities it locks | Note |
 |---|---|---|---|
-| 1 | `interpreted_scalars` (yorumlanan/sabit skaler aritmetiği) | I4, I11, I16, I17, I18 | e^{iφ}, (1+i)/2, 1/det, trig, reel ağırlıklar — SABİT katsayı değerleri. M26 ince ayrımı (stage-7 denetçi bulgusu): tam-sayı-katsayılı özdeşlikler (Amitsur-Levitzki türü) işaretsiz bölmeyle ZATEN ifade edilebilir; bu anahtar değer-düzeyi aritmetik için. |
-| 2 | `guarded_atoms` (koşullu atom sınıfları) | I4, I12, I13, I19, I20, I21 | Horn-koşul altyapısına (CONDITIONS) doğal bağlanır: "hermitsel atom", "üniter atom", "(τ,α,0,0) atomu". Faz C ayrışım türetici bunu isteyecek. |
-| 3 | `dagger` + `stokes_sort` | I9, I13, I14 | Z^† ayrı unary op; Stokes ayrı sort. S′=ZSZ† ailesi ve H=\|h⟩⟨h\| için. (Denetçi ispatı: dagger mevcut dilde İFADE EDİLEMEZ — derece argümanı.) |
-| 4 | `entry_level` (girdi/iz/det ifadeleri) | I3, I5, I6, I12, I13, I14, I17, I19, I20, I21 | Muhtemelen e-graph'a HİÇ girmez; SymPy-tarafı doğrulama/rapor katmanında kalır (keşif = terim düzeyi, betimleme = girdi düzeyi). |
-| 5 | `constants` (A, R(θ), özel durumlar) | I2, I11, I18 | Ancak guarded_atoms + interpreted_scalars sonrası anlamlı. |
+| 1 | `interpreted_scalars` (interpreted/constant scalar arithmetic) | I4, I11, I16, I17, I18 | e^{iφ}, (1+i)/2, 1/det, trig, real weights — CONSTANT coefficient values. M26 fine distinction (stage-7 auditor finding): integer-coefficient identities (Amitsur-Levitzki type) can ALREADY be expressed with unsigned division; this key is for value-level arithmetic. |
+| 2 | `guarded_atoms` (conditional atom classes) | I4, I12, I13, I19, I20, I21 | Binds naturally to the Horn-condition infrastructure (CONDITIONS): "Hermitian atom", "unitary atom", "(τ,α,0,0) atom". The Phase C decomposition deriver will request this. |
+| 3 | `dagger` + `stokes_sort` | I9, I13, I14 | Z^† a separate unary op; Stokes a separate sort. For the S′=ZSZ† family and H=\|h⟩⟨h\|. (Auditor proof: dagger CANNOT BE EXPRESSED in the current language — degree argument.) |
+| 4 | `entry_level` (entry/trace/det expressions) | I3, I5, I6, I12, I13, I14, I17, I19, I20, I21 | Probably NEVER enters the e-graph; stays in the SymPy-side verification/report layer (discovery = term level, description = entry level). |
+| 5 | `constants` (A, R(θ), special cases) | I2, I11, I18 | Only meaningful after guarded_atoms + interpreted_scalars. |
 
-Önerilen sıra: **2** (Faz C girişiyle birlikte — ayrışım türetici koşullu
-sınıflar istiyor), sonra ihtiyaca göre 1/3-5. M22 gereği her genişleme
-sonrası kampanya yeniden koşulur ve kazanım sayısı yalnız artabilir.
+Recommended order: **2** (together with the Phase C entry — the decomposition
+deriver wants conditional classes), then 1/3-5 as needed. Per M22, after every
+extension the campaign is re-run and the recovery count can only increase.
 
-Bilinen erişilebilirlik notu: AL-türü toplam-özdeşlikleri (S₄=0'ın işaretsiz
-bölünmüş formu ~boyut 95, 4 atom) ifade edilebilir ama mevcut enumerasyon
-sınırlarının (max_sums=1, boyut ≤~11) çok ötesinde — hedefli (enumerasyonsuz)
-doğrulama her zaman mümkün: üç katman doğrudan çift üzerinde çalışır.
+Known reachability note: AL-type sum-identities (the unsigned divided form of
+S₄=0, ~size 95, 4 atoms) are expressible but far beyond the current enumeration
+limits (max_sums=1, size ≤~11) — targeted (enumeration-free) verification is
+always possible: the three layers operate directly on the pair.

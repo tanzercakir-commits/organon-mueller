@@ -1,49 +1,52 @@
-# egglog 13.2.0 Büyük-Graf Patolojisi (Aşama 3 bulgusu)
+# egglog 13.2.0 Large-Graph Pathology (Stage 3 finding)
 
-**Tarih**: 2026-07-13 · **egglog-python**: 13.2.0 · **Durum**: motor v1.1 ile
-etrafından dolaşıldı (karar M18); kök neden üstümüzde (kütüphane) — izlenecek.
+**Date**: 2026-07-13 · **egglog-python**: 13.2.0 · **Status**: worked around
+with engine v1.1 (decision M18); root cause is not ours (library) — to be tracked.
 
-## Gözlem
+## Observation
 
-Tam enumerasyonun (conj-normal, boyut 9, 1476 terim) TEK paylaşılan e-graph'ta
-sature edilmesi tutarsız sonuçlar verdi:
+Saturating the full enumeration (conj-normal, size 9, 1476 terms) in a SINGLE
+shared e-graph produced inconsistent results:
 
-1. `b·(a·conj(a)) == b·(conj(a)·a)` — yalıtılmış iki-terimli grafta İSPATLANIR
-   (asosiyatiflik + atom komütasyonu); 1476-terimli grafta `check` BAŞARISIZ,
-   ek 30 iterasyon da düzeltmiyor. Çocuk sınıflar (a·conj(a) ≡ conj(a)·a)
-   birleşikken ebeveynler ayrı kalıyor — kongruans kapanışına aykırı görünüm.
-2. Daha vahimi: `extract(b·(conj(a)·a))` sonucu **b içermeyen** bir temsilci
-   (`a·(a·conj(a·a))`) — farklı atom-çokkümesinden bir sınıf. Aksiyomların
-   hiçbiri atom çokkümesini değiştiremeyeceğinden bu ya hatalı bir birleşme
-   ya da taze-düğüm ekleme/kanonikleştirme hatası.
-3. Aynı çiftler 5698-terimli BUDANMAMIŞ grafta doğru çıkabiliyor — davranış
-   kayıt kümesine duyarlı, deterministik olarak yeniden üretilebilir
-   (`spikes/egglog_pathology_probe.py`).
+1. `b·(a·conj(a)) == b·(conj(a)·a)` — PROVEN in an isolated two-term graph
+   (associativity + atom commutation); in the 1476-term graph the `check`
+   FAILS, and 30 extra iterations do not fix it. The child classes
+   (a·conj(a) ≡ conj(a)·a) are merged while the parents stay separate — an
+   appearance contrary to congruence closure.
+2. Worse: `extract(b·(conj(a)·a))` yields a representative that **does not
+   contain b** (`a·(a·conj(a·a))`) — a class from a different atom multiset.
+   Since none of the axioms can change the atom multiset, this is either an
+   incorrect merge or a fresh-node insertion/canonicalization error.
+3. The same pairs can come out correct in the 5698-term UNPRUNED graph — the
+   behavior is sensitive to the registration set and deterministically
+   reproducible (`spikes/egglog_pathology_probe.py`).
 
-## Etki ve savunma
+## Impact and defense
 
-- Motor hiçbir zaman e-graph'a tek başına güvenmiyordu (karar M10); nihai söz
-  bağımsız çok-tohumlu sayısal doğrulamada. Patoloji tam da bu katman
-  sayesinde yakalandı: sahte "underivable" çiftler sayısal olarak doğru ama
-  ispatsız görününce alarm verdi.
-- **v1.1 (karar M18)**: paylaşılan büyük graf kaldırıldı; her aday çift kendi
-  taze iki-terimli e-graph'ında ispatlanıyor. Yalıtılmış modda tüm problarda
-  tutarlı davranış; 9/9 takılan çift ispatlandı.
+- The engine never trusted the e-graph on its own (decision M10); the final
+  word is in independent multi-seed numeric verification. The pathology was
+  caught precisely thanks to this layer: the spurious "underivable" pairs
+  raised an alarm when they appeared numerically correct but unproven.
+- **v1.1 (decision M18)**: the shared large graph was removed; each candidate
+  pair is proven in its own fresh two-term e-graph. In isolated mode the
+  behavior is consistent across all probes; 9/9 stuck pairs were proven.
 
-## Elenen hipotezler (2026-07-13, kullanıcı sorusu üzerine)
+## Eliminated hypotheses (2026-07-13, on the user's question)
 
-- **Bellek yönetimi**: hayır — graflar küçük (≈10³ düğüm), hata deterministik
-  ve içerik-bağımlı; daha büyük (5698) graf doğruyken daha küçüğü (1476)
-  hatalı — bellek baskısı deseniyle uyumsuz.
-- **`seminaive` bayrağı**: hayır — `EGraph(seminaive=False)` ile de aynı
-  davranış (her iki ayarda test edildi). API'de başka ilgili konfigürasyon
-  yüzeyi görünmüyor (`RunConfig` iterasyon/scheduler düzeyi; ek iterasyonlar
-  zaten denendi).
+- **Memory management**: no — the graphs are small (≈10³ nodes), the error is
+  deterministic and content-dependent; the larger (5698) graph is correct
+  while the smaller one (1476) is faulty — inconsistent with a memory-pressure
+  pattern.
+- **The `seminaive` flag**: no — the same behavior occurs with
+  `EGraph(seminaive=False)` too (tested in both settings). No other relevant
+  configuration surface is visible in the API (`RunConfig` is at the
+  iteration/scheduler level; extra iterations were already tried).
 
-## Açık iş
+## Open work
 
-- Upstream'e bildirim — karar GÜNCEL (13 Tem, öğleden sonra): kullanıcı
-  "belki yazarız" dedi; **taslak hazır**: `egglog-upstream-issue-draft.md`
-  (tek kural + 29 terimlik 1-minimal repro, delta-debug ile küçültüldü).
-  GÖNDERİM hâlâ kullanıcı onayına bağlı (M23, kritik-karar: dış temas).
-- egglog sürüm yükseltmelerinde probe script yeniden koşulmalı.
+- Reporting upstream — the decision is CURRENT (Jul 13, afternoon): the user
+  said "maybe we'll write it up"; **draft ready**: `egglog-upstream-issue-draft.md`
+  (single rule + a 1-minimal repro of 29 terms, reduced with delta-debug).
+  SUBMISSION still depends on user approval (M23, critical-decision: external
+  contact).
+- On egglog version upgrades, the probe script must be rerun.

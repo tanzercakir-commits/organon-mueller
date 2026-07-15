@@ -1,70 +1,70 @@
-# AŞAMA 2 — RAPOR
+# STAGE 2 — REPORT
 
-**Tarih**: 2026-07-13
+**Date**: 2026-07-13
 **Spec**: `specs/stage-02.md`
-**Sonuç**: TAMAMLANDI — 56/56 test yeşil; motor bilinen yapıyı kendi başına
-yeniden keşfetti; hasat edilen adayların %100'ü bağımsız doğrulamadan geçti;
-**FROZEN-22 ilan edildi**.
-**Mod**: Bu aşamadan itibaren otonom yürütme (kullanıcı mandası 2026-07-13);
-güven çıpası `docs/VERIFICATION.md`.
+**Result**: COMPLETED — 56/56 tests green; the engine rediscovered known structure on its
+own; 100% of the harvested candidates passed independent verification;
+**FROZEN-22 declared**.
+**Mode**: Autonomous execution from this stage on (user mandate 2026-07-13);
+trust anchor `docs/VERIFICATION.md`.
 
 ---
 
-## 1. Teslim edilenler
+## 1. Deliverables
 
-- **`discovery/` paketi (hibrit motor v0)**:
-  - `terms.py`: soyut terim dili (Atom/Mul/Conj), deterministik enumerasyon.
-  - `axioms.py`: egglog kural seti — asosiyatiflik (çift yön), conj involüsyon,
-    **sıra-koruyan** conj dağılımı ((AB)\*=A\*B\*), I10 komütasyonu **yalnız
-    atom düzeyinde** (ses/soundness sınırı; serbest-değişkenli hali unsound —
-    gerekçe modül docstring'inde, sayısal karşı-örnekle).
-  - `interpret.py`: terim → somut Z-matris değeri (SymPy/NumPy); motordan
-    bağımsız sayısal denklik testi.
-  - `engine.py`: enumerate → saturate → hasat (extract-gruplama + check-teyit)
-    → doğrula boru hattı; `DiscoveryResult(sound, verified, refuted,
-    extraction_collisions, ...)`. K9/K10: doğrulanamayan aday sessizce elenmez,
-    build'i kırar.
-- `docs/VERIFICATION.md`: 6 katmanlı doğrulama sözleşmesi + dürüst sınırlar.
-- `docs/ROADMAP.md`: **FROZEN-22** (6 faz, 22 aşama — artık değişmez).
-- pyproject `[discovery]` extra'sı (egglog>=13); CI `.[test,discovery]`.
+- **`discovery/` package (hybrid engine v0)**:
+  - `terms.py`: abstract term language (Atom/Mul/Conj), deterministic enumeration.
+  - `axioms.py`: egglog rule set — associativity (both directions), conj involution,
+    **order-preserving** conj distribution ((AB)\*=A\*B\*), I10 commutation **only at
+    the atom level** (soundness boundary; the free-variable form is unsound —
+    rationale in the module docstring, with a numerical counterexample).
+  - `interpret.py`: term → concrete Z-matrix value (SymPy/NumPy); numerical equivalence test
+    independent of the engine.
+  - `engine.py`: enumerate → saturate → harvest (extract-grouping + check-confirmation)
+    → verify pipeline; `DiscoveryResult(sound, verified, refuted,
+    extraction_collisions, ...)`. K9/K10: an unverifiable candidate is not silently eliminated,
+    it breaks the build.
+- `docs/VERIFICATION.md`: 6-layer verification contract + honest boundaries.
+- `docs/ROADMAP.md`: **FROZEN-22** (6 phases, 22 stages — now immutable).
+- pyproject `[discovery]` extra (egglog>=13); CI `.[test,discovery]`.
 
-## 2. Doğrulama sonuçları
+## 2. Verification results
 
-- Suite: **56/56 yeşil** (~32 sn; egglog'suz kurulumda discovery testleri
-  düzgün atlanıyor).
-- **Yeniden keşif kabulü** (boyut-9 saturasyon, 5698 terim, 0.15 sn):
-  R1 conj-involüsyon ✅ · R2 a·conj(b)≡conj(b)·a ✅ · R3 seri Mueller çarpımı
+- Suite: **56/56 green** (~32 s; on an egglog-less install the discovery tests are
+  skipped cleanly).
+- **Rediscovery acceptance** (size-9 saturation, 5698 terms, 0.15 s):
+  R1 conj-involution ✅ · R2 a·conj(b)≡conj(b)·a ✅ · R3 serial Mueller product
   (a·b)·conj(a·b) ≡ (a·conj(a))·(b·conj(b)) ✅
-- **Negatif kontroller**: a·b ≢ b·a ✅ · conj(a)·conj(b) ≢ conj(b)·conj(a) ✅
-  (saturasyon komütatiflik "icat etmiyor"; her ikisi sayısal olarak da gerçekten eşitsiz)
-- **Tam hasat** (boyut 7): 570 terim → 64 e-sınıf → **506 aday çift, 506/506
-  doğrulandı, 0 çürütüldü, 0 extraction çakışması**.
+- **Negative controls**: a·b ≢ b·a ✅ · conj(a)·conj(b) ≢ conj(b)·conj(a) ✅
+  (saturation does not "invent" commutativity; both are also genuinely unequal numerically)
+- **Full harvest** (size 7): 570 terms → 64 e-classes → **506 candidate pairs, 506/506
+  verified, 0 refuted, 0 extraction collisions**.
 
-## 3. Bağımsız denetim
+## 3. Independent audit
 
-Verdict: **PASS**. Denetçi farklı tohumla (seed 7): ses sınırını iki yönde
-sayısal olarak teyit etti (serbest kural 20/20 çürüdü; atom kuralı 20/20
-geçti), 506 çifti yeniden doğruladı (0 hata), 64 sınıf çapasının ikili
-FARKLILIĞINI da doğruladı (motor ne fazla birleştiriyor ne — bu boyutta —
-eksik birleştiriyor). Üç önerisi uygulandı:
+Verdict: **PASS**. The auditor, with a different seed (seed 7): confirmed the soundness boundary in both
+directions numerically (the free rule was refuted 20/20; the atom rule
+passed 20/20), re-verified the 506 pairs (0 errors), and also verified the pairwise
+DISTINCTNESS of the 64 class anchors (the engine neither over-merges nor — at this
+size — under-merges). Three of its suggestions were applied:
 
-| Öneri | Aksiyon |
+| Suggestion | Action |
 |---|---|
-| `equivalent` genel Exception yutuyordu | ✅ yalnız `EggSmolError` yakalanıyor; operasyonel hata artık "eşit değil" maskesi takamaz |
-| Defensive-split görünmezdi | ✅ `extraction_collisions` sayacı + testte sıfır garantisi |
-| axioms docstring türetilebilirlik ifadesi eksikti | ✅ "assoc + conj dağılımı" olarak düzeltildi |
+| `equivalent` was swallowing a generic Exception | ✅ only `EggSmolError` is caught; an operational error can no longer masquerade as "not equal" |
+| The defensive-split was invisible | ✅ `extraction_collisions` counter + zero guarantee in test |
+| The axioms docstring's derivability statement was missing | ✅ corrected to "assoc + conj distribution" |
 
-## 4. Kararlar
+## 4. Decisions
 
-1. **FROZEN-22** ilanı (karar M14) — değişiklik ancak kritik-karar notuyla.
-2. Hibrit sınır (M10) kalıcı mimari ilke: egglog asla tek doğrulayıcı olmaz.
-3. Tamlık (completeness) kaybı bilinçli tercih: motor eksik bulabilir ama
-   yanlış bulamaz — spec yalnız ses garantisi veriyor.
-4. Düzeltme kaydı: spec'in ilk taslağındaki boyut aritmetiği hatası (R3
-   terimleri 8/9, "7" değil) spec içinde açıkça düzeltildi.
+1. **FROZEN-22** declaration (decision M14) — a change only with a critical-decision note.
+2. The hybrid boundary (M10) is a permanent architectural principle: egglog is never the sole verifier.
+3. Loss of completeness is a deliberate choice: the engine may find too few but
+   cannot find wrong ones — the spec guarantees only soundness.
+4. Correction record: the dimension-arithmetic error in the spec's first draft (R3
+   terms are 8/9, not "7") was explicitly corrected inside the spec.
 
-## 5. Sıradaki aşama (otonom devam)
+## 5. Next stage (autonomous continuation)
 
-**Aşama 3 — Terim enumerasyonu + karmaşıklık sınırları (Faz B)**: atom sayısı
-ve boyut ölçekleme stratejisi, extract darboğazının (21 sn @ boyut 9)
-optimizasyonu, skaler yer tutucular için tasarım notu.
+**Stage 3 — Term enumeration + complexity bounds (Phase B)**: atom count
+and size scaling strategy, optimization of the extract bottleneck (21 s @ size 9),
+design note for scalar placeholders.

@@ -1,56 +1,56 @@
-# organon-mueller — Yol Haritası — **FROZEN-22** (ilan: Aşama 2, 2026-07-13)
+# organon-mueller — Roadmap — **FROZEN-22** (declared: Stage 2, 2026-07-13)
 
-**22 aşama, 6 faz — DONDURULDU** (Organon v1 geleneği; v1'de frozen-55).
-Bu sayı artık değişmez; değişiklik ancak kritik-karar notuyla kullanıcıya
-gider. Kuntman/grup geri bildirimi C ve D fazlarının İÇ sırasını
-değiştirebilir, aşama sayısını değiştiremez.
+**22 stages, 6 phases — FROZEN** (Organon v1 tradition; frozen-55 in v1).
+This number no longer changes; a change only goes to the user via a
+critical-decision note. Kuntman/group feedback can change the INTERNAL order of
+phases C and D, but cannot change the number of stages.
 
 ```
-FAZ A — Zemin (Aşama 0–2)
-├── 0  Temsil katmanı + 14 özdeşlik regresyonu            ✅ (36/36)
-├── 1  Kütüphane genişletme (21 özdeşlik) + serileştirme
-│      + egglog spike (BAŞARILI, hibrit mimari önerisi)    ✅ (50/50)
-└── 2  Keşif motoru çekirdeği v0: hibrit egglog+SymPy,        ✅ (56/56)
-       enumerasyon+saturasyon+hasat+%100 doğrulama;
-       R1-R3 yeniden keşfi, negatif kontroller → FROZEN-22 İLANI
+PHASE A — Foundation (Stage 0–2)
+├── 0  Representation layer + 14-identity regression        ✅ (36/36)
+├── 1  Library extension (21 identities) + serialization
+│      + egglog spike (SUCCESSFUL, hybrid architecture proposal)  ✅ (50/50)
+└── 2  Discovery engine core v0: hybrid egglog+SymPy,        ✅ (56/56)
+       enumeration+saturation+harvest+100% verification;
+       R1-R3 rediscovery, negative controls → FROZEN-22 DECLARATION
 
-FAZ B — Keşif motoru (Aşama 3–7)                            ✅
-├── 3  Terim enumerasyonu + karmaşıklık sınırları           ✅ (M18 yalıtılmış ispatlar)
-├── 4  Aday boru hattı: sayısal ön-elek → sembolik ispat    ✅ (M19 sertifikasyon)
-├── 5  Geri-kazanım kampanyası: motor I1–I21'i KENDİSİ bulmalı ✅ ({I1,I10,I15})
-├── 6  Yeni aday taraması #1 + literatür karşılaştırma disiplini ✅ (fragman tamlığı TEOREM)
-└── 7  İterasyon değerlendirmesi (v1 iter geleneği)          ✅ (Sum/Scale; AL ince ayrımı)
+PHASE B — Discovery engine (Stage 3–7)                      ✅
+├── 3  Term enumeration + complexity bounds                 ✅ (M18 isolated proofs)
+├── 4  Candidate pipeline: numeric pre-screen → symbolic proof  ✅ (M19 certification)
+├── 5  Recovery campaign: the engine must find I1–I21 ITSELF  ✅ ({I1,I10,I15})
+├── 6  New candidate sweep #1 + literature-comparison discipline  ✅ (fragment completeness THEOREM)
+└── 7  Iteration evaluation (v1 iter tradition)             ✅ (Sum/Scale; AL fine distinction)
 
-FAZ C — Ayrışım türetici (Aşama 8–11)                       ✅
-├── 8  Simetri-koşullu ayrışım: AO2016'nın 6 tipinin otomatik türetimi ✅ (Tablo 2 6/6; reshuffle TEOREM)
-├── 9  Rank-2 genel çözücü                                  ✅ (Tablo 4 3/3; guarded atoms M32)
-├── 10 Rank-3 keşif taraması (yayın-aday yeni sonuç potansiyeli) ✅ (teklik-dışılık bulgusu)
-└── 11 İter + Kuntman feedback penceresi #1                 ✅ (paket hazır; köprü v1)
+PHASE C — Decomposition deriver (Stage 8–11)                ✅
+├── 8  Symmetry-conditioned decomposition: automatic derivation of AO2016's 6 types ✅ (Table 2 6/6; reshuffle THEOREM)
+├── 9  Rank-2 general solver                                ✅ (Table 4 3/3; guarded atoms M32)
+├── 10 Rank-3 discovery sweep (publication-candidate new-result potential) ✅ (non-uniqueness finding)
+└── 11 Iter + Kuntman feedback window #1                    ✅ (package ready; bridge v1)
 
-FAZ D — Dipol modülü (Aşama 12–15)                          ✅
-├── 12 Coupled-dipole sembolik motor (PRB 98,045410 yeniden türetim) ✅ (Eq. 25 ayrışım TEOREM)
-├── 13 γ (optik aktivite) parametresinin yön-genel otomasyonu ✅ (Perrin genel teoremi)
-├── 14 N-dimer / ensemble genellemesi (OA-ensemble açık uçları) ✅ (δ=0⇒γ_z≡0; köprü uçtan-uca)
-└── 15 İter + feedback penceresi #2                         ✅ (dipol EK; M30×8)
+PHASE D — Dipole module (Stage 12–15)                       ✅
+├── 12 Coupled-dipole symbolic engine (PRB 98,045410 re-derivation) ✅ (Eq. 25 decomposition THEOREM)
+├── 13 direction-general automation of the γ (optical activity) parameter ✅ (Perrin general theorem)
+├── 14 N-dimer / ensemble generalization (OA-ensemble open ends) ✅ (δ=0⇒γ_z≡0; bridge end-to-end)
+└── 15 Iter + feedback window #2                            ✅ (dipole addition; M30×8)
 
-FAZ E — Paketleme (Aşama 16–19)                             ✅ (A19'da)
-├── 16 LaTeX/rapor üretici (bulgu → makale malzemesi)       ✅ (kanıt-etiketli, deterministik)
-├── 17 MCP server (decompose/propose/discover/report)       ✅ (GATE sertleştirmesi; HOST edilmedi)
-├── 18 Web arayüzü — STATİK, hosting'siz (karar değişti: Streamlit yerine ✅ (textContent XSS-güvenli)
-│      tek dosya web/index.html; sunucu yüzeyi = saldırı yüzeyi)
-└── 19 Dokümantasyon (README/architecture/user-guide)       ✅ (bu aşama)
+PHASE E — Packaging (Stage 16–19)                           ✅ (at A19)
+├── 16 LaTeX/report generator (finding → paper material)    ✅ (evidence-labeled, deterministic)
+├── 17 MCP server (decompose/propose/discover/report)       ✅ (GATE hardening; NOT hosted)
+├── 18 Web interface — STATIC, hosting-free (decision changed: instead of Streamlit ✅ (textContent XSS-safe)
+│      single file web/index.html; server surface = attack surface)
+└── 19 Documentation (README/architecture/user-guide)       ✅ (this stage)
 
-FAZ F — Kapanış (Aşama 20–22)                               ⏳
-├── 20 Yayın-aday sonuçların konsolidasyonu (+guarded-atoms 2. yarı borcu)
-├── 21 Dış doğrulama (grup feedback, bağımsız tekrar)
-└── 22 v2.0 kapanış değerlendirmesi + retrospektif
+PHASE F — Closure (Stage 20–22)                             ⏳
+├── 20 Consolidation of publication-candidate results (+guarded-atoms 2nd-half debt)
+├── 21 External verification (group feedback, independent replication)
+└── 22 v2.0 closure evaluation + retrospective
 ```
 
-Durum (Aşama 19): A0–A19 tamamlandı; **286 test yeşil**. Kalan: Faz F
-(A20–A22). Not: FROZEN-22 aşama SAYISI değişmez; A18'in "hosted" tanımı
-güvenlik gerekçesiyle "statik, hosting'siz"e revize edildi (kapsam
-değişikliği, sayı değişikliği değil — retrospektifte gerekçeli).
+Status (Stage 19): A0–A19 completed; **287 tests green**. Remaining: Phase F
+(A20–A22). Note: the FROZEN-22 stage COUNT does not change; A18's "hosted"
+definition was revised to "static, hosting-free" for security reasons (a scope
+change, not a count change — reasoned in the retrospective).
 
-Süre kalibrasyonu (handoff): sıkı odakta 2–4 ay, part-time 6–12 ay.
-Aşama ≈ v1'deki milestone tanesi; her aşama spec → impl → test → rapor
-döngüsüyle kapanır.
+Time calibration (handoff): 2–4 months in tight focus, 6–12 months part-time.
+A stage ≈ one milestone unit in v1; every stage closes with a spec → impl →
+test → report cycle.

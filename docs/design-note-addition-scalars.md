@@ -1,64 +1,65 @@
-# Tasarım Notu — Terim Diline `addition` + `scalars` (Aşama 7 spec girdisi)
+# Design Note — `addition` + `scalars` in the Term Language (Stage 7 spec input)
 
-Kaynak gereksinim: `docs/term-language-extensions.md` öncelik 1/1b —
-koherent süperpozisyon fiziği (I15–I18) dile girsin.
+Source requirement: `docs/term-language-extensions.md` priority 1/1b —
+bring the physics of coherent superposition (I15–I18) into the language.
 
-## Dil genişletmesi
+## Language extension
 
 ```
 t ::= Atom(name) | Mul(t, t) | Conj(t)
-    | Sum(t, t)                    # YENİ: terim toplamı
-    | Scale(c, t)                  # YENİ: opak skaler katsayı c ile ölçek
-c ::= ScalarAtom(name) | ScalarConj(c)   # opak; aritmetiği YOK (M10)
+    | Sum(t, t)                    # NEW: term sum
+    | Scale(c, t)                  # NEW: scale by an opaque scalar coefficient c
+c ::= ScalarAtom(name) | ScalarConj(c)   # opaque; NO arithmetic (M10)
 ```
 
-- **Hibrit sınır korunur (M10)**: e-graph skaleri OPAK tutar — `c` üzerinde
-  hiçbir aritmetik kural yok (toplama/çarpma değerlendirmesi SymPy'da).
-  e-graph yalnız YAPISAL yasaları bilir.
-- Yorumlama: `ScalarAtom(name)` → SymPy karmaşık sembolü; sayısal katmanda
-  rastgele karmaşık skaler (tohum ayrık, K14 genişler).
+- **Hybrid boundary preserved (M10)**: the e-graph keeps the scalar OPAQUE —
+  no arithmetic rule on `c` at all (addition/multiplication evaluation lives in SymPy).
+  The e-graph only knows the STRUCTURAL laws.
+- Interpretation: `ScalarAtom(name)` → SymPy complex symbol; at the numeric
+  layer a random complex scalar (separate seed, K14 extends).
 
-## Yapısal aksiyomlar (ses sınırı analiziyle — stage-02/03 dersleri)
+## Structural axioms (with soundness-boundary analysis — stage-02/03 lessons)
 
-| Kural | Not |
+| Rule | Note |
 |---|---|
-| Sum komütatif + asosiyatif | matris toplamı ✓ sound |
-| Mul, Sum üzerine iki yandan dağılır | ✓ sound |
+| Sum commutative + associative | matrix addition ✓ sound |
+| Mul distributes over Sum on both sides | ✓ sound |
 | Conj(Sum(x,y)) = Sum(Conj(x),Conj(y)) | elementwise ✓ |
 | Conj(Scale(c,x)) = Scale(ScalarConj(c), Conj(x)) | ✓ |
-| Scale(c, x)·y = Scale(c, x·y) = x·Scale(c, y) | skaler merkezî ✓ |
-| Scale iç içe: Scale(c, Scale(d, x)) = Scale(d, Scale(c, x)) | skaler değişmeli ✓ (çarpımını OLUŞTURMADAN sıra-değişimi — opaklık korunur) |
-| **YOK**: skaler kısaltma/birleştirme (c+d, c·d) | M10: SymPy tarafında |
+| Scale(c, x)·y = Scale(c, x·y) = x·Scale(c, y) | scalar is central ✓ |
+| Scale nested: Scale(c, Scale(d, x)) = Scale(d, Scale(c, x)) | scalars commute ✓ (reordering WITHOUT FORMING their product — opacity preserved) |
+| **NONE**: scalar reduction/combination (c+d, c·d) | M10: on the SymPy side |
 
-Atom-komütasyon kuralı (I10) değişmez; Sum/Scale içeren serbest-değişkenli
-komütasyon YOK (stage-03 ses dersi — genel kural unsound olur, türetim
-saturasyona bırakılır).
+The atom-commutation rule (I10) is unchanged; there is NO free-variable
+commutation involving Sum/Scale (stage-03 soundness lesson — a general rule
+would be unsound, so the derivation is left to saturation).
 
-## Patlama yönetimi
+## Explosion management
 
-- Başlangıçta **Sum en fazla 1 kez, 2 toplamlı** (süperpozisyon çifti
-  aZ_a + bZ_b) — enumerasyon boyutu kontrollü; kademeli açılır.
-- conj-normal budama Sum/Scale'e genişler: Conj yalnız atom/skaler-atom
-  düzeyinde.
-- **Parmak izi ölçek-göreli anahtara geçer** (stage-03 uyarısının vadesi):
-  opak skalerler rastgele değer alınca mutlak 3-ondalık yuvarlama yetersiz;
-  anahtar, matrisin Frobenius normuna bölünmüş girdilerden üretilir
-  (+ sıfır-matris özel durumu). Yanlış-ayrılma analizi yeniden yapılır.
+- Initially **Sum at most once, 2 summands** (superposition pair
+  aZ_a + bZ_b) — enumeration size is controlled; it opens up gradually.
+- conj-normal pruning extends to Sum/Scale: Conj only at the
+  atom/scalar-atom level.
+- **The fingerprint switches to a scale-relative key** (the stage-03 warning
+  comes due): once opaque scalars take random values, absolute 3-decimal
+  rounding is insufficient; the key is produced from entries divided by the
+  matrix's Frobenius norm (+ zero-matrix special case). The false-separation
+  analysis is redone.
 
-## Kabul hedefleri (Aşama 7)
+## Acceptance targets (Stage 7)
 
-1. I15 açılımı: (aZ_a + bZ_b)·conj(aZ_a + bZ_b) genişlemesinin dört terimli
-   yapısal formu motor tarafından türetilir; çapraz terimin gerçelliği
-   (yapısal formda conj-simetri) kazanılır.
-2. I16 girişim: Scale(e, x) özel durumu — yapısal iskeleti (skaler aritmetiği
-   SymPy doğrular).
-3. Geri-kazanım kampanyası yeniden koşar; M22 monotonluk: kazanım seti
-   {I1, I10} ⊂ yeni set (hedef: + I15 yapısal yarısı; I16-I18 kısmı).
-4. Tüm eski testler değişmeden yeşil (K11 API dokunulmazlığı).
+1. I15 expansion: the four-term structural form of the expansion
+   (aZ_a + bZ_b)·conj(aZ_a + bZ_b) is derived by the engine; the reality of
+   the cross term (conj-symmetry in the structural form) is gained.
+2. I16 interference: the Scale(e, x) special case — its structural skeleton
+   (SymPy verifies the scalar arithmetic).
+3. The recovery campaign reruns; M22 monotonicity: the recovered set
+   {I1, I10} ⊂ new set (target: + the structural half of I15; part of I16-I18).
+4. All old tests green unchanged (K11 API inviolability).
 
-## Riskler
+## Risks
 
-- egglog patolojisi yeni düğüm tipleriyle farklı yüzeylerde tekrarlayabilir →
-  yalıtılmış-graf modu (M18) zaten koruyor; probe genişletilir.
-- Sembolik sertifikasyon maliyeti Sum ile büyür (polinom terim sayısı) —
-  certify süreleri yeniden ölçülür; gerekirse "underivable-only" varsayılanı korunur.
+- The egglog pathology may recur on different surfaces with the new node types →
+  isolated-graph mode (M18) already protects against this; the probe is extended.
+- Symbolic certification cost grows with Sum (polynomial term count) —
+  certify times are remeasured; if needed the "underivable-only" default is kept.
