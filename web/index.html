@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The XSS boundary is textContent-only rendering (never innerHTML on
+     user data), NOT the CSP: 'unsafe-inline' in script-src does not block
+     inline event handlers. This CSP's job is to block NETWORK EGRESS
+     (default-src/img-src 'none') so nothing the user pastes can be
+     exfiltrated and no external resource loads. -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'none'; connect-src 'none'">
+<title>organon-mueller — result viewer</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 15px/1.5 system-ui, sans-serif; max-width: 900px;
+         margin: 2rem auto; padding: 0 1rem; }
+  h1 { font-size: 1.4rem; margin-bottom: .2rem; }
+  .sub { color: #666; margin-top: 0; }
+  textarea { width: 100%; min-height: 9rem; font-family: ui-monospace,
+             monospace; font-size: 13px; box-sizing: border-box; }
+  button { font: inherit; padding: .4rem .9rem; margin: .5rem .4rem .5rem 0;
+           cursor: pointer; }
+  .card { border: 1px solid #8884; border-radius: 8px; padding: 1rem;
+          margin: 1rem 0; }
+  .label { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em;
+           color: #888; }
+  .evi-symbolic-proof { color: #1a7f37; font-weight: 600; }
+  .evi-numeric-deterministic { color: #0969da; font-weight: 600; }
+  .evi-candidate { color: #9a6700; font-weight: 600; }
+  table { border-collapse: collapse; margin: .4rem 0; }
+  td, th { border: 1px solid #8883; padding: .2rem .55rem; text-align: right;
+           font-variant-numeric: tabular-nums; }
+  th { text-align: left; background: #8881; }
+  .err { color: #cf222e; font-weight: 600; }
+  .note { color: #666; font-size: .85rem; }
+  pre { background: #8881; padding: .7rem; overflow-x: auto; font-size: 12px; }
+  .foot { margin-top: 2rem; color: #888; font-size: .82rem;
+          border-top: 1px solid #8883; padding-top: 1rem; }
+</style>
+</head>
+<body>
+<h1>organon-mueller — result viewer</h1>
+<p class="sub">Stokes–Mueller decomposition results, rendered in your browser.</p>
+
+<p class="note">This page does <b>no computation</b> and needs <b>no server</b>.
+The maths lives in the Python package (<code>organon-mueller</code>); run a
+tool via the MCP server or CLI, then paste its JSON output below to view it.
+Nothing you paste leaves your machine — the page has no network access and
+never runs pasted data as code.</p>
+
+<textarea id="json-input" aria-label="Tool output JSON"
+  placeholder="Paste organon-mueller tool output (JSON) here…"></textarea>
+<div>
+  <button id="render-btn" type="button">Render</button>
+  <button id="example-btn" type="button">Load example</button>
+  <button id="clear-btn" type="button">Clear</button>
+</div>
+
+<div id="output" aria-live="polite"></div>
+
+<p class="foot">
+  Evidence labels map to the verification layers in
+  <code>docs/VERIFICATION.md</code>: <span class="evi-symbolic-proof">symbolic-proof</span>
+  (exact), <span class="evi-numeric-deterministic">numeric-deterministic</span>
+  (seeded), <span class="evi-candidate">candidate</span> (no novelty or
+  physics claim — that judgement is reserved for humans). This viewer is
+  presentation only; it is not hosted anywhere by the project.
+</p>
+
+<!-- Embedded example: real tool output, schema-consistent. -->
+<script id="example-data" type="application/json">
+{"note":"organon-mueller MCP/CLI output — sample","decompose_mueller":{"kind":"DecompositionResult","symmetry":"type1","variant":"b","alpha1":0.4,"m1":[[1.0,0.0,0.0,0.148883],[0.0,0.910791,0.385106,0.0],[0.0,-0.385106,0.910791,0.0],[0.148883,0.0,0.0,1.0]],"m2":[[1.0,-0.09667,0.30076,0.55482],[-0.09667,0.42782,-0.29799,-0.38928],[0.30076,-0.29799,0.63248,0.42713],[0.55482,-0.38928,0.42713,0.9397]]},"propose_hypotheses":{"rank":2,"scores":{"type1":0.53,"type2":0.09,"type3":0.42,"type1-2":0.33,"type1-3":0.51,"type2-3":0.31},"accepted":[{"hypothesis":"type1","kind":"DecompositionResult","alpha1":0.4}],"rejected":[{"hypothesis":"type2","reason":"recovered H2 not rank 1"}],"note":"scores are an ordering heuristic, not evidence; acceptance is decided solely by the exact solvers"}}
+</script>
+
+<script>
+"use strict";
+(function () {
+  var out = document.getElementById("output");
+
+  // --- safe DOM helpers: user data ONLY via textContent, never innerHTML ---
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined && text !== null) e.textContent = String(text);
+    return e;
+  }
+  function fmtNum(v) {
+    if (typeof v !== "number" || !isFinite(v)) return String(v);
+    if (v !== 0 && Math.abs(v) < 1e-6) return v.toExponential(2);
+    return (Math.round(v * 1e6) / 1e6).toString();
+  }
+  function matrixTable(m) {
+    var t = el("table");
+    if (!Array.isArray(m)) { t.appendChild(el("caption", null, "(not a matrix)")); return t; }
+    m.forEach(function (row) {
+      var tr = el("tr");
+      (Array.isArray(row) ? row : [row]).forEach(function (v) {
+        tr.appendChild(el("td", null, fmtNum(v)));
+      });
+      t.appendChild(tr);
+    });
+    return t;
+  }
+  function card(title) {
+    var c = el("div", "card");
+    if (title) c.appendChild(el("div", "label", title));
+    return c;
+  }
+
+  function renderDecomposition(d, host) {
+    var c = card("decomposition");
+    if (d.error) { c.appendChild(el("p", "err", "error: " + d.error)); host.appendChild(c); return; }
+    c.appendChild(el("div", null,
+      (d.kind || "result") + " — symmetry " + (d.symmetry || "?")
+      + (d.variant ? " (variant " + d.variant + ")" : "")));
+    if ("alpha1" in d) c.appendChild(el("div", null, "α₁ = " + fmtNum(d.alpha1)));
+    if (Array.isArray(d.alphas))
+      c.appendChild(el("div", null, "weights: " + d.alphas.map(fmtNum).join(", ")));
+    var mats = [];
+    if (d.m1) mats.push(["M₁", d.m1]);
+    if (d.m2) mats.push(["M₂", d.m2]);
+    if (Array.isArray(d.m_components))
+      d.m_components.forEach(function (m, i) { mats.push(["M" + (i + 1), m]); });
+    mats.forEach(function (pair) {
+      c.appendChild(el("div", "label", pair[0]));
+      c.appendChild(matrixTable(pair[1]));
+    });
+    if (d.note) c.appendChild(el("p", "note", d.note));
+    host.appendChild(c);
+  }
+
+  function renderPropose(p, host) {
+    var c = card("hypothesis map (rank " + (p.rank) + ")");
+    if (p.error) { c.appendChild(el("p", "err", "error: " + p.error)); host.appendChild(c); return; }
+    var t = el("table"), head = el("tr");
+    ["hypothesis", "score", "outcome", "reason"].forEach(function (h) {
+      head.appendChild(el("th", null, h));
+    });
+    t.appendChild(head);
+    var scores = p.scores || {};
+    (p.accepted || []).forEach(function (a) {
+      var tr = el("tr");
+      tr.appendChild(el("td", null, a.hypothesis));
+      tr.appendChild(el("td", null, fmtNum(scores[a.hypothesis])));
+      tr.appendChild(el("td", null, "accepted"));
+      tr.appendChild(el("td", null, ""));
+      t.appendChild(tr);
+    });
+    (p.rejected || []).forEach(function (r) {
+      var tr = el("tr");
+      tr.appendChild(el("td", null, r.hypothesis));
+      tr.appendChild(el("td", null, fmtNum(scores[r.hypothesis])));
+      tr.appendChild(el("td", null, "rejected"));
+      tr.appendChild(el("td", null, r.reason || ""));
+      t.appendChild(tr);
+    });
+    c.appendChild(t);
+    if (p.note) c.appendChild(el("p", "note", p.note));
+    host.appendChild(c);
+  }
+
+  function renderReport(r, host) {
+    var c = card("LaTeX report");
+    c.appendChild(el("pre", null, r.latex !== undefined ? r.latex : JSON.stringify(r)));
+    host.appendChild(c);
+  }
+
+  // Object.create(null): no prototype chain, so a field named
+  // "__proto__" / "constructor" / "toString" resolves to undefined (an
+  // unrecognized field, SHOWN) instead of an inherited value that would
+  // crash or silently swallow it (review D1 — preserves the K21 "shown,
+  // not dropped" guarantee).
+  var KNOWN = Object.create(null);
+  KNOWN["decompose_mueller"] = renderDecomposition;
+  KNOWN["propose_hypotheses"] = renderPropose;
+  KNOWN["generate_report"] = renderReport;
+
+  function safeStringify(v) {
+    // guard against deeply-nested payloads blowing the stack (review D2)
+    try { return JSON.stringify(v, null, 2); }
+    catch (e) { return "(unrenderable value: " + e.message + ")"; }
+  }
+
+  function render(text) {
+    out.textContent = "";
+    var data;
+    try { data = JSON.parse(text); }
+    catch (e) { out.appendChild(el("p", "err", "Not valid JSON: " + e.message)); return; }
+    if (typeof data !== "object" || data === null) {
+      out.appendChild(el("p", "err", "Expected a JSON object of tool outputs.")); return;
+    }
+    // whole-body guard: any renderer bug surfaces to the user, not just
+    // the console (review D2)
+    try {
+      var noteIsString = typeof data.note === "string";
+      if (noteIsString) out.appendChild(el("p", "note", data.note));
+      // a non-string "note" (outside the tool schema) falls through to
+      // the unrecognized-field display rather than vanishing (K21)
+      var keys = Object.keys(data).filter(function (k) {
+        return k !== "note" || !noteIsString;
+      });
+      keys.forEach(function (key) {
+        if (typeof KNOWN[key] === "function") { KNOWN[key](data[key], out); }
+        else {
+          // unrecognized fields are SHOWN, not silently dropped (K21)
+          var c = card("unrecognized field: " + key);
+          c.appendChild(el("pre", null, safeStringify(data[key])));
+          out.appendChild(c);
+        }
+      });
+      if (!keys.length) out.appendChild(el("p", "note", "(no tool fields)"));
+    } catch (e) {
+      out.appendChild(el("p", "err", "Could not render this input: " + e.message));
+    }
+  }
+
+  document.getElementById("render-btn").addEventListener("click", function () {
+    render(document.getElementById("json-input").value);
+  });
+  document.getElementById("example-btn").addEventListener("click", function () {
+    var ex = document.getElementById("example-data").textContent;
+    document.getElementById("json-input").value = ex.trim();
+    render(ex);
+  });
+  document.getElementById("clear-btn").addEventListener("click", function () {
+    document.getElementById("json-input").value = "";
+    out.textContent = "";
+  });
+})();
+</script>
+</body>
+</html>
