@@ -1,0 +1,36 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[T1]{fontenc}
+\setcounter{secnumdepth}{0}
+
+\title{organon-mueller --- feedback package, sample automated report}
+\date{2026-07-14}
+\author{organon-mueller (automated report)}
+\begin{document}\maketitle
+\subsection*{AO2016 Section-6 example (derived equations)}
+\textit{Evidence: numeric-deterministic (layer 2 (seeded numeric)) --- verified numerically (deterministic seeds).}\\
+\textit{Source: Kuntman \& Arteaga, Appl. Opt. 55, 2543 (2016), Sec. 6}\\
+\textit{Reproduction: variant a pinned; loose tolerances for 4-decimal print data}\\
+Recovered $\alpha_1 = 0.29996$ (paper: 0.3); $\max|M_1 - M_1^{paper}| = 0.000242$, $\max|M_2 - M_2^{paper}| = 0.000113$ (4-decimal print noise).
+\subsection*{Rank-3 three-term synthetic recovery}
+\textit{Evidence: candidate (novelty channel (no claim)) --- reported as a CANDIDATE (no novelty or physics claim).}\\
+\textit{Source: beyond-paper zone (M34); cf. AO2016}\\
+\textit{Reproduction: seed 20260713}\\
+True weights (0.3, 0.35, 0.35) recovered to $\max|\Delta\alpha| = \ensuremath{6.7 \times 10^{-16}}$; worst component error $\ensuremath{1.6 \times 10^{-15}}$.
+\subsection*{Coupled-dipole optical activity}
+\textit{Evidence: numeric-deterministic (layer 2 (seeded numeric)) --- verified numerically (deterministic seeds).}\\
+\textit{Source: PRB 98, 045410 (2018); Symmetry 12, 1790 (2020); OA-in-ensemble preprint}\\
+\textit{Reproduction: seed 20260713; deterministic orientation sampling}\\
+Forward-scattering gamma map (theorem: $h_4 = i e_1 \alpha_1 \alpha_2 \Delta_1 (1 - e_2^2)/(2N)$):\\
+co-planar ($e_2 = 1$): $|\gamma| = \ensuremath{1.3 \times 10^{-17}}$ (gamma-blind); 
+out-of-plane: $|\gamma| = 0.004612$.\\
+Ensemble statistics over random rigid orthogonal dimers:\\
+\begin{tabular}{lll}
+configuration & statistic & value \\ \hline
+chiral, coupled & $|\overline{\gamma_z}|$ & 0.010687 \\
+achiral, coupled & $|\overline{\gamma_z}|$ & 0.000006 \\
+chiral, uncoupled & $\overline{|\gamma_z|}$ (pointwise) & \ensuremath{9.1 \times 10^{-18}} \\
+\end{tabular}
+\vspace{1em}\noindent\rule{\linewidth}{0.4pt}\\\textit{Rounding convention: values are rounded to 6 decimals; magnitudes below $10^{-6}$ are shown in scientific notation --- a printed small number is a measured residual, never an exactness claim.}\\\textit{Interpretation boundary: whether any result above is physically interesting or new is deliberately NOT claimed here --- that judgement is reserved for human experts (novelty protocol, final step). Verification layers: see docs/VERIFICATION.md.}
+\end{document}
