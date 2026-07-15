@@ -4,12 +4,12 @@ SymPy expressions travel as `srepr` strings (lossless). Reconstruction uses
 `sympy.sympify` on srepr output, which is safe for strings this module
 itself produced.
 
-STAGE-2 GATE (security): `sympify` evaluates arbitrary expressions — an
-untrusted payload can reach `__import__` through it. Before ANY external
-surface (MCP server, web UI) is wired to `hvector_from_dict`, this module
-must switch to a restricted parser (whitelisted `global_dict`, no attribute
-access) plus a rejection test for injection payloads. Tracked in
-docs/ROADMAP.md phase E; do not expose earlier.
+STAGE-2 GATE — CLOSED (stage 17): reconstruction now goes through the
+restricted srepr parser (`safe_parse.safe_parse_srepr` — ast-walk with a
+whitelist; NEVER eval/sympify on external text). Injection corpus lives
+in tests/test_security.py. External surfaces (MCP server) additionally
+accept only numeric payloads, so no expression text crosses the boundary
+at all.
 """
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ import json
 import sympy as sp
 
 from .algebra.states import HVector
+from .safe_parse import safe_parse_srepr
 from .identities.known import KNOWN_IDENTITIES, Identity
 
 __all__ = [
@@ -44,7 +45,7 @@ def hvector_from_dict(data: dict) -> HVector:
     missing = [name for name in _FIELDS if name not in data]
     if missing:
         raise ValueError(f"missing HVector fields: {missing}")
-    return HVector(*(sp.sympify(data[name]) for name in _FIELDS))
+    return HVector(*(safe_parse_srepr(data[name]) for name in _FIELDS))
 
 
 def hvector_to_json(h: HVector) -> str:
