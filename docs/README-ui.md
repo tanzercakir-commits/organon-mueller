@@ -27,6 +27,15 @@ Options: `organon-ui --port 8000` (different port), `organon-ui
   admits; accepted results and rejected hypotheses each carry their
   reasons. Scores shown are an *ordering heuristic, not evidence* —
   acceptance is decided solely by the exact solvers.
+- **File / batch** tab: load matrices from `.csv` / `.tsv` / `.txt`
+  files. A 4×4 file loads straight into the editor; a wide-format batch
+  file — one matrix per row, 16 columns (m00…m33, row-major) or 17
+  columns (leading label such as wavelength + 16 entries) — can be
+  decomposed in one go (per-row α₁ or failure reason, downloadable
+  results CSV) or sampled row-by-row into the editor. UTF-8, decimal
+  point, delimiter comma/semicolon/tab/whitespace, one optional header
+  line, `#` comments; limits 5 MB / 10,000 matrices. The file is parsed
+  strictly as numbers, locally.
 - **LaTeX report** tab: generate the deterministic, evidence-labelled
   report for the current matrix and download the `.tex` source.
 

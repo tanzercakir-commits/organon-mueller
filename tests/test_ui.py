@@ -144,7 +144,7 @@ def test_report_cb_emits_latex_and_tex_file(tmp_path):
     assert "\\documentclass" in tex and "UI test report" in tex
     assert str(path).endswith(".tex")
     from pathlib import Path
-    assert Path(path).read_text() == tex
+    assert Path(path).read_text(encoding="utf-8") == tex
 
 
 def test_report_cb_passes_tolerances_for_print_precision_data():
@@ -185,3 +185,32 @@ def test_ui_footer_keeps_evidence_discipline():
     assert "novelty" in footer
     assert "ordering heuristic" in footer
     assert "127.0.0.1" in footer
+
+
+def test_report_cb_greek_title_utf8(tmp_path):
+    """Field report (Windows, 2026-07-16): a report title containing this
+    project's daily notation crashed with UnicodeEncodeError because the
+    .tex file was written in the platform code page. The file is now
+    written as UTF-8 explicitly — Greek titles must round-trip."""
+    from pathlib import Path
+
+    title = "Rapor α₁ analizi — β, γ, λ"
+    tex, path, status = ui.report_cb(
+        ui.synthetic_type1(), "type1", "auto", title)
+    assert not status.startswith(ui.STRINGS["err_prefix"])
+    assert Path(path).read_text(encoding="utf-8") == tex
+    assert "α₁" in tex
+
+
+def test_propose_cb_explains_multiple_exact_hypotheses():
+    """Field observation (2026-07-16): several hypotheses can be exact at
+    once (composites subsume fundamentals; verified non-uniqueness) — the
+    UI must explain this exactly when it happens, and stay quiet when it
+    does not."""
+    md, js = ui.propose_cb(ui.synthetic_type1())
+    payload = json.loads(js)
+    assert len(payload["accepted"]) > 1          # the observed situation
+    assert "Several hypotheses are exact" in md
+    assert "not *the* decomposition" in md
+    md2, _ = ui.propose_cb(ui.identity_matrix())  # zero accepted
+    assert "Several hypotheses are exact" not in md2

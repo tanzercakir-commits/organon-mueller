@@ -330,7 +330,8 @@ def compile_pdf(tex_path, out_dir=None) -> Path:
     proc = subprocess.run(
         ["pdflatex", "-interaction=nonstopmode", "-no-shell-escape",
          "-output-directory", str(out_dir), str(tex_path)],
-        capture_output=True, text=True, timeout=120)
+        capture_output=True, text=True, timeout=120,
+        encoding="utf-8", errors="replace")   # log bytes must never crash us
     pdf = out_dir / (tex_path.stem + ".pdf")
     if proc.returncode != 0 or not pdf.exists():
         tail = "\n".join(proc.stdout.splitlines()[-25:])

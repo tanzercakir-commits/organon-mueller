@@ -231,7 +231,7 @@ def tool_generate_report(payload: dict) -> dict:
 
             with tempfile.TemporaryDirectory() as td:
                 p = Path(td) / "report.tex"
-                p.write_text(tex)
+                p.write_text(tex, encoding="utf-8")
                 try:
                     pdf = compile_pdf(p, td)
                     out["pdf_bytes"] = pdf.stat().st_size

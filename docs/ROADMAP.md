@@ -47,7 +47,7 @@ PHASE F — Closure (Stage 20–22)                             ✅
 ```
 
 Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
-**306 tests green**, CI green on all three matrix cells; verification
+**342 tests green**, CI green on all three matrix cells; verification
 contract intact. Closure: `docs/retrospective-v2.md`.
 Decisions TAKEN by the user (2026-07-16): licence = MIT; repository made
 PUBLIC; **v1.0.0 tag applied** (user-authorized push; see
@@ -64,11 +64,17 @@ change — reasoned in the retrospective).
 
 ```
 POST-CLOSURE MILESTONES (new series — FROZEN-22 count untouched)
-└── UI-1  Local web interface (user distribution decision):            ✅
-          `organon-ui` — Gradio front end over the hardened numeric-only
-          tool layer; 127.0.0.1 only, share=False hard-coded (Stage 18
-          posture); English copy; version renumbered to 1.0.0
-          (spec: specs/milestone-ui-01.md)
+├── UI-1  Local web interface (user distribution decision):            ✅
+│         `organon-ui` — Gradio front end over the hardened numeric-only
+│         tool layer; 127.0.0.1 only, share=False hard-coded (Stage 18
+│         posture); English copy; version renumbered to 1.0.0
+│         (spec: specs/milestone-ui-01.md)
+└── UI-2  File loading + batch decomposition (v1.1.0):                 ✅
+          .csv/.tsv/.txt single-matrix and wide-batch (16/17-col) input;
+          strict numbers-only parser (second parse surface, capped +
+          K26); results table + CSV download; Windows field report →
+          repo-wide explicit-encoding sweep + static/dynamic guards +
+          a Windows CI cell (spec: specs/milestone-ui-02.md)
 ```
 
 Time calibration (handoff): 2–4 months in tight focus, 6–12 months part-time.

@@ -183,6 +183,6 @@ def test_demo_sample_report_compiles(tmp_path):
     tex = rep.to_latex()
     assert tex == build_demo_report().to_latex()   # deterministic
     p = tmp_path / "sample-report.tex"
-    p.write_text(tex)
+    p.write_text(tex, encoding="utf-8")
     pdf = compile_pdf(p, tmp_path)
     assert pdf.exists() and pdf.stat().st_size > 1000

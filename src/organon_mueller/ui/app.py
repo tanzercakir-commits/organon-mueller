@@ -61,6 +61,27 @@ STRINGS = {
     "tab_decompose": "Decompose",
     "tab_propose": "Propose hypotheses",
     "tab_report": "LaTeX report",
+    "tab_file": "File / batch",
+    "file_help": (
+        "Load Mueller matrices from a text file (`.csv`, `.tsv`, `.txt`; "
+        "UTF-8, decimal point, delimiter comma/semicolon/tab/whitespace, "
+        "optional single header line, `#` comments ignored).\n\n"
+        "- **Single matrix**: 4 rows × 4 columns → use *Load into "
+        "editor*.\n"
+        "- **Batch**: one matrix per row — 16 columns (m00…m33, "
+        "row-major) or 17 columns (leading label such as wavelength + "
+        "16 entries). *Decompose all rows* runs the symmetry/variant/"
+        "tolerance settings above on every row; *Load into editor* "
+        "brings one chosen row into the grid for hands-on work.\n\n"
+        "Limits: 5 MB, 10,000 matrices. The file is parsed strictly as "
+        "numbers on your machine; nothing is uploaded anywhere."
+    ),
+    "file_label": "Matrix file (.csv / .tsv / .txt)",
+    "row_label": "Batch row to load (1-based)",
+    "btn_load_file": "Load into editor",
+    "btn_batch": "Decompose all rows",
+    "batch_results_label": "Batch results",
+    "batch_csv_label": "Download results (.csv)",
     "symmetry_label": "Symmetry hypothesis",
     "variant_label": "Variant (a/b equation sets; auto = denominator health)",
     "advanced": "Advanced tolerances",
@@ -69,6 +90,15 @@ STRINGS = {
     "rank1_tol": "rank1_tol (rank-1 residual threshold)",
     "btn_decompose": "Decompose",
     "btn_propose": "Try every hypothesis",
+    "propose_nonunique_note": (
+        "**Several hypotheses are exact at once.** That is expected, not "
+        "an error: composite types subsume fundamental ones, and a "
+        "decomposition is generally *a* decomposition, not *the* "
+        "decomposition (verified non-uniqueness — see "
+        "`docs/candidate-findings.md`). Selecting the physically "
+        "meaningful one is a domain judgement the engine deliberately "
+        "does not make."
+    ),
     "btn_report": "Generate LaTeX",
     "m1_label": "Component M1 (symmetric part, α₁·M1)",
     "m2_label": "Component M2 (remainder)",
@@ -241,6 +271,10 @@ def propose_cb(grid):
         lines.append("Rejected (with reasons):")
         lines += [f"- `{r['hypothesis']}`: {r['reason']}"
                   for r in result["rejected"]]
+    if len(result["accepted"]) > 1:
+        # field observation (2026-07-16): several exact hypotheses at once
+        # prompts "which one is right?" — answer it where it happens
+        lines += ["", STRINGS["propose_nonunique_note"]]
     lines += ["", f"*{result['note']}*"]
     return "\n".join(lines), json.dumps(result, indent=2)
 
@@ -251,11 +285,15 @@ _REPORT_TMP = None
 _REPORT_SEQ = itertools.count(1)
 
 
-def _new_report_path() -> Path:
+def _new_artifact_path(stem: str, suffix: str) -> Path:
     global _REPORT_TMP
     if _REPORT_TMP is None:
         _REPORT_TMP = tempfile.TemporaryDirectory(prefix="organon_ui_")
-    return Path(_REPORT_TMP.name) / f"report-{next(_REPORT_SEQ):04d}.tex"
+    return Path(_REPORT_TMP.name) / f"{stem}-{next(_REPORT_SEQ):04d}{suffix}"
+
+
+def _new_report_path() -> Path:
+    return _new_artifact_path("report", ".tex")
 
 
 def report_cb(grid, symmetry, variant, title,
@@ -275,8 +313,103 @@ def report_cb(grid, symmetry, variant, title,
         return "", None, _err(result["error"])
     tex = result["latex"]
     path = _new_report_path()
-    path.write_text(tex)
+    path.write_text(tex, encoding="utf-8")
     return tex, str(path), "Report generated (evidence-labelled LaTeX)."
+
+
+# -- file loading / batch (milestone UI-2) ----------------------------------
+
+def _csv_safe(label: str) -> str:
+    """Neutralize spreadsheet formula injection in a display label written
+    to the results CSV (a label like '=HYPERLINK(...)' must not execute
+    when the CSV is opened in a spreadsheet app)."""
+    return ("'" + label) if label[:1] in ("=", "+", "-", "@") else label
+
+
+def load_file_cb(file_path, row):
+    """-> (grid_matrix, status_markdown). Loads a single-matrix file, or
+    the chosen row of a batch file, into the editor grid."""
+    from .loaders import parse_matrix_file
+
+    keep = [[0.0] * 4 for _ in range(4)]
+    if not file_path:
+        return keep, _err("no file selected")
+    try:
+        parsed = parse_matrix_file(file_path)
+    except ValueError as exc:
+        return keep, _err(exc)
+    head_note = (" (skipped 1 header line)"
+                 if parsed.get("header_skipped") else "")
+    if parsed["kind"] == "single":
+        return (parsed["matrix"],
+                "Loaded the 4×4 matrix into the editor." + head_note)
+    n = len(parsed["matrices"])
+    try:
+        idx = int(row)
+    except (TypeError, ValueError):
+        return keep, _err("row must be a number")
+    if not (1 <= idx <= n):
+        return keep, _err(f"row must be between 1 and {n} "
+                          "(the file has that many matrices)")
+    label = parsed["labels"][idx - 1]
+    return (parsed["matrices"][idx - 1],
+            f"Batch file with {n} matrices — loaded row {idx} "
+            f"(label `{label}`) into the editor." + head_note)
+
+
+def batch_cb(file_path, symmetry, variant, rank_tol, psd_tol, rank1_tol):
+    """-> (summary_markdown, results_rows, csv_path_or_None). Decomposes
+    every matrix in the file through the hardened tool layer."""
+    from ..mcp_server.tools import tool_decompose_mueller
+
+    if not file_path:
+        return _err("no file selected"), [], None
+    from .loaders import parse_matrix_file
+    try:
+        parsed = parse_matrix_file(file_path)
+    except ValueError as exc:
+        return _err(exc), [], None
+    if parsed["kind"] == "single":
+        labels, matrices = ["1"], [parsed["matrix"]]
+    else:
+        labels, matrices = parsed["labels"], parsed["matrices"]
+
+    payload_base = {"symmetry": symmetry,
+                    **_tols(rank_tol, psd_tol, rank1_tol)}
+    if symmetry in ("type1", "type2", "type3"):
+        payload_base["variant"] = variant
+
+    rows, ok = [], 0
+    for label, matrix in zip(labels, matrices):
+        result = tool_decompose_mueller({"mueller": matrix, **payload_base})
+        if "error" in result:
+            rows.append([label, "failed", result["error"]])
+        else:
+            ok += 1
+            rows.append([label, "ok", f"{result['alpha1']:.9g}"])
+
+    csv_path = _new_artifact_path("batch-results", ".csv")
+    lines = ["label,status,alpha1_or_reason"]
+    for label, status, detail in rows:
+        # labels AND details are quoted+escaped (review UI-2 finding 2: a
+        # comma-bearing label from a tab-delimited file must not corrupt
+        # the CSV structure); the formula-injection guard sits inside the
+        # quotes.
+        label_q = '"' + _csv_safe(str(label)).replace('"', '""') + '"'
+        detail_q = '"' + str(detail).replace('"', '""') + '"'
+        lines.append(f"{label_q},{status},{detail_q}")
+    csv_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    head_note = (" Skipped 1 header line."
+                 if parsed.get("header_skipped") else "")
+    summary = (f"**{len(rows)} matrices — {ok} decomposed, "
+               f"{len(rows) - ok} failed** (symmetry `{symmetry}`"
+               + (f", variant `{variant}`"
+                  if "variant" in payload_base else "") + ")."
+               + head_note + " "
+               "Failures carry their reasons; scores/health are not "
+               "evidence — acceptance is decided by the exact solvers.")
+    return summary, rows, str(csv_path)
 
 
 # --------------------------------------------------------------------------
@@ -349,6 +482,32 @@ def build_app():
             btn_p.click(propose_cb, inputs=[matrix],
                         outputs=[propose_md, propose_json])
 
+        with gr.Tab(STRINGS["tab_file"]):
+            gr.Markdown(STRINGS["file_help"])
+            file_in = gr.File(label=STRINGS["file_label"],
+                              file_types=[".csv", ".tsv", ".txt"],
+                              type="filepath")
+            with gr.Row():
+                row_num = gr.Number(value=1, precision=0,
+                                    label=STRINGS["row_label"])
+                btn_load = gr.Button(STRINGS["btn_load_file"])
+                btn_batch = gr.Button(STRINGS["btn_batch"],
+                                      variant="primary")
+            file_status = gr.Markdown("")
+            batch_summary = gr.Markdown("")
+            batch_table = gr.Dataframe(
+                headers=["label", "status", "alpha1 / reason"],
+                interactive=False, type="array",
+                label=STRINGS["batch_results_label"])
+            batch_csv = gr.File(label=STRINGS["batch_csv_label"])
+            btn_load.click(load_file_cb, inputs=[file_in, row_num],
+                           outputs=[matrix, file_status])
+            btn_batch.click(batch_cb,
+                            inputs=[file_in, symmetry, variant,
+                                    rank_tol, psd_tol, rank1_tol],
+                            outputs=[batch_summary, batch_table,
+                                     batch_csv])
+
         with gr.Tab(STRINGS["tab_report"]):
             title_box = gr.Textbox(value="organon-mueller report",
                                    label=STRINGS["report_title_label"])
@@ -394,7 +553,17 @@ def main(argv=None, _launch=None):
                         help="do not open a browser tab automatically")
     args = parser.parse_args(argv)
 
-    app = build_app()
+    try:
+        app = build_app()
+    except ImportError as exc:
+        # The console script is installed even WITHOUT the ui extra (user
+        # field report, 2026-07-16): a bare ModuleNotFoundError traceback
+        # here would violate K26 — one readable line instead.
+        if getattr(exc, "name", None) == "gradio":
+            raise SystemExit(
+                "organon-ui: the web-interface extra is not installed.\n"
+                'Fix:  pip install "organon-mueller[ui]"') from None
+        raise
     kwargs = launch_kwargs(port=args.port, open_browser=not args.no_browser)
     if _launch is not None:
         return _launch(app, kwargs)

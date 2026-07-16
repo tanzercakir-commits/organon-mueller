@@ -12,7 +12,7 @@ HTML = ROOT / "web" / "index.html"
 
 
 def _html():
-    return HTML.read_text()
+    return HTML.read_text(encoding="utf-8")
 
 
 # -- structural -------------------------------------------------------------------

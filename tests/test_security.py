@@ -329,7 +329,8 @@ def test_guarded_campaign_info_graceful_without_egglog():
         "print('OK')\n"
     )
     out = subprocess.run([sys.executable, "-c", code],
-                         capture_output=True, text=True, timeout=120)
+                         capture_output=True, text=True, timeout=120,
+                         encoding="utf-8", errors="replace")
     assert out.returncode == 0 and "OK" in out.stdout, (
         out.stdout + out.stderr)
 

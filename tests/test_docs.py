@@ -9,7 +9,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
 def _read(rel):
-    return (ROOT / rel).read_text()
+    return (ROOT / rel).read_text(encoding="utf-8")
 
 
 # -- links resolve ----------------------------------------------------------------
@@ -87,7 +87,8 @@ def test_stated_test_count_matches_collection():
 
     out = subprocess.run(
         [sys.executable, "-m", "pytest", "--co", "-q"],
-        cwd=ROOT, capture_output=True, text=True, timeout=300)
+        cwd=ROOT, capture_output=True, text=True, timeout=300,
+        encoding="utf-8", errors="replace")   # Windows code-page hazard
     # sum the per-file "path: N" tallies pytest prints in -q collect mode
     counts = [int(n) for n in re.findall(r":\s*(\d+)\s*$", out.stdout, re.M)]
     total = sum(counts)
@@ -161,3 +162,37 @@ def test_pyproject_extras_match_readme():
         assert re.search(rf"^{extra}\s*=", pyproject, re.M), extra
         assert f'[{extra}' in _read("README.md") or f",{extra}" in _read(
             "README.md") or f'"{extra}' in _read("README.md")
+
+
+def test_text_io_always_declares_encoding():
+    """Cross-platform guard (user field report, VSCode/Windows, 2026-07-16):
+    a read_text / write_text call WITHOUT encoding= uses the platform
+    default code page — on Windows that crashed the report tab for a title
+    containing this project's daily notation (a UnicodeEncodeError leaking
+    through, violating K26). Every text I/O in the shipped tree must
+    declare encoding explicitly."""
+    offenders = []
+    for base in ("src", "tests", "examples"):
+        for path in (ROOT / base).rglob("*.py"):
+            if "__pycache__" in path.parts:
+                continue
+            text = path.read_text(encoding="utf-8")
+            for m in re.finditer(r"\.(?:read_text|write_text)\(", text):
+                # inspect the call's argument span (up to 200 chars is
+                # plenty for these call sites)
+                span = text[m.end():m.end() + 200]
+                depth, arg = 1, []
+                for ch in span:
+                    if ch == "(":
+                        depth += 1
+                    elif ch == ")":
+                        depth -= 1
+                        if depth == 0:
+                            break
+                    arg.append(ch)
+                if "encoding=" not in "".join(arg):
+                    line = text[:m.start()].count("\n") + 1
+                    offenders.append(f"{path.relative_to(ROOT)}:{line}")
+    assert not offenders, (
+        "text I/O without explicit encoding= (Windows code-page hazard): "
+        + ", ".join(offenders))
