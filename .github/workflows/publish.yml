@@ -1,0 +1,58 @@
+# Publish to PyPI via Trusted Publishing (OIDC) — no API tokens anywhere.
+#
+# Security posture:
+# - Triggers: a published GitHub Release, or a manual run from the Actions
+#   tab (workflow_dispatch). NO pull_request trigger — forks cannot invoke
+#   this workflow.
+# - The build job has the default read-only permissions. Only the publish
+#   job requests `id-token: write`, which lets PyPI verify (via OIDC) that
+#   the upload really comes from THIS repository's THIS workflow — the
+#   trusted-publisher binding is configured on the PyPI side by the owner.
+# - The `pypi` environment scopes the permission further; protection rules
+#   (e.g. required reviewers) can be added to it later without touching
+#   this file.
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# Enforced in-file, not inherited from mutable repo settings (review):
+# every job is read-only unless it explicitly requests more — only the
+# publish job below adds id-token: write.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build sdist + wheel
+        run: |
+          pip install build twine
+          python -m build
+          python -m twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/organon-mueller
+    permissions:
+      id-token: write   # OIDC token for PyPI trusted publishing — nothing else
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

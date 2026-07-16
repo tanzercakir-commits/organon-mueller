@@ -48,13 +48,15 @@ PHASE F — Closure (Stage 20–22)                             ✅
 
 Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
 **306 tests green**, CI green on all three matrix cells; verification
-contract intact. Closure: `docs/retrospective-v2.md`. Gated user decisions
-(not taken): v1.0.0 release tag (`docs/v1.0-tag-proposal.md` — renumbered
-from v2.0 by user decision, 2026-07-16: organon-mueller is a separate
-project, its semver starts at 1.x), Kuntman package
-submission, egglog upstream, MCP hosting, web exposure. (Licence: decided
-2026-07-16 — MIT; feedback package moved out of the repo to an archive the
-same day, public-face de-personalization.)
+contract intact. Closure: `docs/retrospective-v2.md`.
+Decisions TAKEN by the user (2026-07-16): licence = MIT; repository made
+PUBLIC; **v1.0.0 tag applied** (user-authorized push; see
+`docs/v1.0-tag-proposal.md` — renumbered from v2.0: organon-mueller is a
+separate project, its semver starts at 1.x) and the GitHub Release
+published by the user; feedback package moved out of the repo to an
+archive (public-face de-personalization).
+Still gated (not taken): feedback-package submission, egglog upstream
+issue, MCP hosting, exposure beyond localhost.
 Note: the FROZEN-22
 stage COUNT does not change; A18's "hosted" definition was revised to
 "static, hosting-free" for security reasons (a scope change, not a count
