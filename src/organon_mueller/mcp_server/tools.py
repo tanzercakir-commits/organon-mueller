@@ -119,7 +119,11 @@ def tool_decompose_mueller(payload: dict) -> dict:
             raise ValueError(
                 f"symmetry must be one of {_FUNDAMENTAL + _COMPOSITE}")
         return _result_to_dict(r)
-    except (ValueError, DecompositionError) as exc:
+    except (ValueError, DecompositionError,
+            np.linalg.LinAlgError) as exc:
+        # LinAlgError subclasses ValueError only on numpy >= 2.0; listed
+        # explicitly so numpy 1.x solver failures also return a reason
+        # (review UI-1, finding 6).
         return {"error": str(exc)}
 
 
@@ -154,7 +158,9 @@ def tool_propose_hypotheses(payload: dict) -> dict:
             "note": "scores are an ordering heuristic, not evidence; "
                     "acceptance is decided solely by the exact solvers",
         }
-    except ValueError as exc:
+    except (ValueError, np.linalg.LinAlgError) as exc:
+        # LinAlgError listed for numpy 1.x — see the note in
+        # tool_decompose_mueller (review UI-1, finding 6)
         return {"error": str(exc)}
 
 
@@ -189,7 +195,9 @@ def tool_guarded_campaign_info() -> dict:
 def tool_generate_report(payload: dict) -> dict:
     """Build a LaTeX report from a decomposition request (runs
     tool_decompose_mueller internally, then renders). payload adds
-    optional "title", "date", "compile_pdf": bool (default False)."""
+    optional "title", "date", "compile_pdf": bool (default False), and the
+    same optional tolerances as tool_decompose_mueller — validated
+    identically (UI-1: print-precision data needs looser tolerances)."""
     from ..decomposition import DecompositionError, decompose
     from ..reporting import Report, compile_pdf, decomposition_section
 
@@ -202,9 +210,18 @@ def tool_generate_report(payload: dict) -> dict:
         variant = payload.get("variant", "auto")
         if variant not in ("a", "b", "auto"):
             raise ValueError("variant must be 'a', 'b' or 'auto'")
+        tols = {}
+        for k in ("rank_tol", "psd_tol", "rank1_tol"):
+            if k in payload:
+                v = payload[k]
+                if isinstance(v, bool) or not isinstance(v, (int, float)):
+                    raise ValueError(f"{k} must be a real number in (0, 1)")
+                if not (0 < v < 1):
+                    raise ValueError(f"{k} must be in (0, 1)")
+                tols[k] = float(v)
         title = str(payload.get("title", "organon-mueller report"))[:200]
         date = str(payload.get("date", ""))[:40]
-        r = decompose(mueller=m, symmetry=symmetry, variant=variant)
+        r = decompose(mueller=m, symmetry=symmetry, variant=variant, **tols)
         rep = Report(title=title, date=date).add(decomposition_section(r))
         tex = rep.to_latex()
         out = {"latex": tex}
@@ -223,5 +240,9 @@ def tool_generate_report(payload: dict) -> dict:
                 except RuntimeError as exc:
                     out["pdf_error"] = str(exc)[:300]
         return out
-    except (ValueError, DecompositionError) as exc:
+    except (ValueError, DecompositionError,
+            np.linalg.LinAlgError) as exc:
+        # LinAlgError subclasses ValueError only on numpy >= 2.0; listed
+        # explicitly so numpy 1.x solver failures also return a reason
+        # (review UI-1, finding 6).
         return {"error": str(exc)}

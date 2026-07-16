@@ -20,11 +20,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install
         # discovery (egglog) installs only on >=3.11 via its marker; mcp is
-        # lightweight and enables the MCP tool/registration tests. playwright
-        # (web UI headless) and pdflatex (PDF compile) are intentionally NOT
-        # installed here — those tests self-skip, so CI stays fast and the
-        # skips are honest optionality. On 3.10 the egglog-gated discovery
-        # modules do not collect; the doc-count drift guard accounts for this.
-        run: pip install -e ".[test,discovery,mcp]"
+        # lightweight and enables the MCP tool/registration tests; ui
+        # (gradio) enables the local-interface tests (milestone UI-1).
+        # playwright (static-viewer headless) and pdflatex (PDF compile) are
+        # intentionally NOT installed here — those tests self-skip, so CI
+        # stays fast and the skips are honest optionality. On 3.10 the
+        # egglog-gated discovery modules do not collect; the doc-count drift
+        # guard accounts for this.
+        run: pip install -e ".[test,discovery,mcp,ui]"
       - name: Run test suite
         run: pytest

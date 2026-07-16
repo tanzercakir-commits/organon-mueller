@@ -332,3 +332,36 @@ def test_guarded_campaign_info_graceful_without_egglog():
                          capture_output=True, text=True, timeout=120)
     assert out.returncode == 0 and "OK" in out.stdout, (
         out.stdout + out.stderr)
+
+
+def test_report_tool_tolerance_validation_matches_decompose():
+    """UI-1: tool_generate_report gained the same optional tolerances as
+    tool_decompose_mueller. The validation must be identical — bad types
+    and out-of-range values return {"error": ...} (K26), and valid
+    tolerances actually reach the solver (print-precision data succeeds
+    only with the looser preset)."""
+    from organon_mueller.mcp_server import tool_generate_report
+
+    good = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    for bad in (None, [0.5], {}, "0.5", True):
+        out = tool_generate_report(
+            {"mueller": good, "symmetry": "type1", "rank_tol": bad})
+        assert "error" in out and "rank_tol" in out["error"]
+    for out_of_range in (0.0, 1.0, -0.1, 2.0):
+        out = tool_generate_report(
+            {"mueller": good, "symmetry": "type1",
+             "psd_tol": out_of_range})
+        assert "error" in out and "psd_tol" in out["error"]
+    # valid tolerances reach the solver: AO2016 print data reports only
+    # with the demo preset (defaults reject it as rank-4)
+    from organon_mueller.ui.app import AO2016_PRESET, ao2016_mixture
+    strict = tool_generate_report(
+        {"mueller": ao2016_mixture(), "symmetry": "type3", "variant": "a"})
+    assert "error" in strict
+    loose = tool_generate_report(
+        {"mueller": ao2016_mixture(), "symmetry": AO2016_PRESET["symmetry"],
+         "variant": AO2016_PRESET["variant"],
+         "rank_tol": AO2016_PRESET["rank_tol"],
+         "psd_tol": AO2016_PRESET["psd_tol"],
+         "rank1_tol": AO2016_PRESET["rank1_tol"]})
+    assert "latex" in loose and "\\documentclass" in loose["latex"]

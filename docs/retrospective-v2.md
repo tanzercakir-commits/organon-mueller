@@ -1,4 +1,4 @@
-# Organon v2 (organon-mueller) — Project Retrospective (v2.0 closure)
+# Organon v2 (organon-mueller) — Project Retrospective (v2 closure)
 
 **Date**: 2026-07-16 · **Scope**: the FROZEN-22 roadmap (stages A0–A22) ·
 **State at writing**: A0–A21 complete, 288 tests green, CI green on the
@@ -224,7 +224,7 @@ count stayed at 22 throughout.
 | A19 | E | README/architecture/user-guide; 10 doc-drift guards | ✅ |
 | A20 | F | guarded-atoms negative result; candidate-findings inventory; **English transition** | ✅ |
 | A21 | F | external validation; CI green ×3; independent theorem reproduction | ✅ |
-| A22 | F | v2.0 closure: this retrospective, completion assessment, tag proposal, future work | ✅ |
+| A22 | F | v2 closure: this retrospective, completion assessment, tag proposal, future work | ✅ |
 
 ## Open ends / future work
 
@@ -252,8 +252,10 @@ v2 closes with everything that is internal to the repository complete and
 verified, and everything that reaches outside the repository reserved for a
 human. Concretely, the following are *not* done and are not the assistant's
 to do: submitting or sending the Kuntman package, filing the egglog upstream
-issue, hosting or exposing the MCP server or web viewer, applying the v2.0
-version tag, and — most importantly — making any claim that a candidate
+issue, hosting or exposing the MCP server or web viewer, applying the
+release tag (`v1.0.0` — renumbered from the original v2.0 proposal by user
+decision, 2026-07-16; see `docs/v1.0-tag-proposal.md`), and — most
+importantly — making any claim that a candidate
 result is physically new or interesting. That last one is step 5 of the
 written novelty protocol, and it is reserved for people. The engine's job
 was to make every such judgement *safe to make* by getting the mathematics

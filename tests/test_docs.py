@@ -67,13 +67,14 @@ def _full_optional_stack() -> bool:
     """The advertised count only fully materializes when every optional
     dependency is importable: egglog (6 discovery test modules gate on it
     at module level and DON'T collect without it, e.g. on Python 3.10),
+    gradio (test_ui.py gates on it at module level — the ui extra), and
     mcp and playwright (function-level gates). On a partial environment
     (typical CI 3.10, or CI without mcp/playwright) collection is a
     subset, so the exact-equality check is only enforced on a full env."""
     import importlib.util
 
     return all(importlib.util.find_spec(m) is not None
-               for m in ("egglog", "mcp", "playwright"))
+               for m in ("egglog", "mcp", "playwright", "gradio"))
 
 
 def test_stated_test_count_matches_collection():
@@ -144,7 +145,7 @@ def test_no_stale_stage2_status_in_readme():
 def test_pyproject_extras_match_readme():
     """README install commands reference extras that pyproject defines."""
     pyproject = _read("pyproject.toml")
-    for extra in ("test", "discovery", "mcp"):
+    for extra in ("test", "discovery", "mcp", "ui"):
         assert re.search(rf"^{extra}\s*=", pyproject, re.M), extra
         assert f'[{extra}' in _read("README.md") or f",{extra}" in _read(
             "README.md") or f'"{extra}' in _read("README.md")

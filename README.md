@@ -45,16 +45,18 @@ vectors/matrices, Z-matrix states and biquaternions.
   layer through the covariance representation.
 - **Reports** any of the above as deterministic, evidence-labelled LaTeX.
 
-## Three usage surfaces
+## Four usage surfaces
 
 | Surface | For | Entry |
 |---|---|---|
 | Python package | scripting / integration | `import organon_mueller` |
+| Local web UI | interactive use, no code (localhost only) | [`docs/README-ui.md`](docs/README-ui.md) |
 | MCP server | tool use from an assistant | [`docs/README-mcp.md`](docs/README-mcp.md) |
 | Static web viewer | reading results in a browser (no terminal) | `web/index.html` |
 
-The MCP server and web viewer are **code + tests only**; the project does not
-host or expose them anywhere — running them is your decision.
+Nothing is hosted or exposed by the project. The local web UI binds to
+127.0.0.1 only (no tunnel, no public link); the MCP server and static
+viewer are **code + tests only** — running them is your decision.
 
 ## Quickstart
 
@@ -62,8 +64,11 @@ host or expose them anywhere — running them is your decision.
 pip install -e ".[test]"             # base (Python >= 3.10)
 pip install -e ".[test,discovery]"   # + discovery engine (egglog needs Python >= 3.11)
 pip install -e ".[test,discovery,mcp]"  # + MCP server surface
+pip install -e ".[test,ui]"          # + local web interface
 
-python -m pytest -q                  # full suite: 288 tests collected (discovery self-skips on py3.10)
+python -m pytest -q                  # full suite: 305 tests collected (discovery self-skips on py3.10)
+
+organon-ui                           # local web UI at http://127.0.0.1:7860 (needs the ui extra)
 ```
 
 ```python

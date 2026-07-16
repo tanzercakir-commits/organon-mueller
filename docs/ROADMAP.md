@@ -43,18 +43,29 @@ PHASE E — Packaging (Stage 16–19)                           ✅ (at A19)
 PHASE F — Closure (Stage 20–22)                             ✅
 ├── 20 Consolidation of publication-candidate results (+guarded-atoms 2nd-half debt) ✅ (negative-result debt closed; repo English)
 ├── 21 External verification (group feedback, independent replication) ✅ (288 green; CI ×3; D1/D2 found+fixed)
-└── 22 v2.0 closure evaluation + retrospective ✅ (retrospective-v2 + FROZEN-22 assessment + v2.0 tag PROPOSAL)
+└── 22 v2.0 closure evaluation + retrospective ✅ (retrospective-v2 + FROZEN-22 assessment + version-tag PROPOSAL)
 ```
 
 Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
-**288 tests green**, CI green on all three matrix cells; verification
+**305 tests green**, CI green on all three matrix cells; verification
 contract intact. Closure: `docs/retrospective-v2.md`. Gated user decisions
-(not taken): v2.0 tag (`docs/v2.0-tag-proposal.md`), Kuntman package
+(not taken): v1.0.0 release tag (`docs/v1.0-tag-proposal.md` — renumbered
+from v2.0 by user decision, 2026-07-16: organon-mueller is a separate
+project, its semver starts at 1.x), Kuntman package
 submission, egglog upstream, MCP hosting, web exposure, licence.
 Note: the FROZEN-22
 stage COUNT does not change; A18's "hosted" definition was revised to
 "static, hosting-free" for security reasons (a scope change, not a count
 change — reasoned in the retrospective).
+
+```
+POST-CLOSURE MILESTONES (new series — FROZEN-22 count untouched)
+└── UI-1  Local web interface (user distribution decision):            ✅
+          `organon-ui` — Gradio front end over the hardened numeric-only
+          tool layer; 127.0.0.1 only, share=False hard-coded (Stage 18
+          posture); English copy; version renumbered to 1.0.0
+          (spec: specs/milestone-ui-01.md)
+```
 
 Time calibration (handoff): 2–4 months in tight focus, 6–12 months part-time.
 A stage ≈ one milestone unit in v1; every stage closes with a spec → impl →
