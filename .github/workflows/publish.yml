@@ -37,7 +37,7 @@ jobs:
           pip install build twine
           python -m build
           python -m twine check dist/*
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7   # node24 (v4 targeted deprecated node20)
         with:
           name: dist
           path: dist/
@@ -51,7 +51,7 @@ jobs:
     permissions:
       id-token: write   # OIDC token for PyPI trusted publishing — nothing else
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8   # node24 (v4 targeted deprecated node20)
         with:
           name: dist
           path: dist/

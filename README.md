@@ -1,5 +1,10 @@
 # organon-mueller
 
+[![PyPI](https://img.shields.io/pypi/v/organon-mueller)](https://pypi.org/project/organon-mueller/)
+[![Python](https://img.shields.io/pypi/pyversions/organon-mueller)](https://pypi.org/project/organon-mueller/)
+[![CI](https://github.com/tanzercakir-commits/organon-mueller/actions/workflows/ci.yml/badge.svg)](https://github.com/tanzercakir-commits/organon-mueller/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A symbolic engine for the **Stokes–Mueller algebra of polarization optics**:
 it decomposes depolarizing Mueller matrices into nondepolarizing components,
 discovers and certifies algebraic identities of the underlying state algebra,
@@ -40,12 +45,19 @@ verification contract.
 
 Requires Python ≥ 3.10 (the discovery engine needs ≥ 3.11).
 
-```bash
-pip install -e ".[test]"                # base
-pip install -e ".[test,discovery]"      # + discovery engine (egglog)
-pip install -e ".[test,discovery,mcp]"  # + MCP server surface
-pip install -e ".[test,ui]"             # + local web interface
+From [PyPI](https://pypi.org/project/organon-mueller/):
 
+```bash
+pip install organon-mueller                # base
+pip install "organon-mueller[ui]"          # + local web interface
+pip install "organon-mueller[discovery]"   # + discovery engine (egglog)
+pip install "organon-mueller[mcp]"         # + MCP server surface
+```
+
+For development, from a clone:
+
+```bash
+pip install -e ".[test,discovery,mcp,ui]"
 python -m pytest -q                     # full suite: 306 tests collected (discovery self-skips on py3.10)
 ```
 

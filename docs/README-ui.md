@@ -6,8 +6,8 @@ on your own machine. No account, no service, no hosting, no cost.
 ## Install and run
 
 ```bash
-pip install -e ".[test,ui]"     # from a clone; or: pip install "organon-mueller[ui] @ git+https://github.com/tanzercakir-commits/organon-mueller"
-organon-ui                      # opens http://127.0.0.1:7860 in your browser
+pip install "organon-mueller[ui]"   # from PyPI (or from a clone: pip install -e ".[test,ui]")
+organon-ui                          # opens http://127.0.0.1:7860 in your browser
 ```
 
 Options: `organon-ui --port 8000` (different port), `organon-ui
