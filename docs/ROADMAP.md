@@ -47,7 +47,7 @@ PHASE F — Closure (Stage 20–22)                             ✅
 ```
 
 Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
-**305 tests green**, CI green on all three matrix cells; verification
+**306 tests green**, CI green on all three matrix cells; verification
 contract intact. Closure: `docs/retrospective-v2.md`. Gated user decisions
 (not taken): v1.0.0 release tag (`docs/v1.0-tag-proposal.md` — renumbered
 from v2.0 by user decision, 2026-07-16: organon-mueller is a separate

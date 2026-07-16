@@ -1,16 +1,11 @@
 # organon-mueller
 
-An experimental system that automates the Stokes–Mueller polarization algebra
-of the Kuntman–Arteaga formalism, pairing a **symbolic decomposition/derivation
-engine** with an **identity-discovery engine** — every result gated by a
-written verification contract.
-
-Successor to [Organon v1](https://github.com/tanzercakir-commits/Organon), a
-first-order-logic physics reasoning system (frozen at `v1.0`). v2 narrows the
-logic to the **equational fragment of FOL** (Birkhoff rules) with
-**Horn-conditional guards** (`P(x) → t₁ = t₂`), and deepens the domain to the
-algebra of polarized light: Jones matrices, Mueller matrices, covariance
-vectors/matrices, Z-matrix states and biquaternions.
+A symbolic engine for the **Stokes–Mueller algebra of polarization optics**:
+it decomposes depolarizing Mueller matrices into nondepolarizing components,
+discovers and certifies algebraic identities of the underlying state algebra,
+models coupled oriented dipoles, and reports every result as
+evidence-labelled LaTeX — with each mathematical statement gated by a written
+verification contract.
 
 > **Status: experimental research software.** Results are labelled by evidence
 > class — **verified** (machine-checked against published equations/tables:
@@ -18,58 +13,52 @@ vectors/matrices, Z-matrix states and biquaternions.
 > results; no novelty or physics claim — that judgement is left to human
 > experts, per [`docs/novelty-protocol.md`](docs/novelty-protocol.md)).
 >
-> **v2 is complete.** All 22 FROZEN-22 stages are delivered — full suite
-> green, CI green on Python 3.10–3.12. See
-> [`docs/retrospective-v2.md`](docs/retrospective-v2.md) for the closure
-> retrospective and [`docs/ROADMAP.md`](docs/ROADMAP.md) for the stage map.
->
-> **No licence yet.** Licensing is deliberately deferred and is the author's
+> **No license yet.** Licensing is deliberately deferred and is the author's
 > decision; until a `LICENSE` file is added, no usage rights are granted.
 
 ## What it does
 
-- **Represents** a pure state in six isomorphic ways (`J`, `M = ZZ*`, covariance
-  `H`, `|h⟩`, `Z`, biquaternion) with exact conversions, following JOSA A **34**,
-  80 (2017) and PRA **95**, 063819 (2017).
+- **Represents** a pure polarization state in six isomorphic ways — Jones
+  matrix `J`, Mueller matrix `M = ZZ*`, covariance matrix `H`, covariance
+  vector `|h⟩ = (τ, α, β, γ)`, Z-matrix, and biquaternion — with exact,
+  symbolically proven conversions between all of them [1, 2, 3].
 - **Decomposes** depolarizing Mueller matrices into symmetry-conditioned
-  nondepolarizing components — the six fundamental variants and three composite
-  types of Appl. Opt. **55**, 2543 (2016), *derived* from rank-1 minor
-  conditions (not transcribed), plus a beyond-paper rank-3 three-term zone.
-- **Discovers** algebraic identities by equality saturation over a covariance-
-  vector term language (egglog), with every candidate certified by engine-
-  independent symbolic proof; guarded atoms open a Horn-conditional channel.
-- **Models** coupled oriented dipoles (PRB **98**, 045410 (2018); Symmetry
-  **12**, 1790 (2020); an OA-in-ensemble preprint): the three-term scattering
-  decomposition as a theorem, hybridization, optical activity, Perrin
+  nondepolarizing components: the six fundamental variants and three
+  composite types of the symmetry-conditioned decomposition [4], *derived*
+  from rank-1 minor conditions (not transcribed from the published tables),
+  plus a rank-3 three-term zone that goes beyond the published cases.
+- **Discovers** algebraic identities by equality saturation over a
+  covariance-vector term language (egglog), with every candidate certified
+  by engine-independent symbolic proof; guarded atoms open a
+  Horn-conditional channel (`P(x) → t₁ = t₂`).
+- **Models** coupled oriented dipoles [5, 6, 7]: the three-term scattering
+  decomposition as a theorem, mode hybridization, optical activity, Perrin
   reciprocity, and ensemble statistics — bridged back to the decomposition
   layer through the covariance representation.
 - **Reports** any of the above as deterministic, evidence-labelled LaTeX.
 
-## Four usage surfaces
+## Installation
 
-| Surface | For | Entry |
-|---|---|---|
-| Python package | scripting / integration | `import organon_mueller` |
-| Local web UI | interactive use, no code (localhost only) | [`docs/README-ui.md`](docs/README-ui.md) |
-| MCP server | tool use from an assistant | [`docs/README-mcp.md`](docs/README-mcp.md) |
-| Static web viewer | reading results in a browser (no terminal) | `web/index.html` |
+Requires Python ≥ 3.10 (the discovery engine needs ≥ 3.11).
 
-Nothing is hosted or exposed by the project. The local web UI binds to
-127.0.0.1 only (no tunnel, no public link); the MCP server and static
-viewer are **code + tests only** — running them is your decision.
+```bash
+pip install -e ".[test]"                # base
+pip install -e ".[test,discovery]"      # + discovery engine (egglog)
+pip install -e ".[test,discovery,mcp]"  # + MCP server surface
+pip install -e ".[test,ui]"             # + local web interface
+
+python -m pytest -q                     # full suite: 306 tests collected (discovery self-skips on py3.10)
+```
 
 ## Quickstart
 
+Interactive (no code) — the local web interface:
+
 ```bash
-pip install -e ".[test]"             # base (Python >= 3.10)
-pip install -e ".[test,discovery]"   # + discovery engine (egglog needs Python >= 3.11)
-pip install -e ".[test,discovery,mcp]"  # + MCP server surface
-pip install -e ".[test,ui]"          # + local web interface
-
-python -m pytest -q                  # full suite: 305 tests collected (discovery self-skips on py3.10)
-
-organon-ui                           # local web UI at http://127.0.0.1:7860 (needs the ui extra)
+organon-ui       # opens http://127.0.0.1:7860 (needs the ui extra)
 ```
+
+As a library:
 
 ```python
 from organon_mueller import HVector
@@ -89,48 +78,70 @@ result = decompose(mueller=my_4x4_matrix, symmetry="type1")
 print(result.alpha1, result.m1, result.m2)
 ```
 
-Run the feedback-package demo (decomposition, rank-3 recovery, the dipole
-engine): `python docs/kuntman-package/demo.py`.
+Full demonstration (decomposition against a published worked example,
+rank-3 recovery, the hypothesis bridge, the dipole engine):
+
+```bash
+python examples/demo.py
+```
+
+## Usage surfaces
+
+| Surface | For | Entry |
+|---|---|---|
+| Python package | scripting / integration | `import organon_mueller` |
+| Local web UI | interactive use, no code (localhost only) | [`docs/README-ui.md`](docs/README-ui.md) |
+| MCP server | tool use from an assistant | [`docs/README-mcp.md`](docs/README-mcp.md) |
+| Static web viewer | reading results in a browser (no terminal) | `web/index.html` |
+
+Nothing is hosted or exposed by the project. The local web UI binds to
+127.0.0.1 only (no tunnel, no public link); the MCP server and static
+viewer are **code + tests only** — running them is your decision.
 
 ## Verification contract (the trust anchor)
 
 No mathematical statement reaches `main` without passing the layers in
 [`docs/VERIFICATION.md`](docs/VERIFICATION.md): exact symbolic proof · seeded
-numeric checks · regression against the 21 identities of the known-library
-(each tied to a published equation) · engine-
-independent certification of every discovery candidate · an independent
-adversarial review of every stage (each reviewer re-derives the mathematics
-from scratch) · a 3-version CI matrix. Non-integer confidence is never a
-substitute for a passing test.
+numeric checks · regression against the 21 identities of the known-identity
+library (each tied to a published equation) · engine-independent
+certification of every discovery candidate · an independent adversarial
+review of every change set (each reviewer re-derives the mathematics from
+scratch) · a 3-version CI matrix. Numeric confidence is never a substitute
+for a passing test.
 
-## Architecture & workflow
+## Architecture
 
 Layered, with one-way dependencies: `algebra → identities/conditions →
-discovery / decomposition / dipoles → reporting → mcp_server → web`, plus a
-`safe_parse` security layer guarding deserialization. See
+discovery / decomposition / dipoles → reporting → mcp_server → web / ui`,
+plus a `safe_parse` security layer guarding deserialization. See
 [`docs/architecture.md`](docs/architecture.md) for the layer map and the
-index of design decisions (M-series) and strict rules (K-series), and
+index of design decisions, and
 [`docs/user-guide.md`](docs/user-guide.md) for a task-oriented walkthrough.
 
-Milestone discipline inherited from v1: every stage has a spec in
-[`specs/`](specs/) and a closing report in [`reports/`](reports/); the roadmap
-is frozen at 22 stages ([`docs/ROADMAP.md`](docs/ROADMAP.md)). Nothing untested
-reaches `main`.
+Every change lands with a written spec ([`specs/`](specs/)) and a closing
+report ([`reports/`](reports/)); nothing untested reaches `main`.
 
 ## References
 
-- E. Kuntman, M. A. Kuntman, O. Arteaga, *Vector and matrix states for Mueller
-  matrices of nondepolarizing optical media*, JOSA A **34**, 80 (2017).
-- E. Kuntman, M. A. Kuntman, O. Arteaga, *Quaternion algebra for
-  Stokes–Mueller formalism*, arXiv:1705.07147 (2017).
-- E. Kuntman, M. A. Kuntman, J. Sancho-Parramon, O. Arteaga, *Formalism of
-  optical coherence and polarization based on material media states*, Phys.
-  Rev. A **95**, 063819 (2017).
-- E. Kuntman, O. Arteaga, *Decomposition of a depolarizing Mueller matrix into
-  its nondepolarizing components by using symmetry conditions*, Appl. Opt.
-  **55**, 2543 (2016).
-- M. A. Kuntman, E. Kuntman, J. Sancho-Parramon, O. Arteaga, *Light scattering
-  by coupled oriented dipoles: decomposition of the scattering matrix*, Phys.
-  Rev. B **98**, 045410 (2018).
-- M. A. Kuntman, E. Kuntman, O. Arteaga, *Asymmetric scattering and reciprocity
-  in a plasmonic dimer*, Symmetry **12**, 1790 (2020).
+The algorithms implement, verify against, and extend results from:
+
+1. *Vector and matrix states for Mueller matrices of nondepolarizing
+   optical media*, J. Opt. Soc. Am. A **34**, 80 (2017).
+2. *Quaternion algebra for Stokes–Mueller formalism*, arXiv:1705.07147
+   (2017).
+3. *Formalism of optical coherence and polarization based on material media
+   states*, Phys. Rev. A **95**, 063819 (2017).
+4. *Decomposition of a depolarizing Mueller matrix into its nondepolarizing
+   components by using symmetry conditions*, Appl. Opt. **55**, 2543 (2016).
+5. *Light scattering by coupled oriented dipoles: decomposition of the
+   scattering matrix*, Phys. Rev. B **98**, 045410 (2018).
+6. *Asymmetric scattering and reciprocity in a plasmonic dimer*, Symmetry
+   **12**, 1790 (2020).
+7. *Plasmonic dimers in a solution: a theoretical approach to the optical
+   activity in an ensemble of randomly oriented chiral and achiral
+   plasmonic dimers*, preprint.
+
+## License
+
+No license file yet — see the status note above. Until one is added, the
+code is source-visible but no usage rights are granted.

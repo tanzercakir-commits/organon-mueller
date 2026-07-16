@@ -4,11 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "organon-mueller"
-# 1.0.0: organon-mueller is a separate project from Organon v1 (which owns
-# the v1.x line in ITS repo), so this package's semver starts at 1.x (user
-# decision, 2026-07-16). "Organon v2" stays as the program-generation name.
 version = "1.0.0"
-description = "Automated identity discovery for the Stokes-Mueller formalism of polarization optics - term enumeration, equality saturation, and symbolic verification. Successor to Organon v1."
+description = "Symbolic engine for the Stokes-Mueller algebra of polarization optics: Mueller-matrix decomposition, certified identity discovery (equality saturation + exact symbolic proof), coupled-dipole modelling, and evidence-labelled LaTeX reporting."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

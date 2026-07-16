@@ -120,11 +120,17 @@ def test_every_guard_key_has_both_generators():
         guarded_symbolic_hvector("x", "not_a_guard")
 
 
-# -- Kuntman-package demo smoke test ------------------------------------------------
+# -- demo smoke test (canonical: examples/demo.py; the feedback package
+# ships a shim at docs/kuntman-package/demo.py that re-exports main) -----------------
 
-def test_kuntman_demo_runs_and_matches_paper():
-    demo_path = ROOT / "docs" / "kuntman-package" / "demo.py"
-    spec = importlib.util.spec_from_file_location("kuntman_demo", demo_path)
+@pytest.mark.parametrize("rel", [
+    ("examples", "demo.py"),                 # canonical general demo
+    ("docs", "kuntman-package", "demo.py"),  # feedback-package shim
+], ids=["canonical", "package-shim"])
+def test_demo_runs_and_matches_paper(rel):
+    demo_path = ROOT.joinpath(*rel)
+    spec = importlib.util.spec_from_file_location("demo_under_test",
+                                                  demo_path)
     demo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(demo)
 
