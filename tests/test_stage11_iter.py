@@ -1,5 +1,5 @@
 """Stage-11 (iter): bridge v1 scores, guard-generator meta-test, and the
-Kuntman-package demo smoke test."""
+demo smoke test."""
 import importlib.util
 import pathlib
 
@@ -120,15 +120,10 @@ def test_every_guard_key_has_both_generators():
         guarded_symbolic_hvector("x", "not_a_guard")
 
 
-# -- demo smoke test (canonical: examples/demo.py; the feedback package
-# ships a shim at docs/kuntman-package/demo.py that re-exports main) -----------------
+# -- demo smoke test (canonical demo: examples/demo.py) ----------------------------
 
-@pytest.mark.parametrize("rel", [
-    ("examples", "demo.py"),                 # canonical general demo
-    ("docs", "kuntman-package", "demo.py"),  # feedback-package shim
-], ids=["canonical", "package-shim"])
-def test_demo_runs_and_matches_paper(rel):
-    demo_path = ROOT.joinpath(*rel)
+def test_demo_runs_and_matches_paper():
+    demo_path = ROOT / "examples" / "demo.py"
     spec = importlib.util.spec_from_file_location("demo_under_test",
                                                   demo_path)
     demo = importlib.util.module_from_spec(spec)

@@ -34,7 +34,7 @@ __all__ = [
     "guarded_finding_section",
     "dipole_section",
     "compile_pdf",
-    "build_kuntman_report",
+    "build_demo_report",
 ]
 
 #: evidence label -> (VERIFICATION.md anchor, verb phrase used in text)
@@ -340,23 +340,24 @@ def compile_pdf(tex_path, out_dir=None) -> Path:
 
 # ---------------------------------------------------------------- scenario
 
-def build_kuntman_report(results: dict | None = None,
-                         date: str = "2026-07-14") -> Report:
-    """First real scenario: the feedback-package demo results as a
-    report. Deterministic for a fixed `results` dict; if None, runs the
-    package demo (docs/kuntman-package/demo.py) to obtain them."""
+def build_demo_report(results: dict | None = None,
+                      date: str = "2026-07-14") -> Report:
+    """First real scenario: the demo results as a report. Deterministic
+    for a fixed `results` dict; if None, runs the canonical demo
+    (examples/demo.py) to obtain them."""
     if results is None:
         import importlib.util
 
         demo_path = (Path(__file__).resolve().parents[3]
-                     / "docs" / "kuntman-package" / "demo.py")
-        spec = importlib.util.spec_from_file_location("kuntman_demo", demo_path)
+                     / "examples" / "demo.py")
+        spec = importlib.util.spec_from_file_location("organon_demo",
+                                                      demo_path)
         demo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(demo)
         results = demo.main()
 
-    rep = Report(title="organon-mueller --- feedback package, sample "
-                       "automated report", date=date)
+    rep = Report(title="organon-mueller --- sample automated report",
+                 date=date)
     s6 = results["section6"]
     body = (
         f"Recovered $\\alpha_1 = {_fmt(s6['alpha1'])}$ (paper: 0.3); "

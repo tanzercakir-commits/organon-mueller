@@ -1,6 +1,6 @@
 """Fixed algebraic bases for the Stokes-Mueller formalism.
 
-Conventions are pinned to the Kuntman-Arteaga papers (architectural
+Conventions are pinned to the source papers (architectural
 decision M5 of stage-00):
 
 * Pauli order: sigma0 = identity, sigma1 = diag(1, -1),

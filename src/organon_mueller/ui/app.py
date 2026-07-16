@@ -92,7 +92,7 @@ STRINGS = {
 }
 
 # AO2016 Section 6 component matrices at print precision (same data as
-# docs/kuntman-package/demo.py; the mixture is 0.3*M1 + 0.7*M2).
+# examples/demo.py; the mixture is 0.3*M1 + 0.7*M2).
 _M1_PAPER = [
     [1.0, 0.0, 0.0, 0.1489],
     [0.0, 0.9108, 0.3851, 0.0],

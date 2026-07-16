@@ -52,7 +52,9 @@ contract intact. Closure: `docs/retrospective-v2.md`. Gated user decisions
 (not taken): v1.0.0 release tag (`docs/v1.0-tag-proposal.md` — renumbered
 from v2.0 by user decision, 2026-07-16: organon-mueller is a separate
 project, its semver starts at 1.x), Kuntman package
-submission, egglog upstream, MCP hosting, web exposure, licence.
+submission, egglog upstream, MCP hosting, web exposure. (Licence: decided
+2026-07-16 — MIT; feedback package moved out of the repo to an archive the
+same day, public-face de-personalization.)
 Note: the FROZEN-22
 stage COUNT does not change; A18's "hosted" definition was revised to
 "static, hosting-free" for security reasons (a scope change, not a count

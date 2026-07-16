@@ -19,7 +19,7 @@ def build_server():
     app = FastMCP(
         "organon-mueller",
         instructions="Stokes-Mueller polarization algebra tools "
-                     "(Kuntman-Arteaga formalism). Numeric inputs only; "
+                     "(covariance-vector formalism). Numeric inputs only; "
                      "results carry evidence labels and reasons.")
 
     @app.tool()

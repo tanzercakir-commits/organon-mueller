@@ -139,7 +139,19 @@ def test_no_stale_stage2_status_in_readme():
     src = _read("README.md")
     assert "Stage 2" not in src and "**Stage 2**" not in src
     assert "experimental research software" in src.lower()
-    assert "no licence" in src.lower() or "no license" in src.lower()
+
+
+def test_license_consistency():
+    """MIT chosen by the user (2026-07-16). The LICENSE file, README, and
+    pyproject must agree — and the old 'no license' framing must be gone
+    (it would now be a false claim)."""
+    lic = _read("LICENSE")
+    assert lic.startswith("MIT License")
+    readme = _read("README.md")
+    assert "MIT" in readme and "](LICENSE)" in readme
+    assert "no license yet" not in readme.lower()
+    assert "no licence" not in readme.lower()
+    assert 'license = {text = "MIT"}' in _read("pyproject.toml")
 
 
 def test_pyproject_extras_match_readme():

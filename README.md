@@ -13,8 +13,7 @@ verification contract.
 > results; no novelty or physics claim — that judgement is left to human
 > experts, per [`docs/novelty-protocol.md`](docs/novelty-protocol.md)).
 >
-> **No license yet.** Licensing is deliberately deferred and is the author's
-> decision; until a `LICENSE` file is added, no usage rights are granted.
+> Released under the [MIT License](LICENSE).
 
 ## What it does
 
@@ -125,23 +124,26 @@ report ([`reports/`](reports/)); nothing untested reaches `main`.
 
 The algorithms implement, verify against, and extend results from:
 
-1. *Vector and matrix states for Mueller matrices of nondepolarizing
-   optical media*, J. Opt. Soc. Am. A **34**, 80 (2017).
-2. *Quaternion algebra for Stokes–Mueller formalism*, arXiv:1705.07147
-   (2017).
-3. *Formalism of optical coherence and polarization based on material media
-   states*, Phys. Rev. A **95**, 063819 (2017).
-4. *Decomposition of a depolarizing Mueller matrix into its nondepolarizing
-   components by using symmetry conditions*, Appl. Opt. **55**, 2543 (2016).
-5. *Light scattering by coupled oriented dipoles: decomposition of the
-   scattering matrix*, Phys. Rev. B **98**, 045410 (2018).
-6. *Asymmetric scattering and reciprocity in a plasmonic dimer*, Symmetry
-   **12**, 1790 (2020).
-7. *Plasmonic dimers in a solution: a theoretical approach to the optical
-   activity in an ensemble of randomly oriented chiral and achiral
-   plasmonic dimers*, preprint.
+1. E. Kuntman, M. A. Kuntman, O. Arteaga, *Vector and matrix states for
+   Mueller matrices of nondepolarizing optical media*, J. Opt. Soc. Am. A
+   **34**, 80 (2017).
+2. E. Kuntman, M. A. Kuntman, O. Arteaga, *Quaternion algebra for
+   Stokes–Mueller formalism*, arXiv:1705.07147 (2017).
+3. E. Kuntman, M. A. Kuntman, J. Sancho-Parramon, O. Arteaga, *Formalism of
+   optical coherence and polarization based on material media states*,
+   Phys. Rev. A **95**, 063819 (2017).
+4. E. Kuntman, O. Arteaga, *Decomposition of a depolarizing Mueller matrix
+   into its nondepolarizing components by using symmetry conditions*,
+   Appl. Opt. **55**, 2543 (2016).
+5. M. A. Kuntman, E. Kuntman, J. Sancho-Parramon, O. Arteaga, *Light
+   scattering by coupled oriented dipoles: decomposition of the scattering
+   matrix*, Phys. Rev. B **98**, 045410 (2018).
+6. M. A. Kuntman, E. Kuntman, O. Arteaga, *Asymmetric scattering and
+   reciprocity in a plasmonic dimer*, Symmetry **12**, 1790 (2020).
+7. M. A. Kuntman, E. Kuntman, *Plasmonic dimers in a solution: a
+   theoretical approach to the optical activity in an ensemble of randomly
+   oriented chiral and achiral plasmonic dimers*, preprint.
 
 ## License
 
-No license file yet — see the status note above. Until one is added, the
-code is source-visible but no usage rights are granted.
+[MIT](LICENSE).

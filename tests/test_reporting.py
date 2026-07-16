@@ -176,12 +176,12 @@ def test_full_document_structure_and_footnote():
 
 @pytest.mark.skipif(shutil.which("pdflatex") is None,
                     reason="pdflatex not available (CI-optional)")
-def test_kuntman_sample_report_compiles(tmp_path):
-    from organon_mueller.reporting import build_kuntman_report
+def test_demo_sample_report_compiles(tmp_path):
+    from organon_mueller.reporting import build_demo_report
 
-    rep = build_kuntman_report()
+    rep = build_demo_report()
     tex = rep.to_latex()
-    assert tex == build_kuntman_report().to_latex()   # deterministic
+    assert tex == build_demo_report().to_latex()   # deterministic
     p = tmp_path / "sample-report.tex"
     p.write_text(tex)
     pdf = compile_pdf(p, tmp_path)

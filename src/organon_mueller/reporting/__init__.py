@@ -4,7 +4,7 @@ from .report import (
     EVIDENCE_LABELS,
     Report,
     ReportBlock,
-    build_kuntman_report,
+    build_demo_report,
     compile_pdf,
     decomposition_section,
     dipole_section,
@@ -21,5 +21,5 @@ __all__ = [
     "guarded_finding_section",
     "dipole_section",
     "compile_pdf",
-    "build_kuntman_report",
+    "build_demo_report",
 ]
