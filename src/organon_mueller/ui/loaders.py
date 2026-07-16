@@ -36,7 +36,13 @@ def _err(msg: str) -> ValueError:
 
 
 def _read_text(path) -> str:
-    p = Path(path)
+    try:
+        p = Path(path)
+    except TypeError:
+        # defence in depth (field note, 2026-07-16): both UI callbacks
+        # already guard `if not file_path`, but a direct caller passing
+        # None/odd types must still get a reason, not a TypeError
+        raise _err("no file provided (invalid path)") from None
     try:
         if not p.is_file():
             raise _err("file not found")

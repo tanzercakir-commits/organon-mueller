@@ -325,3 +325,12 @@ def test_typo_in_first_row_names_the_cell(tmp_path):
         loaders.parse_matrix_file(_write(
             tmp_path, "m2.csv", "1,2,3,4\n" * 3))
     assert "treated as a header" not in str(e2.value)
+
+
+def test_none_and_odd_path_types_give_reason():
+    """Field note (2026-07-16): parse_matrix_file(None) raised TypeError.
+    Unreachable from the UI (callbacks guard falsy paths), but a direct
+    caller must still get a readable reason — defence in depth."""
+    for bad in (None, 123, 1.5, ["x"], {"p": 1}):
+        with pytest.raises(ValueError, match="no file provided"):
+            loaders.parse_matrix_file(bad)
