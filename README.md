@@ -18,6 +18,11 @@ vectors/matrices, Z-matrix states and biquaternions.
 > results; no novelty or physics claim — that judgement is left to human
 > experts, per [`docs/novelty-protocol.md`](docs/novelty-protocol.md)).
 >
+> **v2 is complete.** All 22 FROZEN-22 stages are delivered — full suite
+> green, CI green on Python 3.10–3.12. See
+> [`docs/retrospective-v2.md`](docs/retrospective-v2.md) for the closure
+> retrospective and [`docs/ROADMAP.md`](docs/ROADMAP.md) for the stage map.
+>
 > **No licence yet.** Licensing is deliberately deferred and is the author's
 > decision; until a `LICENSE` file is added, no usage rights are granted.
 

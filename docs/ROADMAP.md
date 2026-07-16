@@ -9,7 +9,7 @@ phases C and D, but cannot change the number of stages.
 PHASE A — Foundation (Stage 0–2)
 ├── 0  Representation layer + 14-identity regression        ✅ (36/36)
 ├── 1  Library extension (21 identities) + serialization
-│      + egglog spike (SUCCESSFUL, hybrid architecture proposal)  ✅ (50/50)
+│      + egglog spike (SUCCESSFUL, hybrid architecture proposal)  ✅ (49/49)
 └── 2  Discovery engine core v0: hybrid egglog+SymPy,        ✅ (56/56)
        enumeration+saturation+harvest+100% verification;
        R1-R3 rediscovery, negative controls → FROZEN-22 DECLARATION
@@ -40,14 +40,17 @@ PHASE E — Packaging (Stage 16–19)                           ✅ (at A19)
 │      single file web/index.html; server surface = attack surface)
 └── 19 Documentation (README/architecture/user-guide)       ✅ (this stage)
 
-PHASE F — Closure (Stage 20–22)                             ⏳
+PHASE F — Closure (Stage 20–22)                             ✅
 ├── 20 Consolidation of publication-candidate results (+guarded-atoms 2nd-half debt) ✅ (negative-result debt closed; repo English)
 ├── 21 External verification (group feedback, independent replication) ✅ (288 green; CI ×3; D1/D2 found+fixed)
-└── 22 v2.0 closure evaluation + retrospective
+└── 22 v2.0 closure evaluation + retrospective ✅ (retrospective-v2 + FROZEN-22 assessment + v2.0 tag PROPOSAL)
 ```
 
-Status (Stage 21 complete): A0–A21 completed, A22 (v2.0 closure) the only
-remaining stage; **288 tests green**, CI green on all three matrix cells.
+Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
+**288 tests green**, CI green on all three matrix cells; verification
+contract intact. Closure: `docs/retrospective-v2.md`. Gated user decisions
+(not taken): v2.0 tag (`docs/v2.0-tag-proposal.md`), Kuntman package
+submission, egglog upstream, MCP hosting, web exposure, licence.
 Note: the FROZEN-22
 stage COUNT does not change; A18's "hosted" definition was revised to
 "static, hosting-free" for security reasons (a scope change, not a count
