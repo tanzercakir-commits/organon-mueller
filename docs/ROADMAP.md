@@ -47,7 +47,7 @@ PHASE F — Closure (Stage 20–22)                             ✅
 ```
 
 Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
-**342 tests green**, CI green on all three matrix cells; verification
+**344 tests green**, CI green on all three matrix cells; verification
 contract intact. Closure: `docs/retrospective-v2.md`.
 Decisions TAKEN by the user (2026-07-16): licence = MIT; repository made
 PUBLIC; **v1.0.0 tag applied** (user-authorized push; see

@@ -296,3 +296,32 @@ def test_organon_ui_without_gradio_gives_readable_message():
     assert out.returncode == 0 and "OK" in out.stdout, (
         out.stdout + out.stderr)
     assert "ModuleNotFoundError" not in out.stderr
+
+
+def test_typo_in_first_row_names_the_cell(tmp_path):
+    """User field diagnosis (2026-07-16): a data row with ONE typo'd cell
+    ('1,abc,3,4') used to be absorbed as a 'header' and surfaced as a
+    confusing row-count error. Header rule is now 'no must-numeric cell
+    parses as a number' — a single numeric cell makes the row DATA, so
+    the user gets the exact cell named, same as anywhere else."""
+    body = "1,abc,3,4\n1,2,3,4\n1,2,3,4\n1,2,3,4\n"
+    with pytest.raises(ValueError) as e:
+        loaders.parse_matrix_file(_write(tmp_path, "m.csv", body))
+    msg = str(e.value)
+    assert "[row 1][col 2]" in msg and "'abc'" in msg
+    # the neighbour's example: three numbers + one typo = data, not header
+    body2 = ("abc,0.0,0.0,0.0\n" + "1,2,3,4\n" * 3)
+    with pytest.raises(ValueError, match=r"\[row 1\]\[col 1\]"):
+        loaders.parse_matrix_file(_write(tmp_path, "m3.csv", body2))
+    # a GENUINE header (all cells non-numeric) over too few rows gets the
+    # explanatory hint on the row-count message
+    with pytest.raises(ValueError) as e3:
+        loaders.parse_matrix_file(_write(
+            tmp_path, "m4.csv", "c0,c1,c2,c3\n" + "1,2,3,4\n" * 3))
+    assert ("found 3 rows" in str(e3.value)
+            and "first line was treated as a header" in str(e3.value))
+    # ...and a genuinely short file (no header involved) stays hint-free
+    with pytest.raises(ValueError) as e2:
+        loaders.parse_matrix_file(_write(
+            tmp_path, "m2.csv", "1,2,3,4\n" * 3))
+    assert "treated as a header" not in str(e2.value)

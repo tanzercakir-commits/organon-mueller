@@ -20,7 +20,7 @@ from .algebra.states import (
 )
 from .identities.known import KNOWN_IDENTITIES, Identity, verify_all
 
-__version__ = "0.0.1"
+__version__ = "1.1.1"
 
 __all__ = [
     "BiQuaternion",

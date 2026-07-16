@@ -96,5 +96,12 @@ user's — publish.yml fires only on THEIR GitHub Release).
   a stripped header line is reported in the status ("skipped 1 header
   line"), never silent; OSError on the file surfaces as a readable
   reason. Locked by dedicated tests.
+- v1.1.1 field diagnoses (Windows/VSCode session testing the released
+  1.1.0): stale ``__version__`` ("0.0.1") synced to pyproject and locked
+  by a text-level equality guard; the header rule tightened to "a line
+  is a header only if NO must-numeric cell parses as a number" — one
+  numeric cell is data evidence, so a typo'd data row reports its exact
+  cell instead of being absorbed as a header (independently verified
+  against the full suite before adoption).
 
 **STOP HERE**

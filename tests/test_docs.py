@@ -196,3 +196,19 @@ def test_text_io_always_declares_encoding():
     assert not offenders, (
         "text I/O without explicit encoding= (Windows code-page hazard): "
         + ", ".join(offenders))
+
+
+def test_dunder_version_matches_pyproject():
+    """User field report (2026-07-16): __init__.py carried a stale
+    __version__ ("0.0.1" while pyproject said 1.1.0), so bug reports would
+    cite the wrong version — and nothing guarded it. Both files are read
+    as TEXT (no dependence on install metadata, which goes stale in
+    editable installs), so this cannot silently drift again."""
+    m = re.search(r'^__version__ = "([^"]+)"',
+                  _read("src/organon_mueller/__init__.py"), re.M)
+    assert m, "__init__.py must define __version__"
+    p = re.search(r'^version = "([^"]+)"', _read("pyproject.toml"), re.M)
+    assert p, "pyproject must define version"
+    assert m.group(1) == p.group(1), (
+        f"__version__ {m.group(1)!r} != pyproject {p.group(1)!r} — "
+        "bump BOTH when releasing")

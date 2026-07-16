@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "organon-mueller"
-version = "1.1.0"
+version = "1.1.1"
 description = "Symbolic engine for the Stokes-Mueller algebra of polarization optics: Mueller-matrix decomposition, certified identity discovery (equality saturation + exact symbolic proof), coupled-dipole modelling, and evidence-labelled LaTeX reporting."
 readme = "README.md"
 license = {text = "MIT"}

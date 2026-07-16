@@ -113,18 +113,25 @@ def _is_header(cells: list[str]) -> bool:
     """A single leading header line — width-aware: in the 17-column
     (label + 16) format the label cell may legitimately be non-numeric
     (a sample name), so only the cells that MUST be numeric are tested.
-    An EMPTY cell is never header evidence: the row is then treated as
-    data so the strict per-cell check reports the precise row/col
-    (otherwise '1,,2,3' would be silently absorbed as a 'header')."""
+
+    Rule (field diagnosis, 2026-07-16): a line is a header only if NONE
+    of its must-numeric cells parses as a number. Seeing even one
+    numeric cell is data evidence — real headers carry no numbers — so a
+    data row with a single typo ('1,abc,3,4') is treated as DATA and the
+    strict per-cell check names the exact cell, instead of the row being
+    absorbed as a 'header' and surfacing as a confusing row-count error.
+    An EMPTY cell is likewise never header evidence (same rationale:
+    '1,,2,3' must report the precise cell)."""
     numeric_cells = cells[1:] if len(cells) == 17 else cells
     for c in numeric_cells:
         if c == "":
-            return False
+            return False              # data: precise empty-cell report
         try:
             float(c)
+            return False              # a numeric cell = data evidence
         except ValueError:
-            return True
-    return False
+            continue
+    return True                       # all non-empty and non-numeric
 
 
 def parse_matrix_file(path) -> dict:
@@ -158,10 +165,18 @@ def parse_matrix_file(path) -> dict:
 
     if width == 4:
         if len(rows) != 4:
+            hint = ""
+            if header_skipped:
+                # user field report (2026-07-16): a TYPO in the first data
+                # row makes it look like a header, and a bare row-count
+                # message sends the user hunting in the wrong place
+                hint = (" Note: the first line was treated as a header "
+                        "because it contains a non-numeric cell — if it "
+                        "was meant to be data, fix that cell instead.")
             raise _err(f"a 4-column file must have exactly 4 data rows "
                        f"(one 4x4 matrix); found {len(rows)} rows. For a "
                        "batch, use 16 columns per row (m00..m33) or 17 "
-                       "(label + 16)")
+                       "(label + 16)." + hint)
         matrix = [[_cell_float(c, i + 1, j + 1)
                    for j, c in enumerate(row)] for i, row in enumerate(rows)]
         return {"kind": "single", "matrix": matrix,
