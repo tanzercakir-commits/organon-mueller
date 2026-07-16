@@ -63,9 +63,24 @@ def test_readme_symbols_exist():
 
 # -- numeric claims match reality -------------------------------------------------
 
+def _full_optional_stack() -> bool:
+    """The advertised count only fully materializes when every optional
+    dependency is importable: egglog (6 discovery test modules gate on it
+    at module level and DON'T collect without it, e.g. on Python 3.10),
+    mcp and playwright (function-level gates). On a partial environment
+    (typical CI 3.10, or CI without mcp/playwright) collection is a
+    subset, so the exact-equality check is only enforced on a full env."""
+    import importlib.util
+
+    return all(importlib.util.find_spec(m) is not None
+               for m in ("egglog", "mcp", "playwright"))
+
+
 def test_stated_test_count_matches_collection():
-    """README/ROADMAP advertise a test count — assert the real collected count
-    equals the number the docs advertise (catches doc drift)."""
+    """README/ROADMAP advertise a test count. On a FULL environment assert
+    it equals the real collected count (drift guard); on any environment
+    assert collection never EXCEEDS the advertised number (so adding tests
+    without bumping the docs is always caught)."""
     import subprocess
     import sys
 
@@ -77,19 +92,34 @@ def test_stated_test_count_matches_collection():
     total = sum(counts)
     assert total > 0, out.stdout[-500:]
 
+    claims = []
     for doc in ("README.md", "docs/ROADMAP.md"):
-        for claimed in re.findall(r"(\d+)\s+test", _read(doc)):
-            assert int(claimed) == total, (
-                f"{doc} claims {claimed} tests but collection has {total}")
+        claims += [int(c) for c in re.findall(r"(\d+)\s+test", _read(doc))]
+    assert claims, "no test-count claim found in the docs"
+    for claimed in claims:
+        # partial environments collect a subset — never more than claimed
+        assert total <= claimed, (
+            f"collection has {total} tests but docs claim only {claimed} "
+            "(add-a-test-without-bumping-docs drift)")
+        if _full_optional_stack():
+            assert total == claimed, (
+                f"full env: docs claim {claimed} but collection has {total}")
 
 
 def test_known_identity_count_claim():
-    """README says '21 entries' / '21 identities' — must match the library."""
+    """README must STATE the known-identity library size, and it must match
+    the library. Non-vacuous: the regex finding nothing is itself a failure —
+    otherwise dropping the claim from the README would silently pass (the
+    A15 verb/number-discipline applied to a count)."""
     from organon_mueller.identities.known import KNOWN_IDENTITIES
 
     n = len(KNOWN_IDENTITIES)
-    for claimed in re.findall(r"(\d+)\s+(?:identit|entr)", _read("README.md")):
-        assert int(claimed) == n, f"README claims {claimed}, library has {n}"
+    claims = [int(c) for c in
+              re.findall(r"(\d+)\s+(?:identit|entr)", _read("README.md"))]
+    assert claims, ("README states no known-identity count "
+                    "(expected a '21 identities'-style claim to guard)")
+    for claimed in claims:
+        assert claimed == n, f"README claims {claimed}, library has {n}"
 
 
 def test_mcp_run_command_is_real():

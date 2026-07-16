@@ -312,3 +312,23 @@ def test_fastmcp_wiring_smoke():
     names = {t.name for t in tools}
     assert names == {"decompose_mueller", "propose_hypotheses",
                      "guarded_campaign_info", "generate_report"}
+
+
+def test_guarded_campaign_info_graceful_without_egglog():
+    """Stage-21 CI-safety: on an env without egglog (e.g. Python 3.10),
+    tool_guarded_campaign_info must return {"error": ...}, never leak a
+    ModuleNotFoundError (egglog is imported lazily inside the campaign)."""
+    import subprocess
+    import sys
+
+    code = (
+        "import sys; sys.modules['egglog'] = None\n"
+        "from organon_mueller.mcp_server import tool_guarded_campaign_info\n"
+        "r = tool_guarded_campaign_info()\n"
+        "assert 'error' in r, r\n"
+        "print('OK')\n"
+    )
+    out = subprocess.run([sys.executable, "-c", code],
+                         capture_output=True, text=True, timeout=120)
+    assert out.returncode == 0 and "OK" in out.stdout, (
+        out.stdout + out.stderr)

@@ -41,15 +41,17 @@ PHASE E — Packaging (Stage 16–19)                           ✅ (at A19)
 └── 19 Documentation (README/architecture/user-guide)       ✅ (this stage)
 
 PHASE F — Closure (Stage 20–22)                             ⏳
-├── 20 Consolidation of publication-candidate results (+guarded-atoms 2nd-half debt)
-├── 21 External verification (group feedback, independent replication)
+├── 20 Consolidation of publication-candidate results (+guarded-atoms 2nd-half debt) ✅ (negative-result debt closed; repo English)
+├── 21 External verification (group feedback, independent replication) ✅ (288 green; CI ×3; D1/D2 found+fixed)
 └── 22 v2.0 closure evaluation + retrospective
 ```
 
-Status (Stage 19): A0–A19 completed; **287 tests green**. Remaining: Phase F
-(A20–A22). Note: the FROZEN-22 stage COUNT does not change; A18's "hosted"
-definition was revised to "static, hosting-free" for security reasons (a scope
-change, not a count change — reasoned in the retrospective).
+Status (Stage 21 complete): A0–A21 completed, A22 (v2.0 closure) the only
+remaining stage; **288 tests green**, CI green on all three matrix cells.
+Note: the FROZEN-22
+stage COUNT does not change; A18's "hosted" definition was revised to
+"static, hosting-free" for security reasons (a scope change, not a count
+change — reasoned in the retrospective).
 
 Time calibration (handoff): 2–4 months in tight focus, 6–12 months part-time.
 A stage ≈ one milestone unit in v1; every stage closes with a spec → impl →

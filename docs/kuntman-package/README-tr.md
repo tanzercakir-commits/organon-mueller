@@ -9,8 +9,10 @@ bilinçli olarak size bırakılmıştır) olarak etiketlidir.*
 
 Yayınlarınızdaki Stokes–Mueller cebirini otomatikleştiren deneysel bir
 motor (JOSA A **34**, 80 (2017); Phys. Rev. A **95**, 063819 (2017);
-Appl. Opt. **55**, 2543 (2016); coupled-dipole çalışması planlanan sonraki
-faz). İki ayak: **keşif motoru** (kovaryans-vektörü terim dili üzerinde
+Appl. Opt. **55**, 2543 (2016); coupled-dipole çalışması — PRB **98**,
+045410 (2018), Symmetry **12**, 1790 (2020) ve OA-topluluk ön-baskısı —
+artık kapsanıyor; bkz. `ADDENDUM-dipoles-tr.md`). İki ayak: **keşif motoru**
+(kovaryans-vektörü terim dili üzerinde
 equality saturation; her aday kesin sembolik ispatla sertifikalanır) ve
 **ayrışım türetici** (AO2016'nın simetri-koşullu ayrışımları rank-1 minor
 koşullarından *türetilir* — tablodan kopyalanmaz).
@@ -88,5 +90,8 @@ python docs/kuntman-package/demo.py
 3. Konvansiyonlarımız (reshuffle ile standart-baz kovaryans, iz-1
    normalizasyonu, ölçekli-parametre şablonları) günlük kullandıklarınız
    mı?
-4. Sonraki faz coupled-dipole sembolik modülü (PRB 98, 045410'un yeniden
-   türetimi); hangi çıktılar sizin için en yararlı olur?
+4. Coupled-dipole modülü (PRB 98, 045410; Symmetry 12, 1790; ve OA-topluluk
+   ön-baskısı) teslim edildi — bkz. `ADDENDUM-dipoles-tr.md`. Çıktılarından
+   — Eq. (25) üç-terimli saçılma ayrışımı (teorem), genel-yön γ (optik
+   aktivite) otomasyonu ve δ=0 ⇒ γ_z ≡ 0 topluluk sonucu — hangisini bir
+   sonraki adımda genişletmek en yararlı olur?

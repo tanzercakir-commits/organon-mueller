@@ -9,8 +9,10 @@ is made; interpretation is deliberately left to you).*
 
 An experimental engine that automates the Stokes–Mueller algebra of your
 papers (JOSA A **34**, 80 (2017); Phys. Rev. A **95**, 063819 (2017);
-Appl. Opt. **55**, 2543 (2016); coupled-dipole work is the next planned
-phase). Two pillars: a **discovery engine** (equality saturation over the
+Appl. Opt. **55**, 2543 (2016); the coupled-dipole work — PRB **98**,
+045410 (2018), Symmetry **12**, 1790 (2020), and the OA-in-ensemble
+preprint — is now covered too; see `ADDENDUM-dipoles-en.md`). Two
+pillars: a **discovery engine** (equality saturation over the
 covariance-vector term language, every candidate certified by exact
 symbolic proof) and a **decomposition deriver** (the symmetry-conditioned
 decompositions of AO2016, *derived* — not transcribed — from rank-1 minor
@@ -94,5 +96,8 @@ python docs/kuntman-package/demo.py
 3. Are our conventions (standard-basis covariance via the reshuffle,
    trace-1 normalization, scaled-parameter templates) the ones you use
    day to day?
-4. Next phase is a coupled-dipole symbolic module (re-deriving the
-   PRB 98, 045410 results); which outputs would be most useful to you?
+4. The coupled-dipole module (PRB 98, 045410; Symmetry 12, 1790; and the
+   OA-in-ensemble preprint) is delivered — see `ADDENDUM-dipoles-en.md`.
+   Of its outputs — the Eq. (25) three-term scattering decomposition as a
+   theorem, the general-direction γ (optical-activity) automation, and the
+   δ=0 ⇒ γ_z ≡ 0 ensemble result — which would be most useful to extend next?

@@ -162,11 +162,15 @@ def tool_guarded_campaign_info() -> dict:
     """Report the current guarded-campaign findings (M32 evidence
     quadruples). Requires the discovery extra (egglog)."""
     try:
+        # egglog is imported lazily deep inside run_guarded_campaign
+        # (engine.py at module load), so the ImportError can surface at
+        # the CALL, not just this import — wrap both (MCP contract: return
+        # a reason, never leak a traceback).
         from ..discovery.guards import run_guarded_campaign
+        findings = run_guarded_campaign()
     except ImportError:
         return {"error": "discovery extra not installed (pip install "
                          "organon-mueller[discovery], Python >= 3.11)"}
-    findings = run_guarded_campaign()
     return {"findings": [
         {
             "left": f.left.render(), "right": f.right.render(),

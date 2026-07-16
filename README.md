@@ -58,7 +58,7 @@ pip install -e ".[test]"             # base (Python >= 3.10)
 pip install -e ".[test,discovery]"   # + discovery engine (egglog needs Python >= 3.11)
 pip install -e ".[test,discovery,mcp]"  # + MCP server surface
 
-python -m pytest -q                  # full suite: 287 tests collected (discovery self-skips on py3.10)
+python -m pytest -q                  # full suite: 288 tests collected (discovery self-skips on py3.10)
 ```
 
 ```python
@@ -86,7 +86,8 @@ engine): `python docs/kuntman-package/demo.py`.
 
 No mathematical statement reaches `main` without passing the layers in
 [`docs/VERIFICATION.md`](docs/VERIFICATION.md): exact symbolic proof · seeded
-numeric checks · known-identity regression against the papers · engine-
+numeric checks · regression against the 21 identities of the known-library
+(each tied to a published equation) · engine-
 independent certification of every discovery candidate · an independent
 adversarial review of every stage (each reviewer re-derives the mathematics
 from scratch) · a 3-version CI matrix. Non-integer confidence is never a
