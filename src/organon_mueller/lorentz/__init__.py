@@ -18,14 +18,20 @@ from .core import (
 )
 from .identities import (
     LORENTZ_TASK1,
+    LORENTZ_TASK2,
     LorentzIdentity,
+    bonus_lambda_zbar_theorem,
     spec_form_holds,
+    spec_form_holds_bar,
     verify_task1,
+    verify_task2,
 )
 
 __all__ = [
     "METRIC", "SIGMA", "SIGMA_BAR",
     "boost_alpha", "lorentz_matrix", "minkowski_square", "rotation_alpha",
     "z_bar_matrix", "z_inverse", "z_matrix",
-    "LORENTZ_TASK1", "LorentzIdentity", "spec_form_holds", "verify_task1",
+    "LORENTZ_TASK1", "LORENTZ_TASK2", "LorentzIdentity",
+    "bonus_lambda_zbar_theorem", "spec_form_holds", "spec_form_holds_bar",
+    "verify_task1", "verify_task2",
 ]

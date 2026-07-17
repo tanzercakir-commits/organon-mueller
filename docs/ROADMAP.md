@@ -47,7 +47,7 @@ PHASE F — Closure (Stage 20–22)                             ✅
 ```
 
 Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
-**368 tests green**, CI green on all four matrix cells (Linux ×3 +
+**381 tests green**, CI green on all four matrix cells (Linux ×3 +
 Windows); verification
 contract intact. Closure: `docs/retrospective-v2.md`.
 Decisions TAKEN by the user (2026-07-16): licence = MIT; repository made
@@ -91,7 +91,12 @@ Cadence: STOP at the end of every stage; the user gates continuation.
 │        hold AS WRITTEN for boosts and rotations — no sign flip; row
 │        Λ^μ_ν convention forced, column form pinned FALSE;
 │        conjugation lemma Z(α)* = Z(α*)ᵀ)
-├── L2  Find the five missing Σ̄ identities
+├── L2  Find the five missing Σ̄ identities                          ✅
+│       (trace-orthogonality extraction; LT6 coefficient matrix forced
+│        to C = gΛᵀg = Λ(Z̄) — negative pins kill Λ, Λᵀ, gΛg; BONUS
+│        theorem Λ(Z̄) = gΛ(Z)ᵀg guard-free; on the guard C = Λ⁻¹ ⇒
+│        spec-mirror Σ̄^μ = Λ^μ_ν Z Σ̄^ν Z†, the exact dual of I1;
+│        LT7–10 carry the SAME q̄/q̄/q/q factors as the Σ family)
 ├── L3  Mini-report #1 to the collaborator + feedback window
 ├── L4  Term language + T/†/inverse operators + self-recovery gate
 ├── L5  Discovery sweep (genuinely-new identity hunt, guarded channel)
