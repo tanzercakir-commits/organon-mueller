@@ -127,6 +127,21 @@ def test_c_is_lambda_inverse_on_the_guard():
         assert _exp_zero(sp.expand(lam * c) - sp.eye(4))
 
 
+def test_c_lambda_product_guard_free_and_c_transpose():
+    """|q|² sharpening (contributed by the L2 adversarial review, locked
+    here at L3): C·Λ = Λ·C = q q̄ 𝕀 GUARD-FREE — the guard-level
+    C = Λ⁻¹ above is its q = 1 corollary. Plus Cᵀ = gΛg: the gΛg
+    negative pin doubles as the row/column-convention pin for C."""
+    z = z_matrix(A)
+    lam = sp.expand(z * z.conjugate())
+    c = sp.expand(METRIC * lam.T * METRIC)
+    q = A[0]**2 - A[1]**2 - A[2]**2 - A[3]**2
+    qq = sp.expand(q * sp.conjugate(q))
+    assert _zero(sp.expand(c * lam) - qq * sp.eye(4))
+    assert _zero(sp.expand(lam * c) - qq * sp.eye(4))
+    assert sp.expand(c.T - METRIC * lam * METRIC) == sp.zeros(4)
+
+
 # -- the spec-mirror forms on the guard (boosts AND rotations) ---------------------
 
 @pytest.mark.parametrize("which", ["J1", "J2", "J3", "J4", "J5"])
