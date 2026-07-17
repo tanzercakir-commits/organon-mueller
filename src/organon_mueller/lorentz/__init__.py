@@ -26,6 +26,10 @@ from .identities import (
     verify_task1,
     verify_task2,
 )
+from .discovery import (
+    full_sweep,
+    sweep_report,
+)
 from .terms import (
     KNOWN_TEN,
     certify,
@@ -43,4 +47,5 @@ __all__ = [
     "verify_task1", "verify_task2",
     "KNOWN_TEN", "certify", "classify_all", "letter_matrices",
     "recovery_gate",
+    "full_sweep", "sweep_report",
 ]

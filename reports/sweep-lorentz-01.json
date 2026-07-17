@@ -1,0 +1,271 @@
+{
+ "alphabet": [
+  "Z",
+  "Zc",
+  "Zt",
+  "Zd",
+  "Zb",
+  "Zbc",
+  "Zbt",
+  "Zbd"
+ ],
+ "counts": {
+  "identities": 40,
+  "no_expansion": 88,
+  "total": 128
+ },
+ "evidence": "symbolic-proof (exact, guard-free, generic complex alpha); novelty NOT claimed",
+ "identities": {
+  "Z S Z": [
+   "1",
+   "Z.Zt"
+  ],
+  "Z S Zb": [
+   "1",
+   "Zt.Zb"
+  ],
+  "Z S Zbd": [
+   "1",
+   "Zt.Zbd"
+  ],
+  "Z S Zd": [
+   "1",
+   "Zt.Zd"
+  ],
+  "Z Sb Z": [
+   "1",
+   "Zb.Zbt"
+  ],
+  "Z Sb Zb": [
+   "1",
+   "Zt.Zb"
+  ],
+  "Z Sb Zbd": [
+   "1",
+   "Zc.Zb"
+  ],
+  "Z Sb Zd": [
+   "1",
+   "Zb.Zbc"
+  ],
+  "Zb S Z": [
+   "1",
+   "Z.Zbt"
+  ],
+  "Zb S Zb": [
+   "1",
+   "Zb.Zbt"
+  ],
+  "Zb S Zbd": [
+   "1",
+   "Zbt.Zbd"
+  ],
+  "Zb S Zd": [
+   "1",
+   "Zd.Zbt"
+  ],
+  "Zb Sb Z": [
+   "1",
+   "Z.Zbt"
+  ],
+  "Zb Sb Zb": [
+   "1",
+   "Z.Zt"
+  ],
+  "Zb Sb Zbd": [
+   "1",
+   "Z.Zc"
+  ],
+  "Zb Sb Zd": [
+   "1",
+   "Z.Zbc"
+  ],
+  "Zbc S Zc": [
+   "qbar",
+   "I"
+  ],
+  "Zbc Sb Zc": [
+   "qbar",
+   "I"
+  ],
+  "Zbd S Z": [
+   "1",
+   "Z.Zbc"
+  ],
+  "Zbd S Zb": [
+   "1",
+   "Zb.Zbc"
+  ],
+  "Zbd S Zbd": [
+   "1",
+   "Zbc.Zbd"
+  ],
+  "Zbd S Zd": [
+   "1",
+   "Zd.Zbc"
+  ],
+  "Zbd Sb Z": [
+   "1",
+   "Zd.Zbt"
+  ],
+  "Zbd Sb Zb": [
+   "1",
+   "Zt.Zd"
+  ],
+  "Zbd Sb Zbd": [
+   "1",
+   "Zc.Zd"
+  ],
+  "Zbd Sb Zd": [
+   "1",
+   "Zd.Zbc"
+  ],
+  "Zbt S Zt": [
+   "q",
+   "I"
+  ],
+  "Zbt Sb Zt": [
+   "q",
+   "I"
+  ],
+  "Zc S Zbc": [
+   "qbar",
+   "I"
+  ],
+  "Zc Sb Zbc": [
+   "qbar",
+   "I"
+  ],
+  "Zd S Z": [
+   "1",
+   "Z.Zc"
+  ],
+  "Zd S Zb": [
+   "1",
+   "Zc.Zb"
+  ],
+  "Zd S Zbd": [
+   "1",
+   "Zc.Zbd"
+  ],
+  "Zd S Zd": [
+   "1",
+   "Zc.Zd"
+  ],
+  "Zd Sb Z": [
+   "1",
+   "Zbt.Zbd"
+  ],
+  "Zd Sb Zb": [
+   "1",
+   "Zt.Zbd"
+  ],
+  "Zd Sb Zbd": [
+   "1",
+   "Zc.Zbd"
+  ],
+  "Zd Sb Zd": [
+   "1",
+   "Zbc.Zbd"
+  ],
+  "Zt S Zbt": [
+   "q",
+   "I"
+  ],
+  "Zt Sb Zbt": [
+   "q",
+   "I"
+  ]
+ },
+ "no_expansion": [
+  "Z S Zbc",
+  "Z S Zbt",
+  "Z S Zc",
+  "Z S Zt",
+  "Z Sb Zbc",
+  "Z Sb Zbt",
+  "Z Sb Zc",
+  "Z Sb Zt",
+  "Zb S Zbc",
+  "Zb S Zbt",
+  "Zb S Zc",
+  "Zb S Zt",
+  "Zb Sb Zbc",
+  "Zb Sb Zbt",
+  "Zb Sb Zc",
+  "Zb Sb Zt",
+  "Zbc S Z",
+  "Zbc S Zb",
+  "Zbc S Zbc",
+  "Zbc S Zbd",
+  "Zbc S Zbt",
+  "Zbc S Zd",
+  "Zbc S Zt",
+  "Zbc Sb Z",
+  "Zbc Sb Zb",
+  "Zbc Sb Zbc",
+  "Zbc Sb Zbd",
+  "Zbc Sb Zbt",
+  "Zbc Sb Zd",
+  "Zbc Sb Zt",
+  "Zbd S Zbc",
+  "Zbd S Zbt",
+  "Zbd S Zc",
+  "Zbd S Zt",
+  "Zbd Sb Zbc",
+  "Zbd Sb Zbt",
+  "Zbd Sb Zc",
+  "Zbd Sb Zt",
+  "Zbt S Z",
+  "Zbt S Zb",
+  "Zbt S Zbc",
+  "Zbt S Zbd",
+  "Zbt S Zbt",
+  "Zbt S Zc",
+  "Zbt S Zd",
+  "Zbt Sb Z",
+  "Zbt Sb Zb",
+  "Zbt Sb Zbc",
+  "Zbt Sb Zbd",
+  "Zbt Sb Zbt",
+  "Zbt Sb Zc",
+  "Zbt Sb Zd",
+  "Zc S Z",
+  "Zc S Zb",
+  "Zc S Zbd",
+  "Zc S Zbt",
+  "Zc S Zc",
+  "Zc S Zd",
+  "Zc S Zt",
+  "Zc Sb Z",
+  "Zc Sb Zb",
+  "Zc Sb Zbd",
+  "Zc Sb Zbt",
+  "Zc Sb Zc",
+  "Zc Sb Zd",
+  "Zc Sb Zt",
+  "Zd S Zbc",
+  "Zd S Zbt",
+  "Zd S Zc",
+  "Zd S Zt",
+  "Zd Sb Zbc",
+  "Zd Sb Zbt",
+  "Zd Sb Zc",
+  "Zd Sb Zt",
+  "Zt S Z",
+  "Zt S Zb",
+  "Zt S Zbc",
+  "Zt S Zbd",
+  "Zt S Zc",
+  "Zt S Zd",
+  "Zt S Zt",
+  "Zt Sb Z",
+  "Zt Sb Zb",
+  "Zt Sb Zbc",
+  "Zt Sb Zbd",
+  "Zt Sb Zc",
+  "Zt Sb Zd",
+  "Zt Sb Zt"
+ ],
+ "space": "X mid Y; X,Y in 8-letter alphabet; mid in {S, Sb}"
+}

@@ -47,7 +47,7 @@ PHASE F — Closure (Stage 20–22)                             ✅
 ```
 
 Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
-**391 tests green**, CI green on all four matrix cells (Linux ×3 +
+**399 tests green**, CI green on all four matrix cells (Linux ×3 +
 Windows); verification
 contract intact. Closure: `docs/retrospective-v2.md`.
 Decisions TAKEN by the user (2026-07-16): licence = MIT; repository made
@@ -111,7 +111,17 @@ Cadence: STOP at the end of every stage; the user gates continuation.
 │        with exact classes AND certified; space partitions 16 match /
 │        24 expansion-unmatched / 88 no-expansion — 6 extra matches +
 │        24 unmatched deferred to L5 as counts only)
-├── L5  Discovery sweep (genuinely-new identity hunt, guarded channel)
+├── L5  Discovery sweep (genuinely-new identity hunt, guarded channel) ✅
+│       (COMPLETENESS: all 128 sandwiches decided, exact end-to-end —
+│        40 identities / 88 symbolic negative certificates; 30 NEW
+│        statements beyond the work order's ten: Λ-family closes with
+│        8 members; every expanding C is a two-letter pair product up
+│        to a scalar (Λ = Z·Z*, Λᵀ = Z†·Zᵀ; Z Σ Z = (ZZᵀ)-type,
+│        Z Σ Z̄ = (ᵀZZ̄)-type) — proven case-by-case, universal
+│        one-formula proof deliberately NOT claimed; canonical naming
+│        (degenerate pair Z·Z̄ = qI ⇒ I-first rule); falsified
+│        conjectures pinned (Σ̄ ≠ gΣg, Z̄ ≠ gZg); novelty judgement
+│        reserved for humans — collaborator report #2)
 └── L6  Consolidation + report #2 + v1.2.0 closure
 ```
 
