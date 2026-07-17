@@ -122,7 +122,12 @@ Cadence: STOP at the end of every stage; the user gates continuation.
 │        (degenerate pair Z·Z̄ = qI ⇒ I-first rule); falsified
 │        conjectures pinned (Σ̄ ≠ gΣg, Z̄ ≠ gZg); novelty judgement
 │        reserved for humans — collaborator report #2)
-└── L6  Consolidation + report #2 + v1.2.0 closure
+└── L6  Consolidation + report #2 + v1.2.0 closure                  ✅
+        (report #2 = the Task-3 answer, table GENERATED from the
+         committed sweep JSON, delivered via the user (send gate);
+         retrospective-frozen7; version 1.2.0 in metadata; tag +
+         Release = USER actions per docs/v1.2-tag-proposal.md —
+         FROZEN-7 COMPLETE: 7/7 stages, all reviews PASS)
 ```
 
 Time calibration (handoff): 2–4 months in tight focus, 6–12 months part-time.

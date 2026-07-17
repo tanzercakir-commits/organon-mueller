@@ -39,6 +39,13 @@ verification contract.
   decomposition as a theorem, mode hybridization, optical activity, Perrin
   reciprocity, and ensemble statistics — bridged back to the decomposition
   layer through the covariance representation.
+- **Carries a Lorentz face** (`organon_mueller.lorentz`): the Σ^μ / Z =
+  α_μΣ^μ / Λ = ZZ* algebra of the SL(4,ℂ)-style construction — the Σ^μ
+  basis coincides exactly with the engine's Z-matrix basis. Verified and
+  completed identity families in guard-free theorem form, a self-recovery-
+  gated term language, and a fully decided 128-sandwich discovery sweep
+  (40 proven expansions / 88 symbolic negative certificates,
+  `reports/sweep-lorentz-01.json`).
 - **Reports** any of the above as deterministic, evidence-labelled LaTeX.
 
 ## Installation
