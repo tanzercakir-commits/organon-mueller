@@ -58,7 +58,7 @@ For development, from a clone:
 
 ```bash
 pip install -e ".[test,discovery,mcp,ui]"
-python -m pytest -q                     # full suite: 345 tests collected (discovery self-skips on py3.10)
+python -m pytest -q                     # full suite: 368 tests collected (discovery self-skips on py3.10)
 ```
 
 ## Quickstart

@@ -47,7 +47,8 @@ PHASE F — Closure (Stage 20–22)                             ✅
 ```
 
 Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
-**345 tests green**, CI green on all three matrix cells; verification
+**368 tests green**, CI green on all four matrix cells (Linux ×3 +
+Windows); verification
 contract intact. Closure: `docs/retrospective-v2.md`.
 Decisions TAKEN by the user (2026-07-16): licence = MIT; repository made
 PUBLIC; **v1.0.0 tag applied** (user-authorized push; see
@@ -75,6 +76,26 @@ POST-CLOSURE MILESTONES (new series — FROZEN-22 count untouched)
           K26); results table + CSV download; Windows field report →
           repo-wide explicit-encoding sweep + static/dynamic guards +
           a Windows CI cell (spec: specs/milestone-ui-02.md)
+```
+
+```
+FROZEN-7 — Lorentz face (declared 2026-07-17; count frozen, changes only
+via a critical-decision note to the user; source: the collaborator's
+written work order — Σ^μ basis, Z = α_μΣ^μ, Λ = ZZ*, three tasks).
+Cadence: STOP at the end of every stage; the user gates continuation.
+├── L0  Representation layer (Σ/Σ̄/Z/Z⁻¹(guarded)/Λ; boost+rotation) ✅
+│       (bridge THEOREM: Σ^μ == the engine's Z-basis; Z·Z̄=(α·α)I;
+│        Λ^TgΛ=(α·α)(α·α)*g; textbook boost/rotation anchors exact)
+├── L1  Verify the five given identities (+ sign-convention table)   ✅
+│       (each is the q=1 corollary of a GUARD-FREE theorem; all five
+│        hold AS WRITTEN for boosts and rotations — no sign flip; row
+│        Λ^μ_ν convention forced, column form pinned FALSE;
+│        conjugation lemma Z(α)* = Z(α*)ᵀ)
+├── L2  Find the five missing Σ̄ identities
+├── L3  Mini-report #1 to the collaborator + feedback window
+├── L4  Term language + T/†/inverse operators + self-recovery gate
+├── L5  Discovery sweep (genuinely-new identity hunt, guarded channel)
+└── L6  Consolidation + report #2 + v1.2.0 closure
 ```
 
 Time calibration (handoff): 2–4 months in tight focus, 6–12 months part-time.
