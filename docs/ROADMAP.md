@@ -47,7 +47,7 @@ PHASE F — Closure (Stage 20–22)                             ✅
 ```
 
 Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
-**382 tests green**, CI green on all four matrix cells (Linux ×3 +
+**391 tests green**, CI green on all four matrix cells (Linux ×3 +
 Windows); verification
 contract intact. Closure: `docs/retrospective-v2.md`.
 Decisions TAKEN by the user (2026-07-16): licence = MIT; repository made
@@ -102,8 +102,15 @@ Cadence: STOP at the end of every stage; the user gates continuation.
 │        report stays OUT of the public repo per the de-personalization
 │        rule — hand-delivery via the user, send gate: user; review
 │        FAIL→fix: the |q|² sharpening C·Λ = Λ·C = qq̄I + Cᵀ = gΛg
-│        locked as a 14th Task-2 test → suite 382)
-├── L4  Term language + T/†/inverse operators + self-recovery gate
+│        locked as an extra lock in the Task-2 file → suite 382 then)
+├── L4  Term language + T/†/inverse operators + self-recovery gate  ✅
+│       (8-letter alphabet {Z,Z*,Zᵀ,Z†}×{plain,bar}, polynomial —
+│        inverses covered by bar letters up to q; 128-sandwich space;
+│        registry-blind numeric classifier (2 seeds, collision-checked)
+│        + generic symbolic certifier; GATE PASSED: 10/10 knowns found
+│        with exact classes AND certified; space partitions 16 match /
+│        24 expansion-unmatched / 88 no-expansion — 6 extra matches +
+│        24 unmatched deferred to L5 as counts only)
 ├── L5  Discovery sweep (genuinely-new identity hunt, guarded channel)
 └── L6  Consolidation + report #2 + v1.2.0 closure
 ```

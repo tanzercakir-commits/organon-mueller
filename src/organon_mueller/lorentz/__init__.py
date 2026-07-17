@@ -26,6 +26,13 @@ from .identities import (
     verify_task1,
     verify_task2,
 )
+from .terms import (
+    KNOWN_TEN,
+    certify,
+    classify_all,
+    letter_matrices,
+    recovery_gate,
+)
 
 __all__ = [
     "METRIC", "SIGMA", "SIGMA_BAR",
@@ -34,4 +41,6 @@ __all__ = [
     "LORENTZ_TASK1", "LORENTZ_TASK2", "LorentzIdentity",
     "bonus_lambda_zbar_theorem", "spec_form_holds", "spec_form_holds_bar",
     "verify_task1", "verify_task2",
+    "KNOWN_TEN", "certify", "classify_all", "letter_matrices",
+    "recovery_gate",
 ]
