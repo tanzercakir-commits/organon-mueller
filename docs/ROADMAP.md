@@ -47,7 +47,7 @@ PHASE F — Closure (Stage 20–22)                             ✅
 ```
 
 Status: **v2 COMPLETE — A0–A22 all done** (FROZEN-22 fully delivered);
-**399 tests green**, CI green on all four matrix cells (Linux ×3 +
+**411 tests green**, CI green on all four matrix cells (Linux ×3 +
 Windows); verification
 contract intact. Closure: `docs/retrospective-v2.md`.
 Decisions TAKEN by the user (2026-07-16): licence = MIT; repository made
@@ -70,12 +70,20 @@ POST-CLOSURE MILESTONES (new series — FROZEN-22 count untouched)
 │         tool layer; 127.0.0.1 only, share=False hard-coded (Stage 18
 │         posture); English copy; version renumbered to 1.0.0
 │         (spec: specs/milestone-ui-01.md)
-└── UI-2  File loading + batch decomposition (v1.1.0):                 ✅
-          .csv/.tsv/.txt single-matrix and wide-batch (16/17-col) input;
-          strict numbers-only parser (second parse surface, capped +
-          K26); results table + CSV download; Windows field report →
-          repo-wide explicit-encoding sweep + static/dynamic guards +
-          a Windows CI cell (spec: specs/milestone-ui-02.md)
+├── UI-2  File loading + batch decomposition (v1.1.0):                 ✅
+│         .csv/.tsv/.txt single-matrix and wide-batch (16/17-col) input;
+│         strict numbers-only parser (second parse surface, capped +
+│         K26); results table + CSV download; Windows field report →
+│         repo-wide explicit-encoding sweep + static/dynamic guards +
+│         a Windows CI cell (spec: specs/milestone-ui-02.md)
+└── UI-3  Lorentz transform tab (v1.3.0, branch feature/lorentz-ui):   ✅
+          numeric tool_lorentz_transform (boost/rotation → Λ = ZZ* over
+          the Σ basis; axis normalized; overflow-safe; K26) PINNED to the
+          symbolic engine by test; exposed on BOTH the UI (a "Lorentz
+          transform" tab, α computed never typed, honest validity badge
+          ΛᵀgΛ=g/det/orthochronous/imag-leak) and the MCP server
+          (lorentz_transform; exact-set → 5 tools); numeric-only posture
+          unchanged (spec: specs/milestone-ui-03.md)
 ```
 
 ```

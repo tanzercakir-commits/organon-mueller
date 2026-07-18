@@ -10,6 +10,7 @@ surface), and every failure must surface as a readable reason (K26),
 never a traceback.
 """
 import json
+import math
 
 import pytest
 
@@ -214,3 +215,28 @@ def test_propose_cb_explains_multiple_exact_hypotheses():
     assert "not *the* decomposition" in md
     md2, _ = ui.propose_cb(ui.identity_matrix())  # zero accepted
     assert "Several hypotheses are exact" not in md2
+
+
+# -- Lorentz transform tab (milestone UI-3) ---------------------------------
+
+def test_lorentz_cb_boost_reports_valid_lambda():
+    alpha_md, grid, badge = ui.lorentz_cb("boost", 1.0, 1, 0, 0)
+    assert not alpha_md.startswith(ui.STRINGS["err_prefix"])
+    assert len(grid) == 4 and len(grid[0]) == 4
+    assert abs(grid[0][0] - math.cosh(1.0)) < 1e-9      # Λ00 = cosh φ
+    assert "Proper orthochronous Lorentz transformation" in badge
+    assert "α" in alpha_md
+
+
+def test_lorentz_cb_rotation_grid_is_the_spatial_rotation():
+    _, grid, badge = ui.lorentz_cb("rotation", math.pi / 2, 0, 0, 5)
+    assert abs(grid[1][2] - 1.0) < 1e-9 and abs(grid[2][1] + 1.0) < 1e-9
+    assert "Proper orthochronous" in badge
+
+
+def test_lorentz_cb_error_path_is_readable_and_safe():
+    alpha_md, grid, badge = ui.lorentz_cb("boost", 1.0, 0, 0, 0)
+    assert alpha_md.startswith(ui.STRINGS["err_prefix"])
+    assert "non-zero" in alpha_md
+    assert grid == [[0.0] * 4 for _ in range(4)]        # safe empty grid
+    assert badge == ""

@@ -6,6 +6,7 @@ from .tools import (
     tool_decompose_mueller,
     tool_generate_report,
     tool_guarded_campaign_info,
+    tool_lorentz_transform,
     tool_propose_hypotheses,
 )
 
@@ -14,4 +15,5 @@ __all__ = [
     "tool_propose_hypotheses",
     "tool_guarded_campaign_info",
     "tool_generate_report",
+    "tool_lorentz_transform",
 ]

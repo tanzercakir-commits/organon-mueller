@@ -38,6 +38,16 @@ Options: `organon-ui --port 8000` (different port), `organon-ui
   strictly as numbers, locally.
 - **LaTeX report** tab: generate the deterministic, evidence-labelled
   report for the current matrix and download the `.tex` source.
+- **Lorentz transform** tab: the Lorentz face of the engine — pick a
+  **boost** or **rotation**, enter the parameter (rapidity φ or angle θ,
+  in radians) and an axis (normalized for you), and read off the Lorentz
+  matrix Λ = ZZ* over the Σ basis. The covariance parameters α are
+  *computed* (never typed). An honest validity badge reports the numeric
+  checks that Λ is a proper orthochronous Lorentz transformation
+  (ΛᵀgΛ = g, det Λ = +1, Λ₀₀ ≥ 1, imaginary-leak ≈ 0). The matrix is
+  built from the same definitions the test suite proves symbolically —
+  a test pins the numeric tool to the symbolic engine — and the same
+  tool is exposed on the MCP surface as `lorentz_transform`.
 
 ## Security posture
 

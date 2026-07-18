@@ -15,6 +15,7 @@ __all__ = [
     "tool_propose_hypotheses",
     "tool_guarded_campaign_info",
     "tool_generate_report",
+    "tool_lorentz_transform",
 ]
 
 _FUNDAMENTAL = ("type1", "type2", "type3")
@@ -245,4 +246,120 @@ def tool_generate_report(payload: dict) -> dict:
         # LinAlgError subclasses ValueError only on numpy >= 2.0; listed
         # explicitly so numpy 1.x solver failures also return a reason
         # (review UI-1, finding 6).
+        return {"error": str(exc)}
+
+
+# -- Lorentz face (milestone UI-3) ------------------------------------------
+
+_G = np.diag([1.0, -1.0, -1.0, -1.0])
+
+
+def _sigma_numeric():
+    """The Σ basis as complex numpy arrays (cached). Imported lazily so the
+    tool layer keeps its light import cost when the Lorentz face is unused."""
+    global _SIGMA_CACHE
+    try:
+        return _SIGMA_CACHE
+    except NameError:
+        from ..lorentz.core import SIGMA
+        _SIGMA_CACHE = [np.array(s, dtype=complex) for s in SIGMA]
+        return _SIGMA_CACHE
+
+
+def _finite_real(v, name):
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        raise ValueError(f"{name} must be a real number")
+    v = float(v)
+    if not np.isfinite(v):
+        raise ValueError(f"{name} must be finite")
+    return v
+
+
+def tool_lorentz_transform(payload: dict) -> dict:
+    """Build the Lorentz matrix Λ for a boost or rotation.
+
+    payload: {"kind": "boost"|"rotation", "angle": float,
+              "axis": [float, float, float]}
+    where angle is the rapidity φ (boost) or the rotation angle θ
+    (radians). The axis is NORMALIZED here (a UI user is not expected to
+    supply a unit vector); a zero axis is a readable error.
+
+    Returns {kind, angle, axis_unit, alpha ([re,im] pairs), lambda (4×4
+    real), checks{...}} or {"error": reason} (K26). Λ is built from the
+    engine's proven definitions — α = (cosh(φ/2), sinh(φ/2) n̂) /
+    (cos(θ/2), i sin(θ/2) n̂), Λ = ZZ* over the Σ basis — evaluated
+    numerically; test_lorentz_tool pins it to the symbolic engine.
+    """
+    try:
+        kind = payload.get("kind")
+        if kind not in ("boost", "rotation"):
+            raise ValueError("kind must be 'boost' or 'rotation'")
+        angle = _finite_real(payload.get("angle"), "angle")
+        axis = payload.get("axis")
+        if not (isinstance(axis, (list, tuple)) and len(axis) == 3):
+            raise ValueError("axis must be a list of 3 real numbers")
+        n = np.array([_finite_real(c, f"axis[{i}]")
+                      for i, c in enumerate(axis)], dtype=float)
+        norm = float(np.linalg.norm(n))
+        if norm < 1e-12:
+            raise ValueError("axis must be a non-zero vector "
+                             "(it sets the direction)")
+        nhat = n / norm
+
+        # numpy (not math) for the hyperbolics/trig: an out-of-range boost
+        # rapidity OVERFLOWS to inf here instead of raising OverflowError
+        # (an ArithmeticError, not a ValueError — it would escape the K26
+        # guard); the single finiteness check below then turns BOTH the
+        # overflow band and the inf/nan band into one readable reason.
+        half = angle / 2.0
+        with np.errstate(over="ignore", invalid="ignore"):
+            if kind == "boost":
+                c, s = np.cosh(half), np.sinh(half)
+                alpha = np.array([c, s * nhat[0], s * nhat[1], s * nhat[2]],
+                                 dtype=complex)
+            else:
+                c, s = np.cos(half), np.sin(half)
+                alpha = np.array([c, 1j * s * nhat[0], 1j * s * nhat[1],
+                                  1j * s * nhat[2]], dtype=complex)
+            sig = _sigma_numeric()
+            z = sum(alpha[m] * sig[m] for m in range(4))
+            lam = z @ z.conj()                   # Λ = ZZ* (M = ZZ*)
+        # Everything downstream is finiteness-sensitive and must stay
+        # inside errstate: np.round multiplies by 1e12 (so it overflows
+        # for finite-but-huge entries WELL BEFORE Λ itself does), and the
+        # metric/det checks SQUARE Λ (~1e300)² → overflow. Reject on ANY
+        # non-finite quantity — the intermediate Λ, the ROUNDED output
+        # matrix, or the squared checks — as one readable reason. (Review
+        # UI-3: the earlier fix guarded only `lam`, missing the ≈355–710
+        # band where lam is finite but the round and the checks overflow.)
+        lam_real = lam.real
+        with np.errstate(over="ignore", invalid="ignore"):
+            imag_leak = float(np.max(np.abs(lam.imag)))
+            lam_out = np.round(lam_real, 12)
+            metric_residual = float(np.max(np.abs(
+                lam_real.T @ _G @ lam_real - _G)))
+            det = float(np.linalg.det(lam_real))
+        if not (np.all(np.isfinite(lam)) and np.all(np.isfinite(lam_out))
+                and np.isfinite(metric_residual) and np.isfinite(det)
+                and np.isfinite(imag_leak)):
+            raise ValueError("angle too large: the Lorentz matrix overflows "
+                             "double precision (use a smaller |angle|)")
+        orthochronous = bool(lam_real[0, 0] >= 1.0 - 1e-9)
+        is_proper = bool(metric_residual < 1e-9 and abs(det - 1.0) < 1e-9
+                         and orthochronous and imag_leak < 1e-9)
+        return {
+            "kind": kind,
+            "angle": angle,
+            "axis_unit": [float(x) for x in nhat],
+            "alpha": [[float(a.real), float(a.imag)] for a in alpha],
+            "lambda": lam_out.tolist(),
+            "checks": {
+                "metric_residual": metric_residual,
+                "det": det,
+                "orthochronous": orthochronous,
+                "imag_leak": imag_leak,
+                "is_proper_orthochronous_lorentz": is_proper,
+            },
+        }
+    except ValueError as exc:
         return {"error": str(exc)}

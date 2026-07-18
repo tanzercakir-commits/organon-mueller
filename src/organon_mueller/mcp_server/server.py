@@ -7,6 +7,7 @@ from .tools import (
     tool_decompose_mueller,
     tool_generate_report,
     tool_guarded_campaign_info,
+    tool_lorentz_transform,
     tool_propose_hypotheses,
 )
 
@@ -57,6 +58,16 @@ def build_server():
         return tool_generate_report(
             {"mueller": mueller, "symmetry": symmetry, "title": title,
              "date": date, "compile_pdf": compile_pdf})
+
+    @app.tool()
+    def lorentz_transform(kind: str, angle: float,
+                          axis: list) -> dict:
+        """Lorentz matrix Λ = ZZ* for a boost or rotation. kind:
+        'boost'|'rotation'; angle: rapidity φ (boost) or angle θ
+        (rotation), radians; axis: 3 numbers (normalized). Numeric only;
+        returns Λ, the covariance parameters, and validity checks."""
+        return tool_lorentz_transform(
+            {"kind": kind, "angle": angle, "axis": axis})
 
     return app
 

@@ -311,7 +311,8 @@ def test_fastmcp_wiring_smoke():
     tools = anyio.run(app.list_tools)
     names = {t.name for t in tools}
     assert names == {"decompose_mueller", "propose_hypotheses",
-                     "guarded_campaign_info", "generate_report"}
+                     "guarded_campaign_info", "generate_report",
+                     "lorentz_transform"}
 
 
 def test_guarded_campaign_info_graceful_without_egglog():

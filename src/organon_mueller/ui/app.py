@@ -107,6 +107,24 @@ STRINGS = {
     "report_title_label": "Report title",
     "latex_label": "LaTeX source",
     "download_label": "Download .tex",
+    "tab_lorentz": "Lorentz transform",
+    "lorentz_help": (
+        "The Lorentz face of the engine (`organon_mueller.lorentz`): pick "
+        "a **boost** or a **rotation**, enter the parameter and an axis, "
+        "and read off the Lorentz matrix Λ = ZZ*. The axis is normalized "
+        "for you; only numbers are entered (the covariance parameters α "
+        "are computed, never typed). The 40 proven identities and the full "
+        "sweep are reference material — see `reports/sweep-lorentz-01.json`."
+    ),
+    "lorentz_kind_label": "Transformation",
+    "lorentz_angle_label": (
+        "Parameter — rapidity φ (boost) or angle θ (rotation), in radians"
+    ),
+    "lorentz_axis_help": "Axis n (any non-zero vector; normalized for you)",
+    "btn_lorentz": "Compute Λ",
+    "lorentz_alpha_label": "Covariance parameters (computed)",
+    "lorentz_matrix_label": "Lorentz matrix Λ (4×4, real)",
+    "lorentz_badge_label": "Validity",
     "footer": (
         "**Evidence discipline.** Numbers shown here are evidence class "
         "*numeric-deterministic*; the symbolic proofs live in the test "
@@ -412,6 +430,48 @@ def batch_cb(file_path, symmetry, variant, rank_tol, psd_tol, rank1_tol):
     return summary, rows, str(csv_path)
 
 
+# -- Lorentz transform (milestone UI-3) -------------------------------------
+
+def _fmt_complex(pair) -> str:
+    re, im = pair
+    if abs(im) < 1e-12:
+        return f"{re:.6g}"
+    sign = "+" if im >= 0 else "−"
+    return f"{re:.6g} {sign} {abs(im):.6g}i"
+
+
+def lorentz_cb(kind, angle, nx, ny, nz):
+    """-> (alpha_markdown, lambda_grid, validity_markdown). Thin wrapper
+    over tool_lorentz_transform; every failure is a readable string."""
+    from ..mcp_server.tools import tool_lorentz_transform
+
+    empty = [[0.0] * 4 for _ in range(4)]
+    result = tool_lorentz_transform(
+        {"kind": kind, "angle": angle, "axis": [nx, ny, nz]})
+    if "error" in result:
+        return _err(result["error"]), empty, ""
+
+    nhat = result["axis_unit"]
+    alpha_md = (
+        "**α** = ("
+        + ", ".join(_fmt_complex(a) for a in result["alpha"]) + ")"
+        + "  ·  n̂ = ("
+        + ", ".join(f"{x:.4g}" for x in nhat) + ")")
+
+    ch = result["checks"]
+    ok = ch["is_proper_orthochronous_lorentz"]
+    head = ("**Proper orthochronous Lorentz transformation** — all checks "
+            "pass." if ok else
+            "**Not a proper orthochronous Lorentz transformation** — see "
+            "the residuals below.")
+    body = (
+        f"\n\n- metric ΛᵀgΛ = g — residual `{ch['metric_residual']:.2e}`"
+        f"\n- det Λ = `{ch['det']:.6f}` (expected +1)"
+        f"\n- orthochronous (Λ₀₀ ≥ 1) — {'yes' if ch['orthochronous'] else 'no'}"
+        f"\n- imaginary part of Λ — `{ch['imag_leak']:.2e}` (expected ~0)")
+    return alpha_md, result["lambda"], head + body
+
+
 # --------------------------------------------------------------------------
 # app assembly
 # --------------------------------------------------------------------------
@@ -520,6 +580,28 @@ def build_app():
                         inputs=[matrix, symmetry, variant, title_box,
                                 rank_tol, psd_tol, rank1_tol],
                         outputs=[latex_out, tex_file, report_status])
+
+        with gr.Tab(STRINGS["tab_lorentz"]):
+            gr.Markdown(STRINGS["lorentz_help"])
+            lor_kind = gr.Radio(choices=["boost", "rotation"],
+                                value="boost",
+                                label=STRINGS["lorentz_kind_label"])
+            lor_angle = gr.Number(value=0.5,
+                                  label=STRINGS["lorentz_angle_label"])
+            gr.Markdown(STRINGS["lorentz_axis_help"])
+            with gr.Row():
+                lor_nx = gr.Number(value=1.0, label="nx")
+                lor_ny = gr.Number(value=0.0, label="ny")
+                lor_nz = gr.Number(value=0.0, label="nz")
+            btn_lor = gr.Button(STRINGS["btn_lorentz"], variant="primary")
+            lor_alpha = gr.Markdown(label=STRINGS["lorentz_alpha_label"])
+            lor_matrix = gr.Dataframe(label=STRINGS["lorentz_matrix_label"],
+                                      interactive=False, type="array")
+            lor_badge = gr.Markdown(label=STRINGS["lorentz_badge_label"])
+            btn_lor.click(lorentz_cb,
+                          inputs=[lor_kind, lor_angle,
+                                  lor_nx, lor_ny, lor_nz],
+                          outputs=[lor_alpha, lor_matrix, lor_badge])
 
         gr.Markdown(STRINGS["footer"])
     return app
